@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuckHunt4Wp", "DuckHunt4Wp.csproj", "{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuckHunt4WpContent", "..\DuckHunt4WpContent\DuckHunt4WpContent.contentproj", "{B118C1C2-CB93-46F0-ABB9-F2EC493497F7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Windows Phone = Debug|Windows Phone
+		Release|Windows Phone = Release|Windows Phone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}.Debug|Windows Phone.Deploy.0 = Debug|Windows Phone
+		{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
+		{B118C1C2-CB93-46F0-ABB9-F2EC493497F7}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{B118C1C2-CB93-46F0-ABB9-F2EC493497F7}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
