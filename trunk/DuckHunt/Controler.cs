@@ -16,6 +16,33 @@ namespace DuckHuntCommon
         public List<Texture2D> textureList;
     }
 
+    class ViewObjectFactory
+    {
+        public static ViewObject CreateViewObject(ModelObject model)
+        {
+            ViewObject viewObject = null;
+            switch (model.Type())
+            {
+                case ModelType.SKY:
+                case ModelType.GRASS:
+                case ModelType.DOG:
+                case ModelType.DUCK:
+                case ModelType.BULLET:
+                    {
+                        viewObject = new CommonViewObject(model);
+                    }
+                    break;
+                case ModelType.HITBOARD:
+                    {
+                        viewObject = null;
+                    }
+                    break;
+                    
+            }
+            return viewObject;
+        }
+    }
+
     class DuckHuntGameControler
     {
         ContentManager Content = null;
@@ -104,8 +131,8 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = new ViewObject(obj);
-                    viewObject.Init(objTextureLst[obj.Type()].textureList, obj.GetSpace());
+                    viewObject = ViewObjectFactory.CreateViewObject(obj);
+                    viewObject.Init(obj, objTextureLst[obj.Type()].textureList, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
                 viewObject.Update(gameTime);
@@ -131,8 +158,8 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = new ViewObject(obj);
-                    viewObject.Init(objTextureLst[obj.Type()].textureList, obj.GetSpace());
+                    viewObject = ViewObjectFactory.CreateViewObject(obj);
+                    viewObject.Init(obj, objTextureLst[obj.Type()].textureList, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
                 viewObject.Draw(spriteBatch);

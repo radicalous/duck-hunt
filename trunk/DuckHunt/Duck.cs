@@ -10,7 +10,7 @@ using GameCommon;
 
 namespace DuckHuntCommon 
 {
-    enum ModelType { NONE, SKY, GRASS, DUCK, DOG, BULLET };
+    enum ModelType { NONE, SKY, GRASS, DUCK, DOG, BULLET, HITBOARD};
 
     interface ModelObject
     {
@@ -36,19 +36,26 @@ namespace DuckHuntCommon
         public StaticBackground staticBackground;
     }
 
-    class ViewObject
+    interface ViewObject
+    {
+        void Init(ModelObject model, List<Texture2D> texturesList, Rectangle space);
+        void Update(GameTime gameTime);
+        void Draw(SpriteBatch spriteBatch);
+    }
+
+    class CommonViewObject: ViewObject
     {
         List<AnimationInfo> animationList;
         List<ViewItem> viewItmList;
 
         ModelObject model;
 
-        public ViewObject(ModelObject model1)
+        public CommonViewObject(ModelObject model1)
         {
             model = model1;
         }
 
-        public void Init(List<Texture2D> texturesList, Rectangle space)
+        public void Init(ModelObject model1, List<Texture2D> texturesList, Rectangle space)
         {
             animationList = model.GetAnimationInfoList();
             viewItmList = new List<ViewItem>();
@@ -105,6 +112,38 @@ namespace DuckHuntCommon
             }
         }
     }
+
+    class HitBoardViewObject: ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+
+        ModelObject model;
+
+        public HitBoardViewObject(ModelObject model1)
+        {
+            model = model1;
+        }
+
+        public void Init(ModelObject model1, List<Texture2D> texturesList, Rectangle space)
+        {
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            // draw background
+
+
+            // draw duck status
+
+
+        }
+    }
+
 
     class ForestModel
     {
@@ -1049,6 +1088,129 @@ namespace DuckHuntCommon
         public float GetSacle()
         {
             return scale;
+        }
+
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+    }
+
+
+    class HitBoardModel : ModelObject
+    {
+        // include the background, duck icon/deadduck icon
+        List<AnimationInfo> anationInfoList;
+
+        int AnimationIndex
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        float Depth
+        {
+            get { return 0.1f; }
+        }
+
+        Vector2 Position
+        {
+            get
+            {
+                return position;
+            }
+        }
+
+        Rectangle space; //indicate the object view range
+        Vector2 position = Vector2.Zero; // no use
+
+        public HitBoardModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\laser1";
+            animationInfo.frameWidth = 47;
+            animationInfo.frameHeight = 23;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+        }
+        public HitBoardModel(Vector2 position1)
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\laser1";
+            animationInfo.frameWidth = 35;
+            animationInfo.frameHeight = 27;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            position = position1;
+        }
+      
+
+        public void Initialize(Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+ 
+        }
+
+
+        public ModelType Type()
+        {
+            // sky 
+
+            return ModelType.HITBOARD;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return AnimationIndex;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return Depth;
+        }
+
+        public Vector2 GetPosition()
+        {
+            if (shootduck != null)
+            {
+                //return shootduck.GetPosition();
+            }
+            return Position;
+        }
+        public Rectangle GetSpace()
+        {
+            return dogspace;
+        }
+        public float GetSacle()
+        {
+            return 1;
         }
 
 
