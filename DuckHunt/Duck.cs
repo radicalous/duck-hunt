@@ -25,6 +25,9 @@ namespace DuckHuntCommon
         List<AnimationInfo> GetAnimationInfoList();
         int GetCurrentAnimationIndex();
         float GetAnimationDepth();
+
+        List<ModelObject> GetChildrenObjects();
+
         ViewObject GetViewObject();
         void SetViewObject(ViewObject viewObject);
 
@@ -49,19 +52,41 @@ namespace DuckHuntCommon
         List<ViewItem> viewItmList;
 
         ModelObject model;
+        List<ViewObject> childViewObjectList;
 
         public CommonViewObject(ModelObject model1)
         {
             model = model1;
+            List<ModelObject> childobjlst = model.GetChildrenObjects();
+            if (childobjlst != null)
+            {
+                childViewObjectList = new List<ViewObject>();
+                foreach (ModelObject obj in childobjlst)
+                {
+                    ViewObject viewobj = ViewObjectFactory.CreateViewObject(obj);
+                    childViewObjectList.Add(viewobj);
+                }
+            }
         }
 
         public void Init(ModelObject model1, List<Texture2D> texturesList, Rectangle space)
         {
+            // try to calculate how may textures are needed by children
+            List<ModelObject> childobjls = model.GetChildrenObjects();
+            int childtexturecount = 0;
+            if (childobjls != null)
+            {
+                foreach (ModelObject obj in childobjls)
+                {
+                    childtexturecount += obj.GetAnimationInfoList().Count;
+                }
+            }
+            int curobjtexturecnt = model.GetAnimationInfoList().Count - childtexturecount;
             animationList = model.GetAnimationInfoList();
             viewItmList = new List<ViewItem>();
-            int i = 0;
-            foreach (AnimationInfo animationInfo in animationList)
+            for (int i = 0; i < curobjtexturecnt; i++)
             {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
                 ViewItem viewItm = new ViewItem();
                 if (animationInfo.animation)
                 {
@@ -80,7 +105,29 @@ namespace DuckHuntCommon
                         space.Width, space.Height, 0);
                 }
                 viewItmList.Add(viewItm);
-                i++;
+            }
+
+            // left textures are for children
+            if (childobjls != null)
+            {
+                List<Texture2D> leftTextureList = texturesList;
+                leftTextureList.RemoveRange(0, curobjtexturecnt);
+
+                List<Texture2D> childTextureList = new List<Texture2D>();
+                foreach (ModelObject obj in childobjls)
+                {
+                    for (int i = 0; i < obj.GetAnimationInfoList().Count; i++)
+                    {
+                        childTextureList.Add(leftTextureList[i]);
+                    }
+
+                    //
+                    Init(obj, childTextureList, obj.GetSpace());
+
+                    // remove tthis child's textures
+                    leftTextureList.RemoveRange(0, obj.GetAnimationInfoList().Count);
+                    childTextureList.RemoveRange(0, childTextureList.Count);
+                }
             }
         }
 
@@ -98,6 +145,14 @@ namespace DuckHuntCommon
                 viewItm.staticBackground.Update(gameTime);
             }
 
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject viewObj in childViewObjectList)
+                {
+                    viewObj.Update(gameTime);
+                }
+            }
+
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -109,6 +164,13 @@ namespace DuckHuntCommon
             else
             {
                 viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
+            }
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject viewObj in childViewObjectList)
+                {
+                    viewObj.Draw(spriteBatch);
+                }
             }
         }
     }
@@ -230,6 +292,10 @@ namespace DuckHuntCommon
             return 1.0f;
         }
 
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
 
         ViewObject viewObject;
         public ViewObject GetViewObject()
@@ -315,6 +381,11 @@ namespace DuckHuntCommon
         public float GetSacle()
         {
             return 1.0f;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
         }
 
         ViewObject viewObject;
@@ -574,6 +645,10 @@ namespace DuckHuntCommon
             return scale;
         }
 
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
 
         ViewObject viewObject;
         public ViewObject GetViewObject()
@@ -899,6 +974,11 @@ namespace DuckHuntCommon
             return 1.0f;
         }
 
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
 
         ViewObject viewObject;
         public ViewObject GetViewObject()
@@ -1090,6 +1170,10 @@ namespace DuckHuntCommon
             return scale;
         }
 
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
 
         ViewObject viewObject;
         public ViewObject GetViewObject()
@@ -1103,11 +1187,67 @@ namespace DuckHuntCommon
     }
 
 
+    class DuckIconModel : ModelObject
+    {
+        Rectangle space;
+        public void Initialize(Rectangle rect, int seed)
+        {
+        }
+        public void Update(GameTime gameTime)
+        {
+
+        }
+        public ModelType Type()
+        {
+            return ModelType.NONE;
+        }
+
+        public Vector2 GetPosition()
+        {
+            return Vector2.Zero;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return null;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+        public float GetAnimationDepth()
+        {
+            return 0.3f;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        public ViewObject GetViewObject()
+        {
+            return null;
+        }
+        public void SetViewObject(ViewObject viewObject)
+        {
+        }
+    }
+
     class HitBoardModel : ModelObject
     {
         // include the background, duck icon/deadduck icon
         List<AnimationInfo> anationInfoList;
-
+       
         int AnimationIndex
         {
             get
@@ -1137,14 +1277,18 @@ namespace DuckHuntCommon
             //
             anationInfoList = new List<AnimationInfo>();
 
-            // flying duck
+            // background
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\laser1";
+            animationInfo.texturesPath = "Graphics\\HitBoardBackground";
             animationInfo.frameWidth = 47;
             animationInfo.frameHeight = 23;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
+
+            // get least of duck icon
+
+            //
         }
         public HitBoardModel(Vector2 position1)
         {
@@ -1171,7 +1315,10 @@ namespace DuckHuntCommon
 
         public void Update(GameTime gameTime)
         {
- 
+            // no update for itself
+
+
+            // update child object
         }
 
 
@@ -1198,20 +1345,23 @@ namespace DuckHuntCommon
 
         public Vector2 GetPosition()
         {
-            if (shootduck != null)
-            {
-                //return shootduck.GetPosition();
-            }
+
             return Position;
         }
         public Rectangle GetSpace()
         {
-            return dogspace;
+            return space;
         }
         public float GetSacle()
         {
             return 1;
         }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
 
 
         ViewObject viewObject;
