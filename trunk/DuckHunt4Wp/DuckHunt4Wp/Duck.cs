@@ -1103,7 +1103,7 @@ namespace DuckHuntCommon
 
         Vector2 position = Vector2.Zero;
         Vector2 targetposition = Vector2.Zero;
-        DuckModel shootduck;
+        List<DuckModel> shootduckList;
 
 
         public BulletModel()
@@ -1124,6 +1124,8 @@ namespace DuckHuntCommon
             bulletspace.Y = 0;
             bulletspace.Width = animationInfo.frameWidth;
             bulletspace.Height = animationInfo.frameHeight;
+
+            shootduckList = new List<DuckModel>();
         }
         public BulletModel(Vector2 position1)
         {
@@ -1146,16 +1148,28 @@ namespace DuckHuntCommon
             bulletspace.Y = 0;
             bulletspace.Width = animationInfo.frameWidth;
             bulletspace.Height = animationInfo.frameHeight;
+
+            shootduckList = new List<DuckModel>();
         }
 
         float deltax = 40f; //40f;
         float deltay = -20f; //-20f;
 
+        public List<DuckModel> GetShootDucks()
+        {
+            if (shootduckList.Count > 0)
+            {
+                return shootduckList;
+            }
+
+            return null;
+        }
+
         public void SetTarget(DuckModel duck)
         {
-            shootduck = duck;
             if (duck != null)
             {
+                shootduckList.Add(duck);
                 depth = duck.GetAnimationDepth() + 0.1f;
                 position = duck.GetAbsolutePosition();
                 targetposition = position;
@@ -1187,7 +1201,7 @@ namespace DuckHuntCommon
 
         public void Update(GameTime gameTime)
         {
-            if (shootduck != null)
+            if (shootduckList.Count > 0)
             {
 
                 if (position.X < targetposition.X)
@@ -1245,7 +1259,7 @@ namespace DuckHuntCommon
 
         public Vector2 GetAbsolutePosition()
         {
-            if (shootduck != null)
+            if (shootduckList.Count > 0)
             {
                 //return shootduck.GetAbsolutePosition();
             }

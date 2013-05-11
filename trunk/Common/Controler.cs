@@ -567,6 +567,22 @@ namespace DuckHuntCommon
                 duck.Shoot(bullet);
             }
             bulletsList.Add(bullet);
+
+            if (bullet.GetShootDucks() != null)
+            {
+                //
+                int ii = 0;
+                foreach (DuckModel duck2 in duckList)
+                {
+                    if (duck2.dead)
+                    {
+                        hitBoard.SetDuckIconsState(currentduck + ii, DuckIconModel.DuckIconState.Dead);
+                    }
+                    ii++;
+                }
+
+            }
+
             bulletcount--;
             bulletBoard.RemoveFirstBullet();
         }
