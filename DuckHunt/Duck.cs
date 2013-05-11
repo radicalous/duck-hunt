@@ -1171,7 +1171,7 @@ namespace DuckHuntCommon
             {
                 shootduckList.Add(duck);
                 depth = duck.GetAnimationDepth() + 0.1f;
-                position = duck.GetAbsolutePosition();
+                //position = duck.GetAbsolutePosition();
                 targetposition = position;
                 position.X = position.X - 20*6 ;
                 position.Y = position.Y + 10*6 ;
