@@ -243,7 +243,7 @@ namespace GameCommon
         {
             boundaryRect = dogspace;
             Position.X = dogspace.Left;
-            Position.Y = dogspace.Bottom;
+            Position.Y = dogspace.Top;
         }
 
 

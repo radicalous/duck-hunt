@@ -70,6 +70,8 @@
     <Compile Include="Duck.cs" />
     <Compile Include="ParallaxingBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Content\Graphics\BulletBoard.xnb" />
+    <None Include="Content\Graphics\bulletIcon.xnb" />
     <None Include="Content\Graphics\deadduck.xnb" />
     <None Include="Content\Graphics\dogfound.xnb" />
     <None Include="Content\Graphics\dogjumpdown.xnb" />
@@ -79,6 +81,9 @@
     <None Include="Content\Graphics\dogseeking.xnb" />
     <None Include="Content\Graphics\dogshowduck1.xnb" />
     <None Include="Content\Graphics\duckForest.xnb" />
+    <None Include="Content\Graphics\duckIconAlive.xnb" />
+    <None Include="Content\Graphics\duckIconDead.xnb" />
+    <None Include="Content\Graphics\duckIconOngoing.xnb" />
     <None Include="Content\Graphics\ducks.xnb" />
     <None Include="Content\Graphics\ducksreverse.xnb" />
     <None Include="Content\Graphics\dyingduck.xnb" />
@@ -86,6 +91,7 @@
     <None Include="Content\Graphics\explosion.xnb" />
     <None Include="Content\Graphics\Forest.xnb" />
     <None Include="Content\Graphics\gameFont.xnb" />
+    <None Include="Content\Graphics\HitBoardBackground.xnb" />
     <None Include="Content\Graphics\laser.xnb" />
     <None Include="Content\Graphics\laser1.xnb" />
     <None Include="Content\Graphics\mainbackground.xnb" />

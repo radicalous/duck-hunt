@@ -123,7 +123,7 @@ namespace DuckHunt4Wp
             spriteBatch.End(); 
         }
 
-        GameTime lastpresstime = new GameTime();
+        ButtonState lastButtonState = new ButtonState();
         private void HuntDuck(GameTime gameTime)
         {
             // Get Thumbstick Controls
@@ -177,11 +177,11 @@ namespace DuckHunt4Wp
             //Get Mouse State then Capture the Button type and Respond Button Press
             currentMouseState = Mouse.GetState();
             Vector2 mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
-            if (currentMouseState.LeftButton == ButtonState.Pressed)
+            if (currentMouseState.LeftButton == ButtonState.Released && lastButtonState == ButtonState.Pressed)
             {
                 controler.HuntDuck(mousePosition);
-
             }
+            lastButtonState = currentMouseState.LeftButton;
         } 
     }
 }

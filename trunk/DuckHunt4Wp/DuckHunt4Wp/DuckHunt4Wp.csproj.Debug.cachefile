@@ -29,5 +29,11 @@ Content\Sound\laserFire.xnb
 Content\Sound\gameMusic.xnb
 Content\Sound\menuMusic.xnb
 Content\Graphics\ducksreverse.xnb
+Content\Graphics\duckIconAlive.xnb
+Content\Graphics\duckIconDead.xnb
+Content\Graphics\duckIconOngoing.xnb
+Content\Graphics\HitBoardBackground.xnb
+Content\Graphics\BulletBoard.xnb
+Content\Graphics\bulletIcon.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma

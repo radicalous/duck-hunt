@@ -34,7 +34,22 @@ namespace DuckHuntCommon
                     break;
                 case ModelType.HITBOARD:
                     {
-                        viewObject = null;
+                        viewObject = new CommonViewObject(model);
+                    }
+                    break;
+                case ModelType.DUCKICON:
+                    {
+                        viewObject = new CommonViewObject(model);
+                    }
+                    break;
+                case ModelType.BULLETBOARD:
+                    {
+                        viewObject = new CommonViewObject(model);
+                    }
+                    break;
+                case ModelType.BULLETICON:
+                    {
+                        viewObject = new CommonViewObject(model);
                     }
                     break;
                     
@@ -132,7 +147,7 @@ namespace DuckHuntCommon
                 if (viewObject == null)
                 {
                     viewObject = ViewObjectFactory.CreateViewObject(obj);
-                    viewObject.Init(obj, objTextureLst[obj.Type()].textureList, obj.GetSpace());
+                    viewObject.Init(obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
                 viewObject.Update(gameTime);
@@ -159,7 +174,7 @@ namespace DuckHuntCommon
                 if (viewObject == null)
                 {
                     viewObject = ViewObjectFactory.CreateViewObject(obj);
-                    viewObject.Init(obj, objTextureLst[obj.Type()].textureList, obj.GetSpace());
+                    viewObject.Init(obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
                 viewObject.Draw(spriteBatch);
@@ -201,12 +216,22 @@ namespace DuckHuntCommon
         List<DuckModel> duckList;
         Rectangle duckFlySpace;
 
-        //DogView dog;
         DogModel dog;
         Rectangle dogRunSpace;
 
+        HitBoardModel hitBoard;
+        Rectangle hitBoardSpace;
+
+        BulletBoardModel bulletBoard;
+        Rectangle bulletBoardSpace;
+
         int round = 1;
         List<GameRound> gameRounds;
+
+        int currentduck = 0;
+        int concurrentduckcnt = 2;
+
+        int bulletcount = 3;
 
         public DuckHuntGame()
         {
@@ -225,6 +250,11 @@ namespace DuckHuntCommon
             objlst.Add(new DuckModel());
             objlst.Add(new DogModel());
             objlst.Add(new BulletModel());
+            objlst.Add(new HitBoardModel());
+            objlst.Add(new DuckIconModel());
+            objlst.Add(new BulletBoardModel());
+            objlst.Add(new BulletIconModel());
+
             foreach (ModelObject obj in objlst)
             {
                 ObjectTexturesPathsItem texturesPathsItem = new ObjectTexturesPathsItem();
@@ -248,11 +278,15 @@ namespace DuckHuntCommon
                 objlst.Add(blueSky);
                 objlst.Add(grass);
                 objlst.Add(dog);
+                objlst.Add(this.hitBoard);
+                objlst.Add(bulletBoard);
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
                 objlst.Add(blueSky);
                 objlst.Add(grass);
+                objlst.Add(bulletBoard);
+
                 foreach (DuckModel duck in duckList)
                 {
                     objlst.Add(duck);
@@ -261,17 +295,26 @@ namespace DuckHuntCommon
                 {
                     objlst.Add(bullet);
                 }
+                objlst.Add(this.hitBoard);
             }
             else if (phase == GAME_PHASE.DOG_SHOW)
             {
                 objlst.Add(blueSky);
                 objlst.Add(grass);
+                objlst.Add(bulletBoard);
+
                 objlst.Add(dog);
+                objlst.Add(this.hitBoard);
+
             }
             else if (phase == GAME_PHASE.OVER)
             {
                 objlst.Add(blueSky);
                 objlst.Add(grass);
+                objlst.Add(bulletBoard);
+
+                objlst.Add(this.hitBoard);
+
             }
         }
 
@@ -279,16 +322,17 @@ namespace DuckHuntCommon
         {
             // dog seek duck
             blueSky = new SkyModel();
-            blueSky.Initialize(rectBackground, 0);
+            blueSky.Initialize(null, rectBackground, 0);
             grass = new GrassModel();
-            grass.Initialize(rectBackground, 0);
+            grass.Initialize(null, rectBackground, 0);
         }
 
         void NewDog()
         {
             // dog seek duck
             dog = new DogModel();
-            dog.Initialize(dogRunSpace, 0);
+            dog.Initialize(null, dogRunSpace, 0);
+            dog.StartPilot(dogRunSpace);
         }
 
         void NewDuck()
@@ -299,7 +343,24 @@ namespace DuckHuntCommon
             }
             else
             {
+                // set duck state
+                int ii = 0;
+                foreach (DuckModel duck2 in duckList)
+                {
+                    if (duck2.dead)
+                    {
+                        hitBoard.SetDuckIconsState(currentduck + ii, DuckIconModel.DuckIconState.Dead);
+                    }
+                    else
+                    {
+                        hitBoard.SetDuckIconsState(currentduck + ii, DuckIconModel.DuckIconState.Alive);
+                    }
+                    ii++;
+                }
+                currentduck += duckList.Count;
                 duckList.Clear();
+                bulletcount = 3;
+                bulletBoard.LoadBullet(bulletcount);
             }
             DuckModel duck = new DuckModel();
             duckList.Add(duck);
@@ -311,9 +372,30 @@ namespace DuckHuntCommon
             int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
             foreach (DuckModel duck1 in duckList)
             {
-                duck1.Initialize(duckFlySpace, s + (i++) * 7);
+                duck1.Initialize(null, duckFlySpace, s + (i++) * 7);
+                duck1.StartPilot(duckFlySpace);
             }
 
+            for (i = 0; i < concurrentduckcnt; i++)
+            {
+                hitBoard.SetDuckIconsState(this.currentduck+i, DuckIconModel.DuckIconState.Ongoing);
+            }
+            
+
+        }
+
+        void NewHitBoard()
+        {
+            hitBoard = new HitBoardModel();
+            hitBoard.Initialize(null, hitBoardSpace, 0);
+            hitBoard.LoadDuckIconsModel(10);
+        }
+
+        void NewBulletBoard()
+        {
+            bulletBoard = new BulletBoardModel();
+            bulletBoard.Initialize(null, bulletBoardSpace, 0);
+            bulletBoard.LoadBullet(3);
         }
 
         public void StartGame(Rectangle screenRect)
@@ -345,9 +427,45 @@ namespace DuckHuntCommon
                 dogRunSpace.Height = 120;
             }
 
+            HitBoardModel hitBoard1 = new HitBoardModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                hitBoardSpace.X = (rectBackground.Height - hitBoard1.GetSpace().Width) / 2 + 20;
+                hitBoardSpace.Y = dogRunSpace.Left + 150;
+                hitBoardSpace.Width = hitBoard1.GetSpace().Width;
+                hitBoardSpace.Height = hitBoard1.GetSpace().Height;
+            }
+            else
+            {
+                hitBoardSpace.X = (rectBackground.Width - hitBoard1.GetSpace().Width) / 2 + 20;
+                hitBoardSpace.Y = dogRunSpace.Top + 150;
+                hitBoardSpace.Width = hitBoard1.GetSpace().Width;
+                hitBoardSpace.Height = hitBoard1.GetSpace().Height;
+            }
+
+
+            BulletBoardModel bulletBoard1 = new BulletBoardModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                bulletBoardSpace.X = 20;
+                bulletBoardSpace.Y = dogRunSpace.Left + 150;
+                bulletBoardSpace.Width = bulletBoard1.GetSpace().Width;
+                bulletBoardSpace.Height = bulletBoard1.GetSpace().Height;
+            }
+            else
+            {
+                bulletBoardSpace.X = 20;
+                bulletBoardSpace.Y = dogRunSpace.Top + 150;
+                bulletBoardSpace.Width = bulletBoard1.GetSpace().Width;
+                bulletBoardSpace.Height = bulletBoard1.GetSpace().Height;
+            }
+
             NewBackground();
             NewDog();
+            NewHitBoard();
+            NewBulletBoard();
         }
+
 
         public void Update(GameTime gametime)
         {
@@ -427,8 +545,13 @@ namespace DuckHuntCommon
             }
         }
 
+        Vector2 oldshootposition = Vector2.Zero;
         public void ShootDuck(Vector2 shootposition)
         {
+            if (oldshootposition == shootposition)
+            {
+                return;
+            }
             if (phase != GAME_PHASE.DUCK_FLY)
             {
                 return;
@@ -444,6 +567,8 @@ namespace DuckHuntCommon
                 duck.Shoot(bullet);
             }
             bulletsList.Add(bullet);
+            bulletcount--;
+            bulletBoard.RemoveFirstBullet();
         }
     }
 
