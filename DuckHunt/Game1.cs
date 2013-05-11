@@ -119,7 +119,7 @@ namespace DuckHunt
             _spriteBatch.End(); 
         }
 
-
+        ButtonState lastButtonState = new ButtonState();
         private void HuntDuck(GameTime gameTime)
         {
             // Get Thumbstick Controls
@@ -154,6 +154,7 @@ namespace DuckHunt
             player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
             */
 
+            
             // Windows 8 Touch Gestures for MonoGame
 
             while (TouchPanel.IsGestureAvailable)
@@ -163,6 +164,15 @@ namespace DuckHunt
 
                 if (gesture.GestureType == GestureType.Tap)
                 {
+                    /*
+                    Vector2 off = gesture.Position-lastpos;
+                    if(gameTime.ElapsedGameTime.Milliseconds - lastinputtime.ElapsedGameTime.Milliseconds < 20 || (off.Length() < 1))
+                    {
+                        return ;
+                    }
+                    lastinputtime = gameTime;
+                    lastpos = gesture.Position;
+                     */
                     controler.HuntDuck(gesture.Position);
                 }
 
@@ -171,10 +181,11 @@ namespace DuckHunt
             //Get Mouse State then Capture the Button type and Respond Button Press
             currentMouseState = Mouse.GetState();
             Vector2 mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
-            if (currentMouseState.LeftButton == ButtonState.Pressed)
+            if (currentMouseState.LeftButton == ButtonState.Released && lastButtonState == ButtonState.Pressed)
             {
                 controler.HuntDuck(mousePosition);
             }
+            lastButtonState = currentMouseState.LeftButton;
         } 
 
     }
