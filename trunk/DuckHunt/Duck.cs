@@ -10,7 +10,16 @@ using GameCommon;
 
 namespace DuckHuntCommon 
 {
-    enum ModelType { NONE, SKY, GRASS, DUCK, DOG, BULLET, HITBOARD, DUCKICON, BULLETBOARD, BULLETICON};
+    enum ModelType { NONE, SKY, GRASS, DUCK, DOG, BULLET, HITBOARD,
+        DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD};
+    
+    enum ResourceType { TEXTURE, SOUND, FONT };
+    class ResourceItem
+    {
+        public ResourceType type;
+        public string path;
+    }
+
 
     interface ModelObject
     {
@@ -19,6 +28,7 @@ namespace DuckHuntCommon
         void Initialize(ModelObject parent, Rectangle rect, int seed); // Rect is the rect range based on parent object
         void Update(GameTime gameTime);
 
+        List<ResourceItem> GetResourceList();
         //Vector2 GetAbsolutePosition();  // position is the center of the object based on the parent object
         Vector2 GetAbsolutePosition(); // the lefttop cornor
         Rectangle GetSpace();   // space is the rect the object may cover, the lefttop is Zero
@@ -27,7 +37,8 @@ namespace DuckHuntCommon
 
         List<AnimationInfo> GetAnimationInfoList(); // this is the animation information, include itself and it's children's
         int GetCurrentAnimationIndex(); // current animation index
-        float GetAnimationDepth();      // animation depth, 
+        float GetAnimationDepth();      // animation depth
+
 
         ModelObject GetParentObject();              
         List<ModelObject> GetChildrenObjects();
@@ -164,34 +175,97 @@ namespace DuckHuntCommon
         }
     }
 
-    class HitBoardViewObject: ViewObject
+    // draw the score myself
+    class ScoreBoardViewObject : ViewObject
     {
         List<AnimationInfo> animationList;
         List<ViewItem> viewItmList;
+        ScroeBoardModel model;
+        List<SpriteFont> fontList;
 
-        ModelObject model;
+        Vector2 scoreposition;
 
-        public HitBoardViewObject(ModelObject model1)
+        public ScoreBoardViewObject(ModelObject model1)
         {
-            model = model1;
+            model = (ScroeBoardModel)model1;
         }
 
         public void Init(ModelObject model1, Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
         {
+            model = (ScroeBoardModel)model1;
 
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        space.Width, space.Height, 0);
+                }
+                viewItmList.Add(viewItm);
+            }
         }
 
         public void Update(GameTime gameTime)
         {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = model.GetAbsolutePosition();
+                viewItm.animation.Position.X += viewItm.animation.FrameWidth / 2;
+                viewItm.animation.Position.Y += viewItm.animation.FrameHeight / 2;
+                viewItm.animation.scale = model.GetSacle();
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+            scoreposition = model.GetAbsolutePosition();
+            scoreposition.X += 50;
+            scoreposition.Y += 25;
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            // draw background
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+            }
+            else
+            {
+                viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
+            }
 
-
-            // draw duck status
-
-
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y -= 20;
+            spriteBatch.DrawString(fontList[0], "1000", pos1, Color.White, 0, Vector2.Zero, 1,
+                SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], "SCORE", scoreposition, Color.White, 0, Vector2.Zero, 1, 
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
 
@@ -258,6 +332,17 @@ namespace DuckHuntCommon
             // sky 
 
             return ModelType.SKY;
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\sky";
+            resourceList.Add(resourceItm);
+            return resourceList;
         }
 
         public List<AnimationInfo> GetAnimationInfoList()
@@ -370,6 +455,16 @@ namespace DuckHuntCommon
             return ModelType.GRASS;
         }
 
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duckForest";
+            resourceList.Add(resourceItm);
+            return resourceList;
+        }
         public List<AnimationInfo> GetAnimationInfoList()
         {
             return AnimationTexturesList;
@@ -427,6 +522,7 @@ namespace DuckHuntCommon
  
     class AnimationInfo
     {
+        public bool fontTexture = false;
         public bool animation = true;
         public string texturesPath;
 
@@ -562,6 +658,32 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
         }
 
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\ducks";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dyingduck";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\deadduck";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\ducksreverse";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
 
         public void Shoot(BulletModel bullet)
         {
@@ -917,6 +1039,53 @@ namespace DuckHuntCommon
         }
 
 
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dogs";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dogseeking";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dogfound";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dogjumpup";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dogjumpdown";
+            resourceList.Add(resourceItm);
+            
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\doglaugh";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dogshowduck1";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\dogshowduck1";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
         public void ShowDog(int deadduck)
         {
             state = DOGSTATE.Showing;
@@ -1242,6 +1411,21 @@ namespace DuckHuntCommon
             return ModelType.BULLET;
         }
 
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\laser1";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
         public List<AnimationInfo> GetAnimationInfoList()
         {
             return anationInfoList;
@@ -1337,6 +1521,30 @@ namespace DuckHuntCommon
 
             space.Width = 19;
             space.Height = 19;
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duckIconAlive";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duckIconOngoing";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duckIconDead";
+            resourceList.Add(resourceItm);
+
+
+            return resourceList;
         }
 
 
@@ -1511,6 +1719,19 @@ namespace DuckHuntCommon
             duckIcons = new List<DuckIconModel>();
 
         }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\HitBoardBackground";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
         public HitBoardModel(Vector2 position1)
         {
             //
@@ -1665,6 +1886,17 @@ namespace DuckHuntCommon
         }
 
 
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\bulletIcon";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
         public void Initialize(ModelObject parent1, Rectangle rect, int seed)
         {
             parent = parent1;
@@ -1801,6 +2033,18 @@ namespace DuckHuntCommon
             bulletIcons = new List<BulletIconModel>();
 
         }
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\BulletBoard";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
         public BulletBoardModel(Vector2 position1)
         {
             //
@@ -1930,6 +2174,187 @@ namespace DuckHuntCommon
         {
             viewObject = viewObject1;
         }
-    } 
+    }
 
+
+
+    class ScroeBoardModel : ModelObject
+    {
+        // include the background, duck icon/deadduck icon
+        List<AnimationInfo> anationInfoList;
+        List<BulletIconModel> bulletIcons;
+
+        int AnimationIndex
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        float Depth
+        {
+            get { return 0.35f; }
+        }
+
+        Vector2 Position
+        {
+            get
+            {
+                return position;
+            }
+        }
+
+        Rectangle space; //indicate the object view range
+        Vector2 position = Vector2.Zero; // no use
+
+        public ScroeBoardModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // background
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\ScoreBoard";
+            animationInfo.frameWidth = 148;
+            animationInfo.frameHeight = 65;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            // get least of duck icon
+
+            space.Width = 148;
+            space.Height = 65;
+
+            bulletIcons = new List<BulletIconModel>();
+
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\ScoreBoard";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\gameFont";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
+        public ScroeBoardModel(Vector2 position1)
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\ScoreBoard";
+            animationInfo.frameWidth = 148;
+            animationInfo.frameHeight = 65;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            // get least of duck icon
+
+            space.Width = 148;
+            space.Height = 65;
+
+            bulletIcons = new List<BulletIconModel>();
+        }
+
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+            position.X = space.Left;
+            position.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+
+
+            // update child object
+        }
+
+
+        public ModelType Type()
+        {
+            return ModelType.SCOREBOARD;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return AnimationIndex;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return Depth;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            return Position;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            List<ModelObject> childrenlst = new List<ModelObject>();
+            foreach (BulletIconModel child in bulletIcons)
+            {
+                childrenlst.Add(child);
+            }
+            return childrenlst;
+        }
+
+        public void RemoveFirstBullet()
+        {
+            if (bulletIcons.Count > 0)
+            {
+                bulletIcons.RemoveAt(0);
+                this.viewObject = null;
+            }
+        }
+
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+    } 
 }
