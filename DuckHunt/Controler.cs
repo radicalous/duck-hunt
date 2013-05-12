@@ -5,7 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using GameCommon;
 
 namespace DuckHuntCommon 
@@ -15,6 +16,7 @@ namespace DuckHuntCommon
         public ModelType objType;
         public List<Texture2D> textureList;
         public List<SpriteFont> fontList;
+        public List<SoundEffect> soundList;
         
     }
 
@@ -86,6 +88,8 @@ namespace DuckHuntCommon
             objTextureLst = new Dictionary<ModelType, ObjectTexturesItem>();
         }
 
+        Song gamebackgorundsound;
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -95,6 +99,12 @@ namespace DuckHuntCommon
             // TODO: use this.Content to load your game content here
             Content = Content1;
             LoadResources();
+
+            List<GameSound> soundList = game.GetSoundList();
+            gamebackgorundsound = Content.Load<Song>(soundList[0].soundpath);
+            MediaPlayer.IsRepeating = true;
+            //MediaPlayer.Volume = 50;
+            MediaPlayer.Play(gamebackgorundsound);
 
             game.StartGame(viewRect);
         }
@@ -124,6 +134,7 @@ namespace DuckHuntCommon
                     textureItm.objType = objResourceItm.objType;
                     textureItm.textureList = new List<Texture2D>();
                     textureItm.fontList = new List<SpriteFont>();
+                    textureItm.soundList = new List<SoundEffect>();
 
                     foreach (ResourceItem resourceItm in objResourceItm.resourceList)
                     {
@@ -137,7 +148,7 @@ namespace DuckHuntCommon
                         }
                         else if (resourceItm.type == ResourceType.SOUND)
                         {
-                            //textureItm.sou
+                            textureItm.soundList.Add(Content.Load<SoundEffect>(resourceItm.path));
                         }
                     }
                     objTextureLst[textureItm.objType] = textureItm;
@@ -219,9 +230,18 @@ namespace DuckHuntCommon
         public int deadDuck = 0;
         public string shootername;
     }
+
+
+
+    enum GAME_PHASE { SEEK_DUCK, DUCK_FLY, DOG_SHOW, OVER };
+    class GameSound
+    {
+        public GAME_PHASE phase;
+        public string soundpath;
+    }
+
     class DuckHuntGame
     {
-        enum GAME_PHASE { SEEK_DUCK, DUCK_FLY, DOG_SHOW, OVER };
 
         GAME_PHASE phase = GAME_PHASE.SEEK_DUCK;
 
@@ -259,6 +279,17 @@ namespace DuckHuntCommon
             gameRounds = new List<GameRound>();
             bulletsList = new List<BulletModel>();
         }
+
+        public List<GameSound> GetSoundList()
+        {
+            List<GameSound> soundList = new List<GameSound>();
+            GameSound sound = new GameSound();
+            sound.phase = GAME_PHASE.SEEK_DUCK;
+            sound.soundpath = "Sound\\gameMusic";
+            soundList.Add(sound);
+            return soundList;
+        }
+
 
         public void GetResources(out List<ObjectResourceItem> resourceList)
         {

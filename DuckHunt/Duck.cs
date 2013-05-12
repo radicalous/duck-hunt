@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
+
 
 using GameCommon;
 
@@ -115,6 +117,15 @@ namespace DuckHuntCommon
                 }
                 viewItmList.Add(viewItm);
             }
+            //play init sound
+            if (objTextureLst[model.Type()].soundList.Count > 0)
+            {//SoundEffect.MasterVolume
+                //SoundEffect.
+                //SoundEf
+                float mastvol = SoundEffect.MasterVolume;
+                objTextureLst[model.Type()].soundList[0].Play(1,0, 0);
+            }
+            
 
             
             // left textures are for children
@@ -1420,6 +1431,11 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\laser1";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\laserFire";
             resourceList.Add(resourceItm);
 
             return resourceList;
