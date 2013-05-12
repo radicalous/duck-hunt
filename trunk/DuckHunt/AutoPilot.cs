@@ -46,18 +46,6 @@ namespace GameCommon
             Position.X = boundary.Width / 2;
             Position.Y = boundary.Height / 2;
 
-            /*
-            factorx = radom.Next(maxRatio);
-            if (factorx < 1)
-            {
-                factorx = 1;
-            }
-            factory = radom.Next(maxRatio);
-            if (factory < 1)
-            {
-                factory = 1;
-            }
-             */
         }
 
         public void LeadDirection(Direction hor, Direction ver)
