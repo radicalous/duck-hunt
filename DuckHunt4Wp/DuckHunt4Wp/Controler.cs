@@ -405,40 +405,40 @@ namespace DuckHuntCommon
             rectBackground = screenRect;
             if (rectBackground.Width < rectBackground.Height)
             {
-                duckFlySpace.Width = rectBackground.Height - 50;
+                duckFlySpace.Width = rectBackground.Height - 150;
                 duckFlySpace.Height = rectBackground.Width;
             }
             else
             {
                 duckFlySpace.Width = rectBackground.Width;
-                duckFlySpace.Height = rectBackground.Height - 50;
+                duckFlySpace.Height = rectBackground.Height - 150;
             }
 
             if (rectBackground.Width < rectBackground.Height)
             {
                 dogRunSpace.Width = rectBackground.Height;
-                dogRunSpace.Y = rectBackground.Width - 220;
-                dogRunSpace.Height = 120;
+                dogRunSpace.Y = rectBackground.Width - -250 - 100;
+                dogRunSpace.Height = 100;
             }
             else
             {
                 dogRunSpace.Width = rectBackground.Width;
-                dogRunSpace.Y = rectBackground.Height - 220;
-                dogRunSpace.Height = 120;
+                dogRunSpace.Y = rectBackground.Height - 250-100;
+                dogRunSpace.Height = 100;
             }
 
             HitBoardModel hitBoard1 = new HitBoardModel();
             if (rectBackground.Width < rectBackground.Height)
             {
                 hitBoardSpace.X = (rectBackground.Height - hitBoard1.GetSpace().Width) / 2 + 20;
-                hitBoardSpace.Y = dogRunSpace.Left + 150;
+                hitBoardSpace.Y = rectBackground.Width-68 -3;
                 hitBoardSpace.Width = hitBoard1.GetSpace().Width;
                 hitBoardSpace.Height = hitBoard1.GetSpace().Height;
             }
             else
             {
                 hitBoardSpace.X = (rectBackground.Width - hitBoard1.GetSpace().Width) / 2 + 20;
-                hitBoardSpace.Y = dogRunSpace.Top + 150;
+                hitBoardSpace.Y = rectBackground.Height - 68 -3;
                 hitBoardSpace.Width = hitBoard1.GetSpace().Width;
                 hitBoardSpace.Height = hitBoard1.GetSpace().Height;
             }
@@ -447,15 +447,15 @@ namespace DuckHuntCommon
             BulletBoardModel bulletBoard1 = new BulletBoardModel();
             if (rectBackground.Width < rectBackground.Height)
             {
-                bulletBoardSpace.X = 20;
-                bulletBoardSpace.Y = dogRunSpace.Left + 150;
+                bulletBoardSpace.X = 52;
+                bulletBoardSpace.Y = rectBackground.Width - 68;
                 bulletBoardSpace.Width = bulletBoard1.GetSpace().Width;
                 bulletBoardSpace.Height = bulletBoard1.GetSpace().Height;
             }
             else
             {
-                bulletBoardSpace.X = 20;
-                bulletBoardSpace.Y = dogRunSpace.Top + 150;
+                bulletBoardSpace.X = 52;
+                bulletBoardSpace.Y = rectBackground.Height - 68;
                 bulletBoardSpace.Width = bulletBoard1.GetSpace().Width;
                 bulletBoardSpace.Height = bulletBoard1.GetSpace().Height;
             }
