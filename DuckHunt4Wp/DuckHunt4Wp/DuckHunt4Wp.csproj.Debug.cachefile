@@ -30,6 +30,7 @@ Content\Graphics\duckIconOngoing.xnb
 Content\Graphics\HitBoardBackground.xnb
 Content\Graphics\BulletBoard.xnb
 Content\Graphics\bulletIcon.xnb
+Content\Graphics\ScoreBoard.xnb
 Content\Graphics\gameFont.xnb
 Content\Sound\explosion.xnb
 Content\Sound\laserFire.xnb

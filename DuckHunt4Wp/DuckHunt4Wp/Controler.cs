@@ -14,6 +14,8 @@ namespace DuckHuntCommon
     {
         public ModelType objType;
         public List<Texture2D> textureList;
+        public List<SpriteFont> fontList;
+        
     }
 
     class ViewObjectFactory
@@ -52,7 +54,11 @@ namespace DuckHuntCommon
                         viewObject = new CommonViewObject(model);
                     }
                     break;
-                    
+                case ModelType.SCOREBOARD:
+                    {
+                        viewObject = new ScoreBoardViewObject(model);
+                    }
+                    break;
             }
             return viewObject;
         }
@@ -88,7 +94,7 @@ namespace DuckHuntCommon
         {
             // TODO: use this.Content to load your game content here
             Content = Content1;
-            LoadTextures();
+            LoadResources();
 
             game.StartGame(viewRect);
         }
@@ -105,21 +111,34 @@ namespace DuckHuntCommon
         }
 
 
-        public void LoadTextures()
+        public void LoadResources()
         {
-            List<ObjectTexturesPathsItem> texturesPaths;
-            game.GetTexturesPaths(out texturesPaths);
-            if (texturesPaths != null)
+            List<ObjectResourceItem> resourceList;
+            game.GetResources(out resourceList);
+            if (resourceList != null)
             {
-                foreach(ObjectTexturesPathsItem texturePathItm in texturesPaths)
+                foreach (ObjectResourceItem objResourceItm in resourceList)
                 {
                     ObjectTexturesItem textureItm;
                     textureItm = new ObjectTexturesItem();
-                    textureItm.objType = texturePathItm.objType;
+                    textureItm.objType = objResourceItm.objType;
                     textureItm.textureList = new List<Texture2D>();
-                    foreach (string path in texturePathItm.texturePathList)
+                    textureItm.fontList = new List<SpriteFont>();
+
+                    foreach (ResourceItem resourceItm in objResourceItm.resourceList)
                     {
-                        textureItm.textureList.Add(Content.Load<Texture2D>(path));
+                        if (resourceItm.type == ResourceType.TEXTURE)
+                        {
+                            textureItm.textureList.Add(Content.Load<Texture2D>(resourceItm.path));
+                        }
+                        else if (resourceItm.type == ResourceType.FONT)
+                        {
+                            textureItm.fontList.Add(Content.Load<SpriteFont>(resourceItm.path));
+                        }
+                        else if (resourceItm.type == ResourceType.SOUND)
+                        {
+                            //textureItm.sou
+                        }
                     }
                     objTextureLst[textureItm.objType] = textureItm;
                 }
@@ -189,11 +208,10 @@ namespace DuckHuntCommon
 
     }
 
-
-    class ObjectTexturesPathsItem
+    class ObjectResourceItem
     {
         public ModelType objType;
-        public List<string> texturePathList;
+        public List<ResourceItem> resourceList;
     }
 
     class GameRound
@@ -225,6 +243,9 @@ namespace DuckHuntCommon
         BulletBoardModel bulletBoard;
         Rectangle bulletBoardSpace;
 
+        ScroeBoardModel scoreBoard;
+        Rectangle scoreBoardSpace;
+
         int round = 1;
         List<GameRound> gameRounds;
 
@@ -239,10 +260,10 @@ namespace DuckHuntCommon
             bulletsList = new List<BulletModel>();
         }
 
-        public void GetTexturesPaths(out List<ObjectTexturesPathsItem> texturesPaths)
+        public void GetResources(out List<ObjectResourceItem> resourceList)
         {
-            texturesPaths = new List<ObjectTexturesPathsItem>();
-       
+            resourceList = new List<ObjectResourceItem>();
+
             List<ModelObject> objlst = new List<ModelObject>();
             // sky
             objlst.Add(new SkyModel());
@@ -254,18 +275,14 @@ namespace DuckHuntCommon
             objlst.Add(new DuckIconModel());
             objlst.Add(new BulletBoardModel());
             objlst.Add(new BulletIconModel());
+            objlst.Add(new ScroeBoardModel());
 
             foreach (ModelObject obj in objlst)
             {
-                ObjectTexturesPathsItem texturesPathsItem = new ObjectTexturesPathsItem();
-                texturesPathsItem.texturePathList = new List<string>();
-                texturesPathsItem.objType = obj.Type();
-                List<AnimationInfo> animationLst = obj.GetAnimationInfoList();
-                foreach(AnimationInfo animationInfo in animationLst)
-                {
-                    texturesPathsItem.texturePathList.Add(animationInfo.texturesPath);
-                }
-                texturesPaths.Add(texturesPathsItem);
+                ObjectResourceItem objResItem = new ObjectResourceItem();
+                objResItem.objType = obj.Type();
+                objResItem.resourceList = obj.GetResourceList();
+                resourceList.Add(objResItem);
             }
 
         }
@@ -280,6 +297,7 @@ namespace DuckHuntCommon
                 objlst.Add(dog);
                 objlst.Add(this.hitBoard);
                 objlst.Add(bulletBoard);
+                objlst.Add(scoreBoard);
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
@@ -296,6 +314,7 @@ namespace DuckHuntCommon
                     objlst.Add(bullet);
                 }
                 objlst.Add(this.hitBoard);
+                objlst.Add(scoreBoard);
             }
             else if (phase == GAME_PHASE.DOG_SHOW)
             {
@@ -305,7 +324,7 @@ namespace DuckHuntCommon
 
                 objlst.Add(dog);
                 objlst.Add(this.hitBoard);
-
+                objlst.Add(scoreBoard);
             }
             else if (phase == GAME_PHASE.OVER)
             {
@@ -314,6 +333,7 @@ namespace DuckHuntCommon
                 objlst.Add(bulletBoard);
 
                 objlst.Add(this.hitBoard);
+                objlst.Add(scoreBoard);
 
             }
         }
@@ -398,6 +418,12 @@ namespace DuckHuntCommon
             bulletBoard.LoadBullet(3);
         }
 
+        void NewScoreBoard()
+        {
+            scoreBoard = new ScroeBoardModel();
+            scoreBoard.Initialize(null, scoreBoardSpace, 0);
+        }
+
         public void StartGame(Rectangle screenRect)
         {
             // load textures
@@ -460,10 +486,27 @@ namespace DuckHuntCommon
                 bulletBoardSpace.Height = bulletBoard1.GetSpace().Height;
             }
 
+            ScroeBoardModel scoreBoard1 = new ScroeBoardModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                scoreBoardSpace.X = rectBackground.Height - 250;
+                scoreBoardSpace.Y = rectBackground.Width - 73;
+                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
+                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
+            }
+            else
+            {
+                scoreBoardSpace.X = rectBackground.Width - 250;
+                scoreBoardSpace.Y = rectBackground.Height - 73;
+                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
+                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
+            }
+
             NewBackground();
             NewDog();
             NewHitBoard();
             NewBulletBoard();
+            NewScoreBoard();
         }
 
 
