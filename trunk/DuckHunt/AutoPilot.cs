@@ -243,7 +243,7 @@ namespace GameCommon
         {
             boundaryRect = dogspace;
             Position.X = dogspace.Left;
-            Position.Y = dogspace.Top;
+            Position.Y = dogspace.Bottom;
         }
 
 
@@ -303,7 +303,7 @@ namespace GameCommon
             if (direction == 0)
             {
                 Position.Y -= deltay;
-                if (Position.Y <= boundaryRect.Top)
+                if ((Position.Y) <= boundaryRect.Top)
                 {
                     direction = 1;
                 }
@@ -342,8 +342,8 @@ namespace GameCommon
             //Position.X += deltax * factorx;
             if (direction == 0)
             {
-                Position.Y -= deltay;
-                if (Position.Y <= boundaryRect.Top)
+                Position.Y -= deltay/2;
+                if (Position.Y <= boundaryRect.Top+56)
                 {
                     direction = 1;
                 }

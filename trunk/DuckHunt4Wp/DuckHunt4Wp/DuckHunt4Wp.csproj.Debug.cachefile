@@ -23,11 +23,6 @@ Content\Graphics\doglaugh.xnb
 Content\Graphics\deadduck.xnb
 Content\Graphics\dogshowduck1.xnb
 Content\Graphics\dyingduck.xnb
-Content\Graphics\gameFont.xnb
-Content\Sound\explosion.xnb
-Content\Sound\laserFire.xnb
-Content\Sound\gameMusic.xnb
-Content\Sound\menuMusic.xnb
 Content\Graphics\ducksreverse.xnb
 Content\Graphics\duckIconAlive.xnb
 Content\Graphics\duckIconDead.xnb
@@ -35,5 +30,10 @@ Content\Graphics\duckIconOngoing.xnb
 Content\Graphics\HitBoardBackground.xnb
 Content\Graphics\BulletBoard.xnb
 Content\Graphics\bulletIcon.xnb
+Content\Graphics\gameFont.xnb
+Content\Sound\explosion.xnb
+Content\Sound\laserFire.xnb
+Content\Sound\gameMusic.xnb
+Content\Sound\menuMusic.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
