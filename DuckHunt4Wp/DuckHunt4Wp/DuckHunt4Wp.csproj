@@ -86,6 +86,10 @@
     <None Include="Content\Graphics\duckIconOngoing.xnb" />
     <None Include="Content\Graphics\ducks.xnb" />
     <None Include="Content\Graphics\ducksreverse.xnb" />
+    <None Include="Content\Graphics\duck_black_dead.xnb" />
+    <None Include="Content\Graphics\duck_black_flying.xnb" />
+    <None Include="Content\Graphics\duck_black_flying_r.xnb" />
+    <None Include="Content\Graphics\duck_black_shot.xnb" />
     <None Include="Content\Graphics\dyingduck.xnb" />
     <None Include="Content\Graphics\endMenu.xnb" />
     <None Include="Content\Graphics\explosion.xnb" />

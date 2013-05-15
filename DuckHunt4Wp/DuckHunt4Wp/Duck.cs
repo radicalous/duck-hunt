@@ -255,7 +255,7 @@ namespace DuckHuntCommon
             }
 
             scoreposition = model.GetAbsolutePosition();
-            scoreposition.X += 50;
+            scoreposition.X += 20;
             scoreposition.Y += 25;
         }
         public void Draw(SpriteBatch spriteBatch)
@@ -271,11 +271,13 @@ namespace DuckHuntCommon
             }
 
             // draw score
+
             Vector2 pos1 = scoreposition;
-            pos1.Y -= 20;
-            spriteBatch.DrawString(fontList[0], "1000", pos1, Color.White, 0, Vector2.Zero, 1,
-                SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "SCORE", scoreposition, Color.White, 0, Vector2.Zero, 1, 
+            pos1.Y -= 10;
+            string value = this.model.TotalScore.ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], "SCORE:" + value, pos1, Color.White, 0, Vector2.Zero, 1, 
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -585,11 +587,33 @@ namespace DuckHuntCommon
                 {
                     if (autoPilot.HorizationDirection == AutoPilot.Direction.LEFT)
                     {
-                        return 0;
+                        if (autoPilot.ZDirection == AutoPilot.Direction.IN)
+                        {
+                            return 0;
+                        }
+                        else if (autoPilot.ZDirection == AutoPilot.Direction.OUT)
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
                     }
                     else
                     {
-                        return 3;
+                        if (autoPilot.ZDirection == AutoPilot.Direction.IN)
+                        {
+                            return 3;
+                        }
+                        else if (autoPilot.ZDirection == AutoPilot.Direction.OUT)
+                        {
+                            return 3;
+                        }
+                        else 
+                        {
+                            return 3;
+                        }
                     }
                 }
             }
@@ -634,37 +658,37 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ducks";
-            animationInfo.frameWidth = 78;
-            animationInfo.frameHeight = 88;
-            animationInfo.frameCount = 4;
+            animationInfo.texturesPath = "Graphics\\duck_black_flying";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
             animationInfo.frameTime = 100;
             anationInfoList.Add(animationInfo);
 
             //1. dying duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dyingduck";
-            animationInfo.frameWidth = 101;
-            animationInfo.frameHeight = 72;
+            animationInfo.texturesPath = "Graphics\\duck_black_shot";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 3000;
             anationInfoList.Add(animationInfo);
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\deadduck";
-            animationInfo.frameWidth = 39;
-            animationInfo.frameHeight = 83;
+            animationInfo.texturesPath = "Graphics\\duck_black_dead";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ducksreverse";
-            animationInfo.frameWidth = 78;
-            animationInfo.frameHeight = 88;
-            animationInfo.frameCount = 4;
+            animationInfo.texturesPath = "Graphics\\duck_black_flying_r";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
             animationInfo.frameTime = 100;
             anationInfoList.Add(animationInfo);
         }
@@ -675,22 +699,22 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\ducks";
+            resourceItm.path = "Graphics\\duck_black_flying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dyingduck";
+            resourceItm.path = "Graphics\\duck_black_shot";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\deadduck";
+            resourceItm.path = "Graphics\\duck_black_dead";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\ducksreverse";
+            resourceItm.path = "Graphics\\duck_black_flying_r";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -720,7 +744,7 @@ namespace DuckHuntCommon
             duckCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2;
 
             Vector2 subpos = bulletCenter - duckCenter;
-            if (subpos.Length() < 20)
+            if (subpos.Length() < 20*scale)
             {
                 Active = false;
                 dead = true;
@@ -832,6 +856,14 @@ namespace DuckHuntCommon
         }
         public float GetSacle()
         {
+            if (Active)
+            {
+                // get depth, calculate the scale
+
+                //scale = autoPilot.scale;
+                scale = 1 - autoPilot.depthpos/100; 
+            }
+
             return scale;
         }
 
@@ -2353,14 +2385,21 @@ namespace DuckHuntCommon
             return childrenlst;
         }
 
-        public void RemoveFirstBullet()
+
+        int totalscore = 0;
+        public void AddScore(int score)
         {
-            if (bulletIcons.Count > 0)
+            totalscore += score;
+        }
+
+        public int TotalScore
+        {
+            get
             {
-                bulletIcons.RemoveAt(0);
-                this.viewObject = null;
+                return totalscore;
             }
         }
+
 
 
         ViewObject viewObject;

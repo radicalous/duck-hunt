@@ -587,11 +587,33 @@ namespace DuckHuntCommon
                 {
                     if (autoPilot.HorizationDirection == AutoPilot.Direction.LEFT)
                     {
-                        return 0;
+                        if (autoPilot.ZDirection == AutoPilot.Direction.IN)
+                        {
+                            return 0;
+                        }
+                        else if (autoPilot.ZDirection == AutoPilot.Direction.OUT)
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
                     }
                     else
                     {
-                        return 3;
+                        if (autoPilot.ZDirection == AutoPilot.Direction.IN)
+                        {
+                            return 3;
+                        }
+                        else if (autoPilot.ZDirection == AutoPilot.Direction.OUT)
+                        {
+                            return 3;
+                        }
+                        else 
+                        {
+                            return 3;
+                        }
                     }
                 }
             }

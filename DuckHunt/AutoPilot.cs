@@ -8,7 +8,7 @@ namespace GameCommon
 {
     class AutoPilot
     {
-        public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM };
+        public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
 
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
@@ -24,6 +24,20 @@ namespace GameCommon
                 else
                 {
                     return Direction.LEFT;
+                }
+            }
+        }
+        public Direction ZDirection
+        {
+            get
+            {
+                if (detalz > 0)
+                {
+                    return Direction.IN;
+                }
+                else
+                {
+                    return Direction.OUT;
                 }
             }
         }

@@ -8,7 +8,7 @@ namespace GameCommon
 {
     class AutoPilot
     {
-        public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM };
+        public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
 
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
@@ -27,14 +27,34 @@ namespace GameCommon
                 }
             }
         }
+        public Direction ZDirection
+        {
+            get
+            {
+                if (detalz > 0)
+                {
+                    return Direction.IN;
+                }
+                else
+                {
+                    return Direction.OUT;
+                }
+            }
+        }
 
         // current position
         Vector2 prePos;
         public Vector2 Position;
+        //public float scale = 1.0f;
+
+        public float depthpos = 0;
+
         int deltax = 1;
         int deltay = 1;
         int factorx = 1;
         int factory = 1;
+        float detalz = 1;
+
         Random radom;
         int maxRatio = 8;
         public void Initialize(Rectangle boundary, int seed)
@@ -137,6 +157,20 @@ namespace GameCommon
             prePos = Position;
             Position.X += ((float)deltax) * factorx;
             Position.Y += ((float)deltay) * factory;
+
+            depthpos += detalz;
+            if (depthpos < 0 || depthpos > 100)
+            {
+                detalz = -detalz;
+            }
+            if (depthpos < 0)
+            {
+                depthpos = 0;
+            }
+            if (depthpos > 100)
+            {
+                depthpos = 99;
+            }
         }
     }
 
