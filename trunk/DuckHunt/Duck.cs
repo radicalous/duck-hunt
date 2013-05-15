@@ -255,7 +255,7 @@ namespace DuckHuntCommon
             }
 
             scoreposition = model.GetAbsolutePosition();
-            scoreposition.X += 50;
+            scoreposition.X += 20;
             scoreposition.Y += 25;
         }
         public void Draw(SpriteBatch spriteBatch)
@@ -271,11 +271,13 @@ namespace DuckHuntCommon
             }
 
             // draw score
+
             Vector2 pos1 = scoreposition;
-            pos1.Y -= 20;
-            spriteBatch.DrawString(fontList[0], "1000", pos1, Color.White, 0, Vector2.Zero, 1,
-                SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "SCORE", scoreposition, Color.White, 0, Vector2.Zero, 1, 
+            pos1.Y -= 10;
+            string value = this.model.TotalScore.ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], "SCORE:" + value, pos1, Color.White, 0, Vector2.Zero, 1, 
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -2353,14 +2355,21 @@ namespace DuckHuntCommon
             return childrenlst;
         }
 
-        public void RemoveFirstBullet()
+
+        int totalscore = 0;
+        public void AddScore(int score)
         {
-            if (bulletIcons.Count > 0)
+            totalscore += score;
+        }
+
+        public int TotalScore
+        {
+            get
             {
-                bulletIcons.RemoveAt(0);
-                this.viewObject = null;
+                return totalscore;
             }
         }
+
 
 
         ViewObject viewObject;
