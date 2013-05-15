@@ -31,13 +31,15 @@ namespace GameCommon
         // current position
         Vector2 prePos;
         public Vector2 Position;
-        public float scale = 1.0f;
+        //public float scale = 1.0f;
+
+        public float depthpos = 0;
 
         int deltax = 1;
         int deltay = 1;
         int factorx = 1;
         int factory = 1;
-        float detalz = 0.01f;
+        float detalz = 1;
 
         Random radom;
         int maxRatio = 8;
@@ -141,10 +143,19 @@ namespace GameCommon
             prePos = Position;
             Position.X += ((float)deltax) * factorx;
             Position.Y += ((float)deltay) * factory;
-            scale += detalz;
-            if (scale > 1.0f || scale < 0.5f)
+
+            depthpos += detalz;
+            if (depthpos < 0 || depthpos > 100)
             {
                 detalz = -detalz;
+            }
+            if (depthpos < 0)
+            {
+                depthpos = 0;
+            }
+            if (depthpos > 100)
+            {
+                depthpos = 99;
             }
         }
     }

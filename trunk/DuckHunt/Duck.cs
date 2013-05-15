@@ -722,7 +722,7 @@ namespace DuckHuntCommon
             duckCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2;
 
             Vector2 subpos = bulletCenter - duckCenter;
-            if (subpos.Length() < 20)
+            if (subpos.Length() < 20*scale)
             {
                 Active = false;
                 dead = true;
@@ -836,7 +836,10 @@ namespace DuckHuntCommon
         {
             if (Active)
             {
-                scale = autoPilot.scale;
+                // get depth, calculate the scale
+
+                //scale = autoPilot.scale;
+                scale = 1 - autoPilot.depthpos/100; 
             }
 
             return scale;
