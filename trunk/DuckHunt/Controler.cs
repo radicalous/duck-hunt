@@ -645,9 +645,15 @@ namespace DuckHuntCommon
             if (bullet.GetShootDucks() != null)
             {
                 //
-                int score = 10;
-                score *= bullet.GetShootDucks().Count;
-                scoreBoard.AddScore(score);
+                float score = 100;
+                for (int i = 0; i < bullet.GetShootDucks().Count; i++)
+                {
+                    score = 100;
+                    score *= (i+1);
+                    score /= bullet.GetShootDucks()[i].GetSacle();
+                    scoreBoard.AddScore((int)score);
+
+                }
 
                 int ii = 0;
                 foreach (DuckModel duck2 in duckList)

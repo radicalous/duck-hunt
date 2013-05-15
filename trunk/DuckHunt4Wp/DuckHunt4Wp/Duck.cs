@@ -283,23 +283,6 @@ namespace DuckHuntCommon
     }
 
 
-    class ForestModel
-    {
-        Rectangle sceneRc;
-        Rectangle duckFlySpace;
-        Rectangle dogRunSpace;
-
-        string skyTexture;
-        string forestTexture;
-
-        public void Init(Rectangle screenRc)
-        {
-            sceneRc = new Rectangle(screenRc.X, screenRc.Y, screenRc.Width, screenRc.Height);
-            duckFlySpace = new Rectangle();
-            dogRunSpace = new Rectangle();
-
-        }
-    }
 
     class SkyModel : ModelObject
     {
@@ -418,7 +401,7 @@ namespace DuckHuntCommon
     class GrassModel : ModelObject
     {
         ModelObject parent = null;
-        string texturesPath = "Graphics\\duckForest";
+        string texturesPath = "Graphics\\duckForest_2";
 
         float Depth
         {
@@ -474,7 +457,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\duckForest";
+            resourceItm.path = "Graphics\\duckForest_2";
             resourceList.Add(resourceItm);
             return resourceList;
         }
