@@ -36,5 +36,9 @@ Content\Sound\explosion.xnb
 Content\Sound\laserFire.xnb
 Content\Sound\gameMusic.xnb
 Content\Sound\menuMusic.xnb
+Content\Graphics\duck_black_dead.xnb
+Content\Graphics\duck_black_flying.xnb
+Content\Graphics\duck_black_flying_r.xnb
+Content\Graphics\duck_black_shot.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma

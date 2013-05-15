@@ -636,37 +636,37 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ducks";
-            animationInfo.frameWidth = 78;
-            animationInfo.frameHeight = 88;
-            animationInfo.frameCount = 4;
+            animationInfo.texturesPath = "Graphics\\duck_black_flying";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
             animationInfo.frameTime = 100;
             anationInfoList.Add(animationInfo);
 
             //1. dying duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dyingduck";
-            animationInfo.frameWidth = 101;
-            animationInfo.frameHeight = 72;
+            animationInfo.texturesPath = "Graphics\\duck_black_shot";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 3000;
             anationInfoList.Add(animationInfo);
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\deadduck";
-            animationInfo.frameWidth = 39;
-            animationInfo.frameHeight = 83;
+            animationInfo.texturesPath = "Graphics\\duck_black_dead";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ducksreverse";
-            animationInfo.frameWidth = 78;
-            animationInfo.frameHeight = 88;
-            animationInfo.frameCount = 4;
+            animationInfo.texturesPath = "Graphics\\duck_black_flying_r";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
             animationInfo.frameTime = 100;
             anationInfoList.Add(animationInfo);
         }
@@ -677,22 +677,22 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\ducks";
+            resourceItm.path = "Graphics\\duck_black_flying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dyingduck";
+            resourceItm.path = "Graphics\\duck_black_shot";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\deadduck";
+            resourceItm.path = "Graphics\\duck_black_dead";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\ducksreverse";
+            resourceItm.path = "Graphics\\duck_black_flying_r";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -834,6 +834,11 @@ namespace DuckHuntCommon
         }
         public float GetSacle()
         {
+            if (Active)
+            {
+                scale = autoPilot.scale;
+            }
+
             return scale;
         }
 
