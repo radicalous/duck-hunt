@@ -86,6 +86,14 @@ namespace DuckHuntCommon
             game = new DuckHuntGame();
             viewRect = viewScene;
             objTextureLst = new Dictionary<ModelType, ObjectTexturesItem>();
+
+            // logic rect 1600x900
+
+            // calculate our background rect
+
+            // calculate default scale
+
+            //
         }
 
         Song gamebackgorundsound;
@@ -214,6 +222,13 @@ namespace DuckHuntCommon
 
         public void HuntDuck(Vector2 shootPosition)
         {
+            //
+            // local rect, global rect
+            // (local rect - orgpoint ) = global rect * default scale
+            // local rect = orgpoint + global rect * default scale
+            // global rect = (local rect - orgpoint)/ defalult scale
+            //
+
             game.ShootDuck(shootPosition);
         }
 
@@ -244,6 +259,25 @@ namespace DuckHuntCommon
     {
 
         GAME_PHASE phase = GAME_PHASE.SEEK_DUCK;
+
+        // org point
+        Vector2 orgpoint;
+        // default scale
+        float defscale;
+
+        Rectangle localViewRect;
+        Rectangle globalViewRect;
+
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+       
+
+        // we need to extend the backgound so that local screen has black screen
+        Vector2 bgorgpoint;
+        float bgdefscale;
+
 
 
         Rectangle rectBackground;

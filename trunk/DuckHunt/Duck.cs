@@ -140,6 +140,11 @@ namespace DuckHuntCommon
             }
         }
 
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
         public void Update(GameTime gameTime)
         {
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
@@ -723,8 +728,8 @@ namespace DuckHuntCommon
                 duckCenter += parent.GetAbsolutePosition();
             }
             //
-            duckCenter.X += anationInfoList[AnimationIndex].frameWidth / 2;
-            duckCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2;
+            duckCenter.X += anationInfoList[AnimationIndex].frameWidth / 2 ;
+            duckCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2 ;
 
             Vector2 subpos = bulletCenter - duckCenter;
             if (subpos.Length() < 20*scale)
