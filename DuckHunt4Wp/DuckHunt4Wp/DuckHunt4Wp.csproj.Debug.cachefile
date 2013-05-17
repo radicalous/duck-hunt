@@ -31,11 +31,6 @@ Content\Graphics\HitBoardBackground.xnb
 Content\Graphics\BulletBoard.xnb
 Content\Graphics\bulletIcon.xnb
 Content\Graphics\ScoreBoard.xnb
-Content\Graphics\gameFont.xnb
-Content\Sound\explosion.xnb
-Content\Sound\laserFire.xnb
-Content\Sound\gameMusic.xnb
-Content\Sound\menuMusic.xnb
 Content\Graphics\duck_black_dead.xnb
 Content\Graphics\duck_black_flying.xnb
 Content\Graphics\duck_black_flying_r.xnb
@@ -43,5 +38,12 @@ Content\Graphics\duck_black_shot.xnb
 Content\Graphics\duckForest_2.xnb
 Content\Graphics\sky_2.xnb
 Content\Graphics\duckForest_3.xnb
+Content\Graphics\duckForest_4.xnb
+Content\Graphics\gameFont.xnb
+Content\Sound\explosion.xnb
+Content\Sound\laserFire.xnb
+Content\Sound\gameMusic.xnb
+Content\Sound\menuMusic.xnb
+Content\Graphics\bg_grass_a.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma

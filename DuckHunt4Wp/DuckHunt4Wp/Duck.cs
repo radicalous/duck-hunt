@@ -54,7 +54,10 @@ namespace DuckHuntCommon
     class ViewItem
     {
         public Animation animation;
+        public bool backGroundAnimation;
         public StaticBackground2 staticBackground;
+        public Animation bganimation;
+
     }
 
     interface ViewObject
@@ -124,14 +127,105 @@ namespace DuckHuntCommon
                 }
                 else
                 {
-                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.backGroundAnimation = true;
+                    viewItm.bganimation = new Animation();
+                    if (animationInfo.frameHeight == 0)
+                    {
+                        viewItm.bganimation.Initialize(
+                            texturesList[i],
+                            Vector2.Zero, (int)(texturesList[i].Width/*animationInfo.frameWidth*/),
+                            (int)(texturesList[i].Height/*animationInfo.frameHeight*/),
+                            1/*animationInfo.frameCount*/, 1/*animationInfo.frameTime*/, animationInfo.backColor,
+                            model.GetSacle(), true);
 
+
+                        float scale = 1.0f;
+                        if (texturesList[i].Width * 1.0f / texturesList[i].Height > screenRc.Width * 1.0 / screenRc.Height)
+                        {
+                            // the text wider, should extend according height
+                            scale = screenRc.Height * 1.0f / texturesList[i].Height;
+
+                            int offx = (int)((texturesList[i].Width * scale - screenRc.Width) / 2 / scale);
+                            offx = (int)(offx * scale);
+                            offx = -offx;
+                            int centerx = (int)(offx + texturesList[i].Width * scale / 2);
+                            int centery = screenRc.Height / 2;
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+                        else
+                        {
+                            // the texture is higher, should extend according width
+                            scale = screenRc.Width * 1.0f / texturesList[i].Width;
+
+                            int offy = (int)((texturesList[i].Height * scale - screenRc.Height) / scale);
+                            offy = (int)(offy * scale);
+                            offy = -offy;
+                            int centerx = screenRc.Width / 2;
+                            int centery = (int)(offy + texturesList[i].Height * scale / 2);
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+                    }
+                    else
+                    {
+                        viewItm.bganimation.Initialize(
+                            texturesList[i],
+                            Vector2.Zero, animationInfo.frameWidth,
+                            animationInfo.frameHeight,
+                            animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                            model.GetSacle(), true);
+
+
+                        float scale = 1.0f;
+                        if (animationInfo.frameWidth * 1.0f / animationInfo.frameHeight > screenRc.Width * 1.0 / screenRc.Height)
+                        {
+                            // the text wider, should extend according height
+                            scale = screenRc.Height * 1.0f / animationInfo.frameHeight;
+
+                            int offx = (int)((animationInfo.frameWidth * scale - screenRc.Width) / 2 / scale);
+                            offx = (int)(offx * scale);
+                            offx = -offx;
+                            int centerx = (int)(offx + animationInfo.frameWidth * scale / 2);
+                            int centery = screenRc.Height / 2;
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+                        else
+                        {
+                            // the texture is higher, should extend according width
+                            scale = screenRc.Width * 1.0f / animationInfo.frameWidth;
+
+                            int offy = (int)((animationInfo.frameHeight * scale - screenRc.Height) / scale);
+                            offy = (int)(offy * scale);
+                            offy = -offy;
+                            int centerx = screenRc.Width / 2;
+                            int centery = (int)(offy + animationInfo.frameHeight * scale / 2);
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+
+                    }
+
+
+                        
+                    /*
+                    viewItm.staticBackground = new StaticBackground2();
                     viewItm.staticBackground.Initialize(
                         texturesList[i],
-                        Vector2.Zero/*this._orgpointinscreen*/,
-                        screenRc.Width/*(int)(spaceInLogic.Width * _defscaleinscreen)*/, 
-                        screenRc.Height/*(int)(spaceInLogic.Height * _defscaleinscreen)*/,
+                        Vector2.Zero,
+                        screenRc.Width, 
+                        screenRc.Height,
                         0);
+                     */
                 }
                 viewItmList.Add(viewItm);
             }
@@ -178,7 +272,14 @@ namespace DuckHuntCommon
             }
             else
             {
-                viewItm.staticBackground.Update(gameTime);
+                if (viewItm.backGroundAnimation)
+                {
+                    viewItm.bganimation.Update(gameTime);
+                }
+                else
+                {
+                    viewItm.staticBackground.Update(gameTime);
+                }
             }
 
             if (childViewObjectList != null)
@@ -199,7 +300,14 @@ namespace DuckHuntCommon
             }
             else
             {
-                viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
+                if (viewItm.backGroundAnimation)
+                {
+                    viewItm.bganimation.Draw(spriteBatch, model.GetAnimationDepth());
+                }
+                else
+                {
+                    viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
+                }
             }
             if (childViewObjectList != null)
             {
@@ -289,8 +397,8 @@ namespace DuckHuntCommon
             }
 
             scoreposition = model.GetAbsolutePosition()*_defscale + _orgpoint;
-            scoreposition.X += 20;
-            scoreposition.Y += 25;
+            scoreposition.X += 20*_defscale;
+            scoreposition.Y += 25*_defscale;
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -307,7 +415,7 @@ namespace DuckHuntCommon
             // draw score
 
             Vector2 pos1 = scoreposition;
-            pos1.Y -= 10;
+            pos1.Y -= 10*_defscale;
             string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
@@ -336,7 +444,8 @@ namespace DuckHuntCommon
                 anationInfoList = new List<AnimationInfo>();
                 AnimationInfo animationInfo = new AnimationInfo();
                 animationInfo.animation = false;
-                animationInfo.texturesPath = texturesPath;
+                animationInfo.frameCount = 1;
+                animationInfo.frameWidth = animationInfo.frameHeight = 0;
                 anationInfoList.Add(animationInfo);
                 return anationInfoList;
             }
@@ -435,16 +544,9 @@ namespace DuckHuntCommon
     class GrassModel : ModelObject
     {
         ModelObject parent = null;
-        string texturesPath = "Graphics\\duckForest_3";
-
         float Depth
         {
             get { return 0.5F; }
-        }
-
-        public string Textures()
-        {
-            return texturesPath;
         }
 
         // Animation representing the player
@@ -456,7 +558,10 @@ namespace DuckHuntCommon
                 anationInfoList = new List<AnimationInfo>();
                 AnimationInfo animationInfo = new AnimationInfo();
                 animationInfo.animation = false;
-                animationInfo.texturesPath = texturesPath;
+                animationInfo.frameCount = 4;
+                animationInfo.frameWidth = 431; //1600; 
+                animationInfo.frameHeight = 243; // 900;
+                animationInfo.frameTime = 500;
                 anationInfoList.Add(animationInfo);
                 return anationInfoList;
             }
@@ -491,7 +596,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\duckForest_3";
+            resourceItm.path = "Graphics\\bg_grass_a";
             resourceList.Add(resourceItm);
             return resourceList;
         }

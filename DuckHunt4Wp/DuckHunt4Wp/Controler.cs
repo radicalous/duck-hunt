@@ -555,8 +555,8 @@ namespace DuckHuntCommon
             else
             {
                 dogRunSpace.Width = rectBackground.Width;
-                dogRunSpace.Y = rectBackground.Height - 200-180;
-                dogRunSpace.Height = 180;
+                dogRunSpace.Y = rectBackground.Height - 150-150;
+                dogRunSpace.Height = 150;
             }
 
             HitBoardModel hitBoard1 = new HitBoardModel();

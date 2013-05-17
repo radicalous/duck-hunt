@@ -278,6 +278,12 @@
     <Content Include="Content\Graphics\duckForest_3.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Graphics\duckForest_4.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\bg_grass_a.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="DuckHunt_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
