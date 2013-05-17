@@ -22,7 +22,7 @@ namespace DuckHuntCommon
 
     class ViewObjectFactory
     {
-        public static ViewObject CreateViewObject(ModelObject model)
+        public static ViewObject CreateViewObject(ModelObject model, Vector2 orgpoint, float defscale)
         {
             ViewObject viewObject = null;
             switch (model.Type())
@@ -33,27 +33,27 @@ namespace DuckHuntCommon
                 case ModelType.DUCK:
                 case ModelType.BULLET:
                     {
-                        viewObject = new CommonViewObject(model);
+                        viewObject = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.HITBOARD:
                     {
-                        viewObject = new CommonViewObject(model);
+                        viewObject = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.DUCKICON:
                     {
-                        viewObject = new CommonViewObject(model);
+                        viewObject = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.BULLETBOARD:
                     {
-                        viewObject = new CommonViewObject(model);
+                        viewObject = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.BULLETICON:
                     {
-                        viewObject = new CommonViewObject(model);
+                        viewObject = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.SCOREBOARD:
@@ -87,13 +87,7 @@ namespace DuckHuntCommon
             viewRect = viewScene;
             objTextureLst = new Dictionary<ModelType, ObjectTexturesItem>();
 
-            // logic rect 1600x900
 
-            // calculate our background rect
-
-            // calculate default scale
-
-            //
         }
 
         Song gamebackgorundsound;
@@ -184,8 +178,8 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = ViewObjectFactory.CreateViewObject(obj);
-                    viewObject.Init(obj, objTextureLst, obj.GetSpace());
+                    viewObject = ViewObjectFactory.CreateViewObject(obj, game.orgpoint, game.defscale);
+                    viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
                 viewObject.Update(gameTime);
@@ -211,8 +205,8 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = ViewObjectFactory.CreateViewObject(obj);
-                    viewObject.Init(obj, objTextureLst, obj.GetSpace());
+                    viewObject = ViewObjectFactory.CreateViewObject(obj, game.orgpoint, game.defscale);
+                    viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
                 viewObject.Draw(spriteBatch);
@@ -228,8 +222,8 @@ namespace DuckHuntCommon
             // local rect = orgpoint + global rect * default scale
             // global rect = (local rect - orgpoint)/ defalult scale
             //
-
-            game.ShootDuck(shootPosition);
+            Vector2 globalshotpos = (shootPosition - game.orgpoint) / game.defscale;
+            game.ShootDuck(globalshotpos);
         }
 
     }
@@ -261,12 +255,12 @@ namespace DuckHuntCommon
         GAME_PHASE phase = GAME_PHASE.SEEK_DUCK;
 
         // org point
-        Vector2 orgpoint;
+        public Vector2 orgpoint;
         // default scale
-        float defscale;
+        public float defscale;
 
-        Rectangle localViewRect;
-        Rectangle globalViewRect;
+        Rectangle localViewRect = new Rectangle();
+        Rectangle globalViewRect = new Rectangle(0,0, 1600,900);
 
         // local rect, global rect
         // (local rect - orgpoint ) = global rect * default scale
@@ -491,9 +485,40 @@ namespace DuckHuntCommon
 
         public void StartGame(Rectangle screenRect)
         {
+
+            // logic rect 1600x900
+            // calculate our background rect
+            if ((float)screenRect.Width / screenRect.Height > 16.0 / 9)
+            {
+                // to wide, will full filll height
+                float occupiedw = screenRect.Height * 16.0f / 9;
+                this.orgpoint.X = (screenRect.Width-occupiedw)/2;
+                this.orgpoint.Y = 0;
+
+                localViewRect.X = (int)orgpoint.X;
+                localViewRect.Y = (int)orgpoint.Y;
+                localViewRect.Width = (int)occupiedw;
+                localViewRect.Height = screenRect.Height;
+            }
+            else
+            {
+                // to high, will full fill width
+                float occupiedh = screenRect.Width * 9.0f / 16;
+                this.orgpoint.X = 0;
+                this.orgpoint.Y = (screenRect.Height - occupiedh)/2;
+
+                localViewRect.X = (int)orgpoint.X;
+                localViewRect.Y = (int)orgpoint.Y;
+                localViewRect.Width = screenRect.Width;
+                localViewRect.Height = (int)occupiedh;
+            }       
+            // calculate default scale
+            this.defscale = localViewRect.Width * 1.0f / globalViewRect.Width;
+
+            //
             // load textures
 
-            rectBackground = screenRect;
+            rectBackground = globalViewRect;
             if (rectBackground.Width < rectBackground.Height)
             {
                 duckFlySpace.Width = rectBackground.Height - 150;
@@ -508,14 +533,14 @@ namespace DuckHuntCommon
             if (rectBackground.Width < rectBackground.Height)
             {
                 dogRunSpace.Width = rectBackground.Height;
-                dogRunSpace.Y = rectBackground.Width - -250 - 100;
-                dogRunSpace.Height = 100;
+                dogRunSpace.Y = rectBackground.Width - 200 - 180;
+                dogRunSpace.Height = 180;
             }
             else
             {
                 dogRunSpace.Width = rectBackground.Width;
-                dogRunSpace.Y = rectBackground.Height - 250-100;
-                dogRunSpace.Height = 100;
+                dogRunSpace.Y = rectBackground.Height - 200-180;
+                dogRunSpace.Height = 180;
             }
 
             HitBoardModel hitBoard1 = new HitBoardModel();
