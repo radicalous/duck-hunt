@@ -81,6 +81,7 @@
     <None Include="Content\Graphics\dogseeking.xnb" />
     <None Include="Content\Graphics\dogshowduck1.xnb" />
     <None Include="Content\Graphics\duckForest.xnb" />
+    <None Include="Content\Graphics\duckForest_3.xnb" />
     <None Include="Content\Graphics\duckIconAlive.xnb" />
     <None Include="Content\Graphics\duckIconDead.xnb" />
     <None Include="Content\Graphics\duckIconOngoing.xnb" />
@@ -106,6 +107,7 @@
     <None Include="Content\Graphics\ScoreBoard.xnb" />
     <None Include="Content\Graphics\shipAnimation.xnb" />
     <None Include="Content\Graphics\sky.xnb" />
+    <None Include="Content\Graphics\sky_2.xnb" />
     <None Include="Content\Sound\explosion.xnb" />
     <None Include="Content\Sound\gameMusic.xnb" />
     <None Include="Content\Sound\laserFire.xnb" />

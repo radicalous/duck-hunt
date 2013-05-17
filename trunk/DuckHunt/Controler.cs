@@ -22,8 +22,10 @@ namespace DuckHuntCommon
 
     class ViewObjectFactory
     {
-        public static ViewObject CreateViewObject(ModelObject model, Vector2 orgpoint, float defscale)
+        public static ViewObject CreateViewObject(Rectangle screerc, ModelObject model, Vector2 orgpoint, float defscale)
         {
+            CommonViewObject commViewObj = null;
+            ScoreBoardViewObject scoreboardObj = null;
             ViewObject viewObject = null;
             switch (model.Type())
             {
@@ -33,34 +35,43 @@ namespace DuckHuntCommon
                 case ModelType.DUCK:
                 case ModelType.BULLET:
                     {
-                        viewObject = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.HITBOARD:
                     {
-                        viewObject = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.DUCKICON:
                     {
-                        viewObject = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.BULLETBOARD:
                     {
-                        viewObject = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.BULLETICON:
                     {
-                        viewObject = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
                     }
                     break;
                 case ModelType.SCOREBOARD:
                     {
-                        viewObject = new ScoreBoardViewObject(model);
+                        scoreboardObj = new ScoreBoardViewObject(model);
                     }
                     break;
+            }
+            if (commViewObj != null)
+            {
+                commViewObj.screenRc = screerc;
+                viewObject = commViewObj;
+            }
+            if (scoreboardObj != null)
+            {
+                viewObject = scoreboardObj;
             }
             return viewObject;
         }
@@ -178,7 +189,7 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = ViewObjectFactory.CreateViewObject(obj, game.orgpoint, game.defscale);
+                    viewObject = ViewObjectFactory.CreateViewObject(this.viewRect, obj, game.orgpoint, game.defscale);
                     viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
@@ -205,7 +216,7 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = ViewObjectFactory.CreateViewObject(obj, game.orgpoint, game.defscale);
+                    viewObject = ViewObjectFactory.CreateViewObject(this.viewRect, obj, game.orgpoint, game.defscale);
                     viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
@@ -271,6 +282,7 @@ namespace DuckHuntCommon
         // we need to extend the backgound so that local screen has black screen
         Vector2 bgorgpoint;
         float bgdefscale;
+        Rectangle localViewRect4Background = new Rectangle();
 
 
 
@@ -514,6 +526,10 @@ namespace DuckHuntCommon
             }       
             // calculate default scale
             this.defscale = localViewRect.Width * 1.0f / globalViewRect.Width;
+
+            // calculate background settings
+
+
 
             //
             // load textures

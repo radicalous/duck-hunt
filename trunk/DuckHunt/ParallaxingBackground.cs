@@ -276,4 +276,112 @@ namespace DuckHuntCommon
 
     }
 
+
+
+    class StaticBackground2
+    {
+        // The image representing the parallaxing background
+
+        Texture2D texture;
+
+        // An array of positions of the parallaxing background
+
+        Vector2[] positions;
+
+        // The speed which the background is moving
+
+        int speed;
+
+        int bgWidth;
+        int bgHeight;
+
+        int _screenWidth = 0;
+        int _screenHeight = 0;
+        Vector2 _orgpos;
+
+        float scale = 1.0f;
+
+        Rectangle texturerc = new Rectangle();
+
+        public void Initialize(Texture2D texture1, Vector2 orgpos, int screenWidth, int screenHeight, int speed)
+        {
+            _orgpos = orgpos;
+
+            _screenWidth = screenWidth;
+            _screenHeight = screenHeight;
+
+            // Load the background texture we will be using
+
+            texture = texture1;
+
+            // Set the speed of the background
+
+            this.speed = speed;
+
+
+            bgHeight = texture.Height;
+
+            bgWidth = texture.Width;
+
+
+            // We add 1 to it so that we won't have a gap in the tiling
+            positions = new Vector2[1];
+            
+            // If we divide the screen with the texture width then we can determine the number of tiles need.
+            // scale so that the picture can show on all screen
+            if (texture.Width * 1.0f / texture.Height > _screenWidth * 1.0 / _screenHeight)
+            {
+                // the text wider, should extend according height
+                scale = _screenHeight * 1.0f / texture.Height;
+                int off = (int)((texture.Width * scale - _screenWidth)/2/scale);
+                texturerc.Width = texture.Width;
+                texturerc.Height = texture.Height;
+                texturerc.X += (int)(texture.Width * (off * 1.0f / texture.Width));
+                texturerc.Width -= (int)(texture.Width * (off * 1.0f / texture.Width)); 
+
+            }
+            else
+            {
+                // the texture is higher, should extend according width
+                scale = _screenWidth * 1.0f / texture.Width;
+
+                int off = (int)((texture.Height * scale - _screenHeight)/scale);
+                texturerc.Width = texture.Width;
+                texturerc.Height = texture.Height;
+                texturerc.Y += (int)(texture.Height * (off * 1.0f / texture.Height));
+                texturerc.Height -= texturerc.Y;
+            }
+
+
+        }
+
+
+        public void Update(GameTime gametime)
+        {
+
+            // Update the positions of the background
+            return;
+
+        }
+
+
+        public void Draw(SpriteBatch spriteBatch, float depth)
+        {
+            //Rectangle rectBg = new Rectangle((int)0, (int)0, _screenWidth, _screenHeight);
+            Vector2 pos = new Vector2(0, 0);
+
+            Rectangle dstrc = new Rectangle((int)0, (int)0, _screenWidth, _screenHeight);
+
+            pos.Y = texturerc.Y ;
+
+            Vector2 orgion = new Vector2(0, 0);
+            spriteBatch.Draw(texture, dstrc, texturerc, Color.White, 0, orgion, SpriteEffects.None, depth); // 0 f
+
+
+            return;
+        }
+
+
+    }
+
 }
