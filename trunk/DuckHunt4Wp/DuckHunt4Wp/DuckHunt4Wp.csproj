@@ -70,6 +70,7 @@
     <Compile Include="Duck.cs" />
     <Compile Include="ParallaxingBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Content\Graphics\bg_grass_a.xnb" />
     <None Include="Content\Graphics\BulletBoard.xnb" />
     <None Include="Content\Graphics\bulletIcon.xnb" />
     <None Include="Content\Graphics\deadduck.xnb" />
@@ -82,6 +83,7 @@
     <None Include="Content\Graphics\dogshowduck1.xnb" />
     <None Include="Content\Graphics\duckForest.xnb" />
     <None Include="Content\Graphics\duckForest_3.xnb" />
+    <None Include="Content\Graphics\duckForest_4.xnb" />
     <None Include="Content\Graphics\duckIconAlive.xnb" />
     <None Include="Content\Graphics\duckIconDead.xnb" />
     <None Include="Content\Graphics\duckIconOngoing.xnb" />

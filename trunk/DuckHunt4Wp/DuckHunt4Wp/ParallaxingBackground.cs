@@ -355,12 +355,14 @@ namespace DuckHuntCommon
 
         }
 
+        int elapsedTime = 0;
+        // The time we display a frame until the next one
+        int frameTime;
 
-        public void Update(GameTime gametime)
+        public void Update(GameTime gameTime)
         {
 
-            // Update the positions of the background
-            return;
+                 return;
 
         }
 
