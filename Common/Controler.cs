@@ -32,6 +32,7 @@ namespace DuckHuntCommon
                 case ModelType.SKY:
                 case ModelType.CLOUD:
                 case ModelType.GRASS:
+                case ModelType.FORGROUND:
                 case ModelType.DOG:
                 case ModelType.DUCK:
                 case ModelType.BULLET:
@@ -291,6 +292,7 @@ namespace DuckHuntCommon
         SkyModel blueSky;
         CloudModel cloud;
         GrassModel grass;
+        ForegroundGrassModel forground;
 
         List<BulletModel> bulletsList;
         List<DuckModel> duckList;
@@ -342,6 +344,7 @@ namespace DuckHuntCommon
             objlst.Add(new SkyModel());
             objlst.Add(new CloudModel());
             objlst.Add(new GrassModel());
+            objlst.Add(new ForegroundGrassModel());
             objlst.Add(new DuckModel());
             objlst.Add(new DogModel());
             objlst.Add(new BulletModel());
@@ -372,13 +375,15 @@ namespace DuckHuntCommon
                 objlst.Add(dog);
                 objlst.Add(this.hitBoard);
                 objlst.Add(bulletBoard);
-                objlst.Add(scoreBoard);
+                //objlst.Add(scoreBoard);
+                objlst.Add(forground);
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
                 objlst.Add(blueSky);
                 objlst.Add(cloud);
                 objlst.Add(grass);
+                objlst.Add(forground);
                 objlst.Add(bulletBoard);
 
                 foreach (DuckModel duck in duckList)
@@ -397,6 +402,7 @@ namespace DuckHuntCommon
                 objlst.Add(blueSky);
                 objlst.Add(cloud);
                 objlst.Add(grass);
+                objlst.Add(forground);
                 objlst.Add(bulletBoard);
 
                 objlst.Add(dog);
@@ -408,6 +414,8 @@ namespace DuckHuntCommon
                 objlst.Add(blueSky);
                 objlst.Add(cloud);
                 objlst.Add(grass);
+                objlst.Add(forground);
+
                 objlst.Add(bulletBoard);
 
                 objlst.Add(this.hitBoard);
@@ -427,6 +435,9 @@ namespace DuckHuntCommon
 
             grass = new GrassModel();
             grass.Initialize(null, rectBackground, 0);
+
+            forground = new ForegroundGrassModel();
+            forground.Initialize(null, rectBackground, 0);
         }
 
         void NewDog()

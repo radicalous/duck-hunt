@@ -12,7 +12,7 @@ using GameCommon;
 
 namespace DuckHuntCommon 
 {
-    enum ModelType { NONE, CLOUD, SKY, GRASS, DUCK, DOG, BULLET, HITBOARD,
+    enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD};
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -413,7 +413,6 @@ namespace DuckHuntCommon
             }
 
             // draw score
-
             Vector2 pos1 = scoreposition;
             pos1.Y -= 10*_defscale;
             string value = this.model.TotalScore.ToString();
@@ -813,9 +812,9 @@ namespace DuckHuntCommon
                 anationInfoList = new List<AnimationInfo>();
                 AnimationInfo animationInfo = new AnimationInfo();
                 animationInfo.animation = false;
-                animationInfo.frameCount = 4;
-                animationInfo.frameWidth = 431; //1600; 
-                animationInfo.frameHeight = 243; // 900;
+                animationInfo.frameCount = 1;
+                animationInfo.frameWidth = 1600; //1600; 
+                animationInfo.frameHeight = 900; // 900;
                 animationInfo.frameTime = 500;
                 anationInfoList.Add(animationInfo);
                 return anationInfoList;
@@ -851,7 +850,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\bg_grass_a";
+            resourceItm.path = "Graphics\\bg_grass";
             resourceList.Add(resourceItm);
             return resourceList;
         }
@@ -909,6 +908,120 @@ namespace DuckHuntCommon
         }
     }
 
+
+
+    class ForegroundGrassModel : ModelObject
+    {
+        ModelObject parent = null;
+        float Depth
+        {
+            get { return 0.2F; }
+        }
+
+        // Animation representing the player
+        List<AnimationInfo> AnimationTexturesList
+        {
+            get
+            {
+                List<AnimationInfo> anationInfoList;
+                anationInfoList = new List<AnimationInfo>();
+                AnimationInfo animationInfo = new AnimationInfo();
+                animationInfo.animation = false;
+                animationInfo.frameCount = 1;
+                animationInfo.frameWidth = 1600; //1600; 
+                animationInfo.frameHeight = 900; // 900;
+                animationInfo.frameTime = 500;
+                anationInfoList.Add(animationInfo);
+                return anationInfoList;
+            }
+        }
+
+
+        Vector2 relativePos;
+        public void Initialize(ModelObject parent, Rectangle rect, int seed)
+        {
+            parent = null;
+            space = rect;
+            relativePos.X = rect.Left;
+            relativePos.Y = rect.Top;
+            space.Offset(-space.Left, -space.Y);
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+        }
+
+        public ModelType Type()
+        {
+            // sky 
+
+            return ModelType.FORGROUND;
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\bg_tree";
+            resourceList.Add(resourceItm);
+            return resourceList;
+        }
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return AnimationTexturesList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return Depth;
+        }
+
+        Rectangle space;
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePos;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+            return absPos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+    }
  
     class AnimationInfo
     {
