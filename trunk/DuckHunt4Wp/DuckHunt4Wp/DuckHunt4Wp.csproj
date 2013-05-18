@@ -98,6 +98,7 @@
     <None Include="Content\Graphics\explosion.xnb" />
     <None Include="Content\Graphics\Forest.xnb" />
     <None Include="Content\Graphics\gameFont.xnb" />
+    <None Include="Content\Graphics\gameFont_10.xnb" />
     <None Include="Content\Graphics\HitBoardBackground.xnb" />
     <None Include="Content\Graphics\laser.xnb" />
     <None Include="Content\Graphics\laser1.xnb" />

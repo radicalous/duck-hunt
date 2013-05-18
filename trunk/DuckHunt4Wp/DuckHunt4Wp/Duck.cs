@@ -2417,7 +2417,11 @@ namespace DuckHuntCommon
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
             resourceItm.path = "Graphics\\gameFont";
+#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
