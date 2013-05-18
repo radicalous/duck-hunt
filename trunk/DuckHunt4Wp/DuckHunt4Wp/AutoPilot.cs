@@ -376,4 +376,65 @@ namespace GameCommon
             }
         }
     }
+
+    class CloudPilot
+    {
+        // The boundary
+        public Rectangle boundaryRect = new Rectangle();
+
+
+        // current position
+        Vector2 prePos;
+        public Vector2 Position;
+        //public float scale = 1.0f;
+
+        public float depthpos = 0;
+
+        int deltax = 1;
+        int deltay = 1;
+        int factorx = 1;
+        int factory = 1;
+
+        Random radom;
+        int maxRatio = 8;
+        public void Initialize(Rectangle boundary, int seed)
+        {
+            radom = new Random(seed);
+            boundaryRect = boundary;
+
+            // radom a intial position
+            Position.X = boundary.Width / 2;
+            Position.Y =  100;
+
+        }
+
+
+        public void RadomStartPos(Rectangle startSpace)
+        {
+            //
+            Position.X = radom.Next(startSpace.Width);
+            Position.Y = startSpace.Y + 20;
+            prePos = Position;
+        }
+
+        int elapsedTime = 0;
+        public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (Position.X >= (boundaryRect.Right + 100) )
+            {
+                Position.X = boundaryRect.X - 100;
+            }
+
+            elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (elapsedTime > 50)
+            {
+                prePos = Position;
+                Position.X += ((float)deltax) * factorx;
+                elapsedTime = 0;
+            }
+
+        }
+    }
+
 }

@@ -12,7 +12,7 @@ using GameCommon;
 
 namespace DuckHuntCommon 
 {
-    enum ModelType { NONE, SKY, GRASS, DUCK, DOG, BULLET, HITBOARD,
+    enum ModelType { NONE, CLOUD, SKY, GRASS, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD};
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -419,7 +419,7 @@ namespace DuckHuntCommon
             string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "SCORE:" + value, pos1, Color.White, 0, Vector2.Zero, 1, 
+            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.White, 0, Vector2.Zero, 1, 
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -539,6 +539,261 @@ namespace DuckHuntCommon
             viewObject = viewObject1;
         }
     }
+
+
+
+    class GrassMountainModel : ModelObject
+    {
+        ModelObject parent = null;
+        float Depth
+        {
+            get { return 1.0F; }
+        }
+
+        // Animation representing the player
+        List<AnimationInfo> AnimationTexturesList
+        {
+            get
+            {
+                List<AnimationInfo> anationInfoList;
+                anationInfoList = new List<AnimationInfo>();
+                AnimationInfo animationInfo = new AnimationInfo();
+                animationInfo.animation = false;
+                animationInfo.frameCount = 1;
+                animationInfo.frameWidth = animationInfo.frameHeight = 0;
+                anationInfoList.Add(animationInfo);
+                return anationInfoList;
+            }
+        }
+
+        Vector2 relativePos;
+        public void Initialize(ModelObject parent, Rectangle rect, int seed)
+        {
+            parent = null;
+            space = rect;
+            relativePos.X = rect.Left;
+            relativePos.Y = rect.Top;
+            space.Offset(-space.Left, -space.Y);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // no animation
+        }
+
+        public ModelType Type()
+        {
+            // sky 
+
+            return ModelType.SKY;
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\sky_2";
+            resourceList.Add(resourceItm);
+            return resourceList;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return AnimationTexturesList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return Depth;
+        }
+
+        Rectangle space;
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePos;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+    }
+
+
+
+
+    class CloudModel : ModelObject
+    {
+        ModelObject parent = null;
+        float Depth
+        {
+            get { return 0.9F; }
+        }
+
+        CloudPilot pilot;
+
+        public CloudModel()
+        {
+            pilot = new CloudPilot();
+        }
+
+        // Animation representing the player
+        List<AnimationInfo> AnimationTexturesList
+        {
+            get
+            {
+                List<AnimationInfo> anationInfoList;
+                anationInfoList = new List<AnimationInfo>();
+                AnimationInfo animationInfo = new AnimationInfo();
+                animationInfo.animation = true;
+                animationInfo.frameCount = 1;
+                animationInfo.frameWidth = 518;
+                animationInfo.frameHeight = 398;
+                animationInfo.frameTime = 300;
+                anationInfoList.Add(animationInfo);
+                return anationInfoList;
+            }
+        }
+
+        Vector2 relativePosInParent;
+        Vector2 RelativePos
+        {
+            get
+            {
+                return pilot.Position;
+            }
+        }
+        public void Initialize(ModelObject parent, Rectangle rect, int seed)
+        {
+            parent = null;
+            space = rect;
+            relativePosInParent.X = rect.Left;
+            relativePosInParent.Y = rect.Top;
+            space.Offset(-space.Left, -space.Y);
+            pilot.Initialize(space, 0);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // no animation
+            pilot.Update(gameTime);
+        }
+
+        public ModelType Type()
+        {
+            // sky 
+
+            return ModelType.CLOUD;
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\Cloud";
+            resourceList.Add(resourceItm);
+            return resourceList;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return AnimationTexturesList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return Depth;
+        }
+
+        Rectangle space;
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = RelativePos;
+            absPos += relativePosInParent;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+            absPos.X -= AnimationTexturesList[0].frameWidth / 2;
+            absPos.Y -= AnimationTexturesList[0].frameHeight / 2;
+
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 0.5f;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+    }
+
+
 
 
     class GrassModel : ModelObject
