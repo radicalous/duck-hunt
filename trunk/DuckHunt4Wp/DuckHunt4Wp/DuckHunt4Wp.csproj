@@ -70,7 +70,9 @@
     <Compile Include="Duck.cs" />
     <Compile Include="ParallaxingBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Content\Graphics\bg_grass.xnb" />
     <None Include="Content\Graphics\bg_grass_a.xnb" />
+    <None Include="Content\Graphics\bg_tree.xnb" />
     <None Include="Content\Graphics\BulletBoard.xnb" />
     <None Include="Content\Graphics\bulletIcon.xnb" />
     <None Include="Content\Graphics\deadduck.xnb" />
