@@ -30,6 +30,7 @@ namespace DuckHuntCommon
             switch (model.Type())
             {
                 case ModelType.SKY:
+                case ModelType.CLOUD:
                 case ModelType.GRASS:
                 case ModelType.DOG:
                 case ModelType.DUCK:
@@ -288,6 +289,7 @@ namespace DuckHuntCommon
 
         Rectangle rectBackground;
         SkyModel blueSky;
+        CloudModel cloud;
         GrassModel grass;
 
         List<BulletModel> bulletsList;
@@ -338,6 +340,7 @@ namespace DuckHuntCommon
             List<ModelObject> objlst = new List<ModelObject>();
             // sky
             objlst.Add(new SkyModel());
+            objlst.Add(new CloudModel());
             objlst.Add(new GrassModel());
             objlst.Add(new DuckModel());
             objlst.Add(new DogModel());
@@ -364,6 +367,7 @@ namespace DuckHuntCommon
             if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 objlst.Add(blueSky);
+                objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(dog);
                 objlst.Add(this.hitBoard);
@@ -373,6 +377,7 @@ namespace DuckHuntCommon
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
                 objlst.Add(blueSky);
+                objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(bulletBoard);
 
@@ -390,6 +395,7 @@ namespace DuckHuntCommon
             else if (phase == GAME_PHASE.DOG_SHOW)
             {
                 objlst.Add(blueSky);
+                objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(bulletBoard);
 
@@ -400,6 +406,7 @@ namespace DuckHuntCommon
             else if (phase == GAME_PHASE.OVER)
             {
                 objlst.Add(blueSky);
+                objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(bulletBoard);
 
@@ -414,6 +421,10 @@ namespace DuckHuntCommon
             // dog seek duck
             blueSky = new SkyModel();
             blueSky.Initialize(null, rectBackground, 0);
+
+            cloud = new CloudModel();
+            cloud.Initialize(null, rectBackground, 0);
+
             grass = new GrassModel();
             grass.Initialize(null, rectBackground, 0);
         }
@@ -619,6 +630,7 @@ namespace DuckHuntCommon
         public void Update(GameTime gametime)
         {
             //
+            cloud.Update(gametime);
             if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 //
