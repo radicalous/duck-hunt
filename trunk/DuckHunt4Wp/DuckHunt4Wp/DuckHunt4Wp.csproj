@@ -75,6 +75,7 @@
     <None Include="Content\Graphics\bg_tree.xnb" />
     <None Include="Content\Graphics\BulletBoard.xnb" />
     <None Include="Content\Graphics\bulletIcon.xnb" />
+    <None Include="Content\Graphics\Cloud.xnb" />
     <None Include="Content\Graphics\deadduck.xnb" />
     <None Include="Content\Graphics\dogfound.xnb" />
     <None Include="Content\Graphics\dogjumpdown.xnb" />
@@ -106,6 +107,8 @@
     <None Include="Content\Graphics\laser1.xnb" />
     <None Include="Content\Graphics\mainbackground.xnb" />
     <None Include="Content\Graphics\mainMenu.xnb" />
+    <None Include="Content\Graphics\MenuItemBg_selected.xnb" />
+    <None Include="Content\Graphics\MenuItemBg_unselected.xnb" />
     <None Include="Content\Graphics\mine.xnb" />
     <None Include="Content\Graphics\mineAnimation.xnb" />
     <None Include="Content\Graphics\player.xnb" />

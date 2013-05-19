@@ -65,6 +65,11 @@ namespace DuckHuntCommon
                         scoreboardObj = new ScoreBoardViewObject(model);
                     }
                     break;
+                case ModelType.MENUITEM:
+                    {
+                        viewObject = new MenuItemViewObject(model);
+                    }
+                    break;
             }
             if (commViewObj != null)
             {
@@ -255,7 +260,7 @@ namespace DuckHuntCommon
 
 
 
-    enum GAME_PHASE { SEEK_DUCK, DUCK_FLY, DOG_SHOW, OVER };
+    enum GAME_PHASE { GAME_SELECT, SEEK_DUCK, DUCK_FLY, DOG_SHOW, OVER };
     class GameSound
     {
         public GAME_PHASE phase;
@@ -265,7 +270,7 @@ namespace DuckHuntCommon
     class DuckHuntGame
     {
 
-        GAME_PHASE phase = GAME_PHASE.SEEK_DUCK;
+        GAME_PHASE phase = GAME_PHASE.GAME_SELECT;
 
         // org point
         public Vector2 orgpoint;
@@ -293,6 +298,13 @@ namespace DuckHuntCommon
         CloudModel cloud;
         GrassModel grass;
         ForegroundGrassModel forground;
+
+        MenuItemModel menuTimeModelItem;
+        MenuItemModel menuFreeModelItem;
+
+        Rectangle timeModelMenuSpace;
+        Rectangle freeModelModelMenuSpace;
+
 
         List<BulletModel> bulletsList;
         List<DuckModel> duckList;
@@ -353,6 +365,7 @@ namespace DuckHuntCommon
             objlst.Add(new BulletBoardModel());
             objlst.Add(new BulletIconModel());
             objlst.Add(new ScroeBoardModel());
+            objlst.Add(new MenuItemModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -367,7 +380,20 @@ namespace DuckHuntCommon
         public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
-            if (phase == GAME_PHASE.SEEK_DUCK)
+            if (phase == GAME_PHASE.GAME_SELECT)
+            {
+                objlst.Add(blueSky);
+                objlst.Add(cloud);
+                objlst.Add(grass);
+
+                objlst.Add(this.hitBoard);
+                objlst.Add(bulletBoard);
+                objlst.Add(forground);
+
+                objlst.Add(menuTimeModelItem);
+                objlst.Add(menuFreeModelItem);
+            }
+            else if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 objlst.Add(blueSky);
                 objlst.Add(cloud);
@@ -486,7 +512,7 @@ namespace DuckHuntCommon
             foreach (DuckModel duck1 in duckList)
             {
                 duck1.Initialize(null, duckFlySpace, s + (i++) * 7);
-                duck1.StartPilot(duckFlySpace);
+                duck1.StartPilot();
             }
 
             for (i = 0; i < concurrentduckcnt; i++)
@@ -515,6 +541,16 @@ namespace DuckHuntCommon
         {
             scoreBoard = new ScroeBoardModel();
             scoreBoard.Initialize(null, scoreBoardSpace, 0);
+        }
+
+        void NewMenu()
+        {
+            menuTimeModelItem = new MenuItemModel();
+            menuTimeModelItem.Initialize(null, timeModelMenuSpace, 0);
+            menuTimeModelItem.Conent = "Time Model";
+            menuFreeModelItem = new MenuItemModel();
+            menuFreeModelItem.Initialize(null, freeModelModelMenuSpace, 0);
+            menuFreeModelItem.Conent = "Free Model";
         }
 
         public void StartGame(Rectangle screenRect)
@@ -630,7 +666,30 @@ namespace DuckHuntCommon
                 scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
             }
 
+            MenuItemModel menuItem = new MenuItemModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                timeModelMenuSpace.X = rectBackground.Height - 150;
+                timeModelMenuSpace.Y = rectBackground.Width - 150;
+                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
+                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
+
+                freeModelModelMenuSpace = timeModelMenuSpace;
+                freeModelModelMenuSpace.Y += 100;
+            }
+            else
+            {
+                timeModelMenuSpace.X = rectBackground.Width/2 - 150;
+                timeModelMenuSpace.Y = rectBackground.Height/2 - 150;
+                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
+                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
+
+                freeModelModelMenuSpace = timeModelMenuSpace;
+                freeModelModelMenuSpace.Y += 100;
+            }
+
             NewBackground();
+            NewMenu();
             NewDog();
             NewHitBoard();
             NewBulletBoard();
@@ -642,7 +701,10 @@ namespace DuckHuntCommon
         {
             //
             cloud.Update(gametime);
-            if (phase == GAME_PHASE.SEEK_DUCK)
+            if (phase == GAME_PHASE.GAME_SELECT)
+            {
+            }
+            else if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 //
                 dog.Update(gametime);
@@ -720,8 +782,25 @@ namespace DuckHuntCommon
         Vector2 oldshootposition = Vector2.Zero;
         public void ShootDuck(Vector2 shootposition)
         {
-            if (oldshootposition == shootposition)
+
+            if (phase == GAME_PHASE.GAME_SELECT)
             {
+                if (menuTimeModelItem.Hit(shootposition))
+                {
+                    // time model game begin
+
+                    return;
+                }
+
+                if (menuFreeModelItem.Hit(shootposition))
+                {
+                    // free model
+
+                    phase = GAME_PHASE.SEEK_DUCK;
+
+                    return;
+                }
+
                 return;
             }
             if (phase != GAME_PHASE.DUCK_FLY)
