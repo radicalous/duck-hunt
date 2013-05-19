@@ -13,7 +13,7 @@ using GameCommon;
 namespace DuckHuntCommon 
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
-        DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD};
+        DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, MENUITEM};
     
     enum ResourceType { TEXTURE, SOUND, FONT };
     class ResourceItem
@@ -424,6 +424,110 @@ namespace DuckHuntCommon
     }
 
 
+
+    // draw the score myself
+    class MenuItemViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+        MenuItemModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 menuContentPos;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public MenuItemViewObject(ModelObject model1)
+        {
+            model = (MenuItemModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            model = (MenuItemModel)model1;
+
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        orgpoint,
+                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
+                }
+                viewItmList.Add(viewItm);
+            }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() * _defscale;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth / 2) * _defscale;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight / 2) * _defscale;
+                viewItm.animation.scale = model.GetSacle() * _defscale;
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+            menuContentPos = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            menuContentPos.X += 20 * _defscale;
+            menuContentPos.Y += 25 * _defscale;
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+            }
+            else
+            {
+                viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
+            }
+
+            // draw score
+            Vector2 pos1 = menuContentPos;
+            Rectangle space = model.GetSpace();
+            pos1.Y += (space.Height/2 - 40) * _defscale;
+            pos1.X += 150 * _defscale;
+            string value = this.model.Conent.ToString();
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Blue, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
 
     class SkyModel : ModelObject
     {
@@ -1037,6 +1141,257 @@ namespace DuckHuntCommon
     }
 
 
+    class MenuItemModel : ModelObject
+    {
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        int elapsedTime = 0;
+
+        List<Vector2> boundingTrigle1;
+        List<Vector2> boundingTrigle2;
+
+        float scale = 1.0f;
+        float depth = 0.6f;
+        float Depth
+        {
+            get { return depth; }
+        }
+
+        List<AnimationInfo> AnimationTexturesList
+        {
+            get
+            {
+                return anationInfoList;
+            }
+        }
+
+        string content = "test";
+        public string Conent
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                content = value;
+            }
+        }
+
+        bool onHover = false;
+        int AnimationIndex
+        {
+            get
+            {
+                if (onHover)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        Vector2 postion;
+
+        Vector2 RelativePosition
+        {
+            get
+            {
+                return postion;
+            }
+        }
+
+        public MenuItemModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // 0. unselected duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\MenuItemBg_selected";
+            animationInfo.frameWidth = 482;
+            animationInfo.frameHeight = 114;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            //1. hover duck
+            animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\MenuItemBg_unselected";
+            animationInfo.frameWidth = 482;
+            animationInfo.frameHeight = 114;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 3000;
+            anationInfoList.Add(animationInfo);
+
+            boundingTrigle1 = new List<Vector2>();
+            boundingTrigle2 = new List<Vector2>();
+
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\MenuItemBg_selected";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\MenuItemBg_unselected";
+            resourceList.Add(resourceItm);
+
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\gameFont";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        Rectangle _itemspace = new Rectangle(0, 0, 482,114);
+
+        ModelObject parent = null;
+        public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        {
+            parent = null;
+            postion.X = itemSpace.Left;
+            postion.Y = itemSpace.Top;
+
+            _itemspace = itemSpace;
+            _itemspace.X -= (int)postion.X;
+            itemSpace.Y -= (int)postion.Y;
+            //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
+
+            Vector2 pos1 = new Vector2();
+            pos1.X = GetAbsolutePosition().X+12;
+            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            boundingTrigle1.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + 160;
+            pos1.Y = GetAbsolutePosition().Y + 12;
+            boundingTrigle1.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + itemSpace.Width-80;
+            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            boundingTrigle1.Add(pos1);
+
+            pos1.X = GetAbsolutePosition().X + 160;
+            pos1.Y = GetAbsolutePosition().Y + 12;
+            boundingTrigle2.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
+            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            boundingTrigle2.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 10;
+            pos1.Y = GetAbsolutePosition().Y + 55;
+            boundingTrigle2.Add(pos1);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+
+
+        }
+
+        public bool Hit(Vector2 absposition)
+        {
+            if (CollectionDetect.PointInTriangle(absposition, boundingTrigle1))
+            {
+                return true;
+            }
+            if (CollectionDetect.PointInTriangle(absposition, boundingTrigle2))
+            {
+                return true;
+            }
+            return false;
+            /*
+            Vector2 menumItemCenter = GetAbsolutePosition();
+            //
+            menumItemCenter.X += anationInfoList[AnimationIndex].frameWidth / 2;
+            menumItemCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2;
+
+            Vector2 subpos = menumItemCenter - absposition;
+            if (subpos.Length() < 30 * scale)
+            {
+                return true;
+            }
+
+            return false;
+             */
+        }
+
+        public ModelType Type()
+        {
+            return ModelType.MENUITEM;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return AnimationTexturesList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return AnimationIndex;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return Depth;
+        }
+
+
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = RelativePosition;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+            // pilot return center postion, adjust it to left top conner
+            absPos.X -= 105 / 2;
+            absPos.Y -= 102 / 2;
+
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            return _itemspace;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+    }
+
+
     class DuckModel : ModelObject
     {
         // Animation representing the player
@@ -1140,6 +1495,11 @@ namespace DuckHuntCommon
 
         int deadstopcount = 0;
 
+        List<Vector2> boundingTrigle1;
+        List<Vector2> boundingTrigle2;
+
+
+
         public DuckModel()
         {
             //
@@ -1181,6 +1541,11 @@ namespace DuckHuntCommon
             animationInfo.frameCount = 3;
             animationInfo.frameTime = 100;
             anationInfoList.Add(animationInfo);
+
+            boundingTrigle1 = new List<Vector2>();
+            boundingTrigle2 = new List<Vector2>();
+
+
         }
 
         public List<ResourceItem> GetResourceList()
@@ -1225,6 +1590,44 @@ namespace DuckHuntCommon
             bulletCenter.Y += bulletRc.Height / 2;
 
             Vector2 duckCenter = GetAbsolutePosition();
+            Vector2 bullet2DuckPos = bulletCenter - duckCenter;
+
+            List<Vector2> boudingTrigle = new List<Vector2>();
+            foreach (Vector2 triglepos in boundingTrigle1)
+            {
+                boudingTrigle.Add(new Vector2(triglepos.X * scale, triglepos.Y * scale));
+            }
+            if (CollectionDetect.PointInTriangle(bullet2DuckPos, boudingTrigle))
+            {
+                // shot
+                Active = false;
+                dead = true;
+                deadPilot = new DeadPilot(this.autoPilot, false);
+
+                // new a bullet  
+                bullet.SetTarget(this);
+
+                return;
+            }
+            boudingTrigle.Clear();
+            foreach (Vector2 triglepos in boundingTrigle2)
+            {
+                boudingTrigle.Add(new Vector2(triglepos.X * scale, triglepos.Y * scale));
+            }
+            if (CollectionDetect.PointInTriangle(bullet2DuckPos, boudingTrigle))
+            {
+                // shot
+                Active = false;
+                dead = true;
+                deadPilot = new DeadPilot(this.autoPilot, false);
+
+                // new a bullet  
+                bullet.SetTarget(this);
+                return;
+            }
+
+
+
             //
             duckCenter.X += anationInfoList[AnimationIndex].frameWidth / 2 ;
             duckCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2 ;
@@ -1258,15 +1661,40 @@ namespace DuckHuntCommon
             randomseed = seed;
             Random radom = new Random(seed);
 
+            duckspace = duckSpace;
+
+
+
+            Vector2 pos1 = new Vector2();
+            pos1.X = 16;
+            pos1.Y = 60;
+            boundingTrigle1.Add(pos1);
+            pos1.X = 26;
+            pos1.Y = 19;
+            boundingTrigle1.Add(pos1);
+            pos1.X = 86;
+            pos1.Y = 40;
+            boundingTrigle1.Add(pos1);
+
+            pos1.X = 26;
+            pos1.Y = 19;
+            boundingTrigle2.Add(pos1);
+            pos1.X = 86;
+            pos1.Y = 40;
+            boundingTrigle2.Add(pos1);
+
+            pos1.X = 75;
+            pos1.Y = 81;
+            boundingTrigle2.Add(pos1);
 
         }
 
-        public void StartPilot(Rectangle duckFlySpace)
+        public void StartPilot()
         {
             // Set the starting position of the player around the middle of the screen and to the back
-            autoPilot.Initialize(duckFlySpace, randomseed);
-            Rectangle startSpace = new Rectangle(duckFlySpace.X, duckFlySpace.Y + (int)(0.9 * duckFlySpace.Height),
-                duckFlySpace.Width, (int)(duckFlySpace.Height * 0.1));
+            autoPilot.Initialize(duckspace, randomseed);
+            Rectangle startSpace = new Rectangle(duckspace.X, duckspace.Y + (int)(0.9 * duckspace.Height),
+                duckspace.Width, (int)(duckspace.Height * 0.1));
             autoPilot.LeadDirection(AutoPilot.Direction.RANDOM, AutoPilot.Direction.UP);
             autoPilot.RadomStartPos(startSpace);
         }
@@ -1325,7 +1753,7 @@ namespace DuckHuntCommon
         }
 
 
-        Rectangle space;
+        //Rectangle space;
 
         public Vector2 GetAbsolutePosition()
         {
@@ -1342,7 +1770,7 @@ namespace DuckHuntCommon
         }
         public Rectangle GetSpace()
         {
-            return space;
+            return duckspace;
         }
         public float GetSacle()
         {
@@ -2910,5 +3338,53 @@ namespace DuckHuntCommon
         {
             viewObject = viewObject1;
         }
-    } 
+    }
+
+
+    class CollectionDetect
+    {
+        public static bool PointInTriangle(Vector2 p1, List<Vector2> triangle)
+        {
+            return _isPointInsideTriangle(triangle, p1);
+        }
+        public static bool BoundingTriangles(List<Vector2> p1, List<Vector2> p2)
+        {
+            for (int i = 0; i < 3; i++)
+                if (_isPointInsideTriangle(p1, p2[i])) return true;
+
+            for (int i = 0; i < 3; i++)
+                if (_isPointInsideTriangle(p2, p1[i])) return true;
+            return false;
+        }
+        private static bool _isPointInsideTriangle(List<Vector2> TrianglePoints, Vector2 p)
+        {
+            // Translated to C# from: http://www.ddj.com/184404201
+            Vector2 e0 = p - TrianglePoints[0];
+            Vector2 e1 = TrianglePoints[1] - TrianglePoints[0];
+            Vector2 e2 = TrianglePoints[2] - TrianglePoints[0];
+
+            float u, v = 0;
+            if (e1.X == 0)
+            {
+                if (e2.X == 0) return false;
+                u = e0.X / e2.X;
+                if (u < 0 || u > 1) return false;
+                if (e1.Y == 0) return false;
+                v = (e0.Y - e2.Y * u) / e1.Y;
+                if (v < 0) return false;
+            }
+            else
+            {
+                float d = e2.Y * e1.X - e2.X * e1.Y;
+                if (d == 0) return false;
+                u = (e0.Y * e1.X - e0.X * e1.Y) / d;
+                if (u < 0 || u > 1) return false;
+                v = (e0.X - e2.X * u) / e1.X;
+                if (v < 0) return false;
+                if ((u + v) > 1) return false;
+            }
+
+            return true;
+        }
+    }
 }
