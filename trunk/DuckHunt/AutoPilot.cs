@@ -158,9 +158,8 @@ namespace GameCommon
             Position.X += ((float)deltax) * factorx;
             Position.Y += ((float)deltay) * factory;
 
-            /*
             depthpos += detalz;
-            if (depthpos < 0 || depthpos > 100)
+            if (depthpos < 0 || depthpos > 50)
             {
                 detalz = -detalz;
             }
@@ -168,12 +167,10 @@ namespace GameCommon
             {
                 depthpos = 0;
             }
-            if (depthpos > 100)
+            if (depthpos > 50)
             {
-                depthpos = 99;
+                depthpos = 50;
             }
-             */
-            depthpos = 50;
         }
     }
 
