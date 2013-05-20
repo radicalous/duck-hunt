@@ -269,13 +269,14 @@ namespace DuckHuntCommon
 
     enum GameMode { GAME_TIME_LIMIT, GAME_FREE_MODE };
 
-    enum GameChapterPhase { CHAPTER1, CHAPTER2, CHAPTER3, CHAPTER4, CHAPTER5 };
+    enum GameChapterPhase { CHAPTER1, CHAPTER2, CHAPTER3, CHAPTER4, CHAPTER5, FOREVER };
 
 
     class GameChapter
     {
         GameChapterPhase chapter;
         int duckcount = 0;
+        int concurrentcount = 6;
         public GameChapter(GameChapterPhase chapter1)
         {
             chapter = chapter1;
@@ -367,6 +368,16 @@ namespace DuckHuntCommon
                         duckcount += 5;
                     }
                     break;
+                case GameChapterPhase.FOREVER:
+                    {
+                        for (int i = 0; i < concurrentcount; i++)
+                        {
+                            duck = new DuckModel();
+                            ducks.Add(duck);
+                            duckcount += 1;
+                        }
+                    }
+                    break;
             }
 
             return true;
@@ -378,18 +389,44 @@ namespace DuckHuntCommon
         List<GameChapter> chapters;
         public GameChapterManager()
         {
-            chapters = new List<GameChapter>();
-            GameChapter chapter;
-            chapter = new GameChapter(GameChapterPhase.CHAPTER1);
-            chapters.Add(chapter);
-            chapter = new GameChapter(GameChapterPhase.CHAPTER2);
-            chapters.Add(chapter);
-            chapter = new GameChapter(GameChapterPhase.CHAPTER3);
-            chapters.Add(chapter);
-            chapter = new GameChapter(GameChapterPhase.CHAPTER4);
-            chapters.Add(chapter);
-            chapter = new GameChapter(GameChapterPhase.CHAPTER5);
-            chapters.Add(chapter);
+
+        }
+
+        public bool Init(GameMode mode)
+        {
+            if (mode == GameMode.GAME_TIME_LIMIT)
+            {
+                chapters = new List<GameChapter>();
+                GameChapter chapter;
+                chapter = new GameChapter(GameChapterPhase.CHAPTER1);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER2);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER3);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER4);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER5);
+                chapters.Add(chapter);
+            }
+            else
+            {
+                chapters = new List<GameChapter>();
+                GameChapter chapter;
+                chapter = new GameChapter(GameChapterPhase.CHAPTER1);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER2);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER3);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER4);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER5);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.FOREVER);
+                chapters.Add(chapter);
+            }
+            return true;
         }
         public bool GetNextChapter(out GameChapter chapter)
         {
@@ -442,6 +479,8 @@ namespace DuckHuntCommon
 
         MenuItemModel menuTimeModelItem;
         MenuItemModel menuFreeModelItem;
+        MenuItemModel menuGameOverItem;
+        MenuItemModel menuRestartItem;
 
         Rectangle timeModelMenuSpace;
         Rectangle freeModelModelMenuSpace;
@@ -589,6 +628,9 @@ namespace DuckHuntCommon
 
                 objlst.Add(this.hitBoard);
                 objlst.Add(scoreBoard);
+                objlst.Add(menuGameOverItem);
+                objlst.Add(menuRestartItem);
+                
 
             }
         }
@@ -617,6 +659,9 @@ namespace DuckHuntCommon
             dog.StartPilot(dogRunSpace);
         }
 
+        int flycount = 0;
+
+        GameMode gameMode = GameMode.GAME_TIME_LIMIT;
         void NewDuck()
         {
             if (duckList == null)
@@ -642,7 +687,24 @@ namespace DuckHuntCommon
                 }
                 currentduck += duckList.Count;
                  */
+
+                if (  gameMode != GameMode.GAME_TIME_LIMIT)
+                {
+                    foreach (DuckModel duck2 in duckList)
+                    {
+                        if ( !duck2.dead)
+                        {
+                            flycount++;
+                        }
+                    }
+                    if (flycount >= 3)
+                    {
+                        duckList.Clear();
+                        return;
+                    }
+                }
                 duckList.Clear();
+
                 /*
                 bulletcount = 3;
                 bulletBoard.LoadBullet(bulletcount);
@@ -714,8 +776,20 @@ namespace DuckHuntCommon
             menuFreeModelItem = new MenuItemModel();
             menuFreeModelItem.Initialize(null, freeModelModelMenuSpace, 0);
             menuFreeModelItem.Conent = "Free Model";
+
+            menuGameOverItem = new MenuItemModel();
+            menuGameOverItem.Initialize(null, timeModelMenuSpace, 0);
+            menuGameOverItem.Conent = "Game Over";
+
+            menuRestartItem = new MenuItemModel();
+            menuRestartItem.Initialize(null, freeModelModelMenuSpace, 0);
+            menuRestartItem.Conent = "Restart";  
         }
 
+        void NewGame()
+        {
+            gameChapterMgr.Init(gameMode);
+        }
         public void StartGame(Rectangle screenRect)
         {
 
@@ -817,14 +891,14 @@ namespace DuckHuntCommon
             if (rectBackground.Width < rectBackground.Height)
             {
                 scoreBoardSpace.X = rectBackground.Height - 250;
-                scoreBoardSpace.Y = rectBackground.Width - 73;
+                scoreBoardSpace.Y = rectBackground.Left + 10;
                 scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
                 scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
             }
             else
             {
                 scoreBoardSpace.X = rectBackground.Width - 250;
-                scoreBoardSpace.Y = rectBackground.Height - 73;
+                scoreBoardSpace.Y = rectBackground.Top + 10;
                 scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
                 scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
             }
@@ -950,6 +1024,8 @@ namespace DuckHuntCommon
                 {
                     // time model game begin
                     phase = GAME_PHASE.SEEK_DUCK;
+                    gameMode = GameMode.GAME_TIME_LIMIT;
+                    NewGame();
 
                     return;
                 }
@@ -959,11 +1035,27 @@ namespace DuckHuntCommon
                     // free model
 
                     phase = GAME_PHASE.SEEK_DUCK;
+                    gameMode = GameMode.GAME_FREE_MODE;
+                    NewGame();
 
                     return;
                 }
 
                 return;
+            }
+
+            if (phase == GAME_PHASE.OVER)
+            {
+                if (menuRestartItem.Hit(shootposition))
+                {
+                    // free model
+
+                    phase = GAME_PHASE.GAME_SELECT;
+                    gameMode = GameMode.GAME_FREE_MODE;
+                    NewGame();
+                    return;
+                }
+
             }
             if (phase != GAME_PHASE.DUCK_FLY)
             {
