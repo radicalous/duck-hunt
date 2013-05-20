@@ -57,6 +57,8 @@ namespace DuckHunt4Wp
             //controler.Initialize(viewScene);
             controler.Initialize(viewScene);
 
+            TouchPanel.EnabledGestures = GestureType.Tap;
+
             base.Initialize();
         }
 

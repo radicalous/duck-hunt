@@ -267,10 +267,150 @@ namespace DuckHuntCommon
         public string soundpath;
     }
 
+    enum GameMode { GAME_TIME_LIMIT, GAME_FREE_MODE };
+
+    enum GameChapterPhase { CHAPTER1, CHAPTER2, CHAPTER3, CHAPTER4, CHAPTER5 };
+
+
+    class GameChapter
+    {
+        GameChapterPhase chapter;
+        int duckcount = 0;
+        public GameChapter(GameChapterPhase chapter1)
+        {
+            chapter = chapter1;
+        }
+
+        public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = new List<DuckModel>();
+            DuckModel duck;
+            switch (chapter)
+            {
+                case GameChapterPhase.CHAPTER1:
+                    {
+                        if (duckcount >= 5)
+                        {
+                            ducks = null;
+                            return false;
+                        }
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duckcount++;
+                    }
+                    break;
+                case GameChapterPhase.CHAPTER2:
+                    {
+                        if (duckcount >= 10)
+                        {
+                            ducks = null;
+                            return false;
+                        }
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duckcount += 2;
+                    }
+                    break;
+                case GameChapterPhase.CHAPTER3:
+                    {
+                        if (duckcount >= 15)
+                        {
+                            ducks = null;
+                            return false;
+                        }
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duckcount += 3;
+                    }
+                    break;
+                case GameChapterPhase.CHAPTER4:
+                    {
+                        if (duckcount >= 20)
+                        {
+                            ducks = null;
+                            return false;
+                        }
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duckcount += 4;
+                    }
+                    break;
+                case GameChapterPhase.CHAPTER5:
+                    {
+                        if (duckcount >= 25)
+                        {
+                            ducks = null;
+                            return false;
+                        }
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duck = new DuckModel();
+                        ducks.Add(duck);
+                        duckcount += 5;
+                    }
+                    break;
+            }
+
+            return true;
+        }
+    }
+
+    class GameChapterManager
+    {
+        List<GameChapter> chapters;
+        public GameChapterManager()
+        {
+            chapters = new List<GameChapter>();
+            GameChapter chapter;
+            chapter = new GameChapter(GameChapterPhase.CHAPTER1);
+            chapters.Add(chapter);
+            chapter = new GameChapter(GameChapterPhase.CHAPTER2);
+            chapters.Add(chapter);
+            chapter = new GameChapter(GameChapterPhase.CHAPTER3);
+            chapters.Add(chapter);
+            chapter = new GameChapter(GameChapterPhase.CHAPTER4);
+            chapters.Add(chapter);
+            chapter = new GameChapter(GameChapterPhase.CHAPTER5);
+            chapters.Add(chapter);
+        }
+        public bool GetNextChapter(out GameChapter chapter)
+        {
+            chapter = null;
+            if (chapters.Count <= 0)
+            {
+                return false;
+            }
+            chapter = chapters[0];
+            chapters.RemoveAt(0);
+            return true;
+        }
+    }
+
+
     class DuckHuntGame
     {
 
         GAME_PHASE phase = GAME_PHASE.GAME_SELECT;
+
+        GameChapterManager gameChapterMgr;
 
         // org point
         public Vector2 orgpoint;
@@ -279,6 +419,7 @@ namespace DuckHuntCommon
 
         Rectangle localViewRect = new Rectangle();
         Rectangle globalViewRect = new Rectangle(0,0, 1600,900);
+
 
         // local rect, global rect
         // (local rect - orgpoint ) = global rect * default scale
@@ -334,6 +475,8 @@ namespace DuckHuntCommon
         {
             gameRounds = new List<GameRound>();
             bulletsList = new List<BulletModel>();
+
+            gameChapterMgr = new GameChapterManager();
         }
 
         public List<GameSound> GetSoundList()
@@ -484,6 +627,7 @@ namespace DuckHuntCommon
             {
                 // set duck state
                 int ii = 0;
+                /*
                 foreach (DuckModel duck2 in duckList)
                 {
                     if (duck2.dead)
@@ -497,29 +641,48 @@ namespace DuckHuntCommon
                     ii++;
                 }
                 currentduck += duckList.Count;
+                 */
                 duckList.Clear();
+                /*
                 bulletcount = 3;
                 bulletBoard.LoadBullet(bulletcount);
-            }
-            DuckModel duck = new DuckModel();
-            duckList.Add(duck);
-            duck = new DuckModel();
-            duckList.Add(duck);
-            
-            int i = 0;
-            DateTime now = System.DateTime.Now;
-            int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
-            foreach (DuckModel duck1 in duckList)
-            {
-                duck1.Initialize(null, duckFlySpace, s + (i++) * 7);
-                duck1.StartPilot();
+                 */
             }
 
-            for (i = 0; i < concurrentduckcnt; i++)
+            List<DuckModel> ducks = null;
+
+            do
             {
-                hitBoard.SetDuckIconsState(this.currentduck+i, DuckIconModel.DuckIconState.Ongoing);
+                if (chapter != null && chapter.GetDuckList(out ducks) && ducks != null && ducks.Count > 0)
+                {
+                    break;
+                }
+                gameChapterMgr.GetNextChapter(out chapter);
+            }while(chapter != null);
+
+            if (ducks == null)
+            {
+                return;
             }
+
+            int i = 0;
+            DateTime now = System.DateTime.Now;
+            foreach (DuckModel duck in ducks)
+            {
+                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                duck.StartPilot();
+                duckList.Add(duck);
+
+                /*
+                for (i = 0; i < concurrentduckcnt; i++)
+                {
+                    hitBoard.SetDuckIconsState(this.currentduck + i, DuckIconModel.DuckIconState.Ongoing);
+                }
+                 */
             
+            }
+
 
         }
 
@@ -696,7 +859,7 @@ namespace DuckHuntCommon
             NewScoreBoard();
         }
 
-
+        GameChapter chapter;
         public void Update(GameTime gametime)
         {
             //
@@ -763,12 +926,10 @@ namespace DuckHuntCommon
                 dog.Update(gametime);
                 if (dog.Gone)
                 {
-                    if (round < 10)
+                    NewDuck();
+                    if (duckList.Count > 0 )
                     {
                         phase = GAME_PHASE.DUCK_FLY;
-
-                        // create two new duck
-                        NewDuck();
                     }
                     else
                     {
