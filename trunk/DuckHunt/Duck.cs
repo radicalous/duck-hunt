@@ -799,7 +799,7 @@ namespace DuckHuntCommon
         {
             get
             {
-                return pilot.Position;
+                return pilot.GetPosition();
             }
         }
         public void Initialize(ModelObject parent, Rectangle rect, int seed)
@@ -1430,13 +1430,13 @@ namespace DuckHuntCommon
                 }
                 else
                 {
-                    if (autoPilot.HorizationDirection == AutoPilot.Direction.LEFT)
+                    if (flyduckPilot.GetHorizationDirection() == Direction.LEFT)
                     {
-                        if (autoPilot.ZDirection == AutoPilot.Direction.IN)
+                        if (flyduckPilot.GetZDirection() ==  Direction.IN)
                         {
                             return 0;
                         }
-                        else if (autoPilot.ZDirection == AutoPilot.Direction.OUT)
+                        else if (flyduckPilot.GetZDirection() == Direction.OUT)
                         {
                             return 0;
                         }
@@ -1447,11 +1447,11 @@ namespace DuckHuntCommon
                     }
                     else
                     {
-                        if (autoPilot.ZDirection == AutoPilot.Direction.IN)
+                        if ( flyduckPilot.GetZDirection() == Direction.IN)
                         {
                             return 3;
                         }
-                        else if (autoPilot.ZDirection == AutoPilot.Direction.OUT)
+                        else if (flyduckPilot.GetZDirection() == Direction.OUT)
                         {
                             return 3;
                         }
@@ -1469,22 +1469,21 @@ namespace DuckHuntCommon
         {
             get 
             {
-                if (autoPilot == null)
+                if (flyduckPilot == null)
                 {
                     return Vector2.Zero;
                 }
 
                 if (Active)
-                    return autoPilot.Position;
+                    return flyduckPilot.GetPosition();
                 else
-                    return deadPilot.Position;
+                    return goneduckPilot.GetPosition();
             }
         }
 
-        AutoPilot autoPilot;
-        DeadPilot deadPilot;
+        AiPilot flyduckPilot;
+        AiPilot goneduckPilot;
 
-        // State of the player
         public bool Active = true;
         public bool dead = false;
 
@@ -1503,7 +1502,7 @@ namespace DuckHuntCommon
         public DuckModel()
         {
             //
-            autoPilot = new AutoPilot();
+            flyduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKNORMAL);
             anationInfoList = new List<AnimationInfo>();
 
             // 0. flying duck
@@ -1591,7 +1590,7 @@ namespace DuckHuntCommon
 
             Vector2 duckCenter = GetAbsolutePosition();
             Vector2 bullet2DuckPos = bulletCenter - duckCenter;
-
+            /*
             List<Vector2> boudingTrigle = new List<Vector2>();
             foreach (Vector2 triglepos in boundingTrigle1)
             {
@@ -1602,7 +1601,8 @@ namespace DuckHuntCommon
                 // shot
                 Active = false;
                 dead = true;
-                deadPilot = new DeadPilot(this.autoPilot, false);
+
+                goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKDEAD, flyduckPilot.GetPosition());
 
                 // new a bullet  
                 bullet.SetTarget(this);
@@ -1619,13 +1619,13 @@ namespace DuckHuntCommon
                 // shot
                 Active = false;
                 dead = true;
-                deadPilot = new DeadPilot(this.autoPilot, false);
+                goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKDEAD, flyduckPilot.GetPosition());
 
                 // new a bullet  
                 bullet.SetTarget(this);
                 return;
             }
-
+            */
 
 
             //
@@ -1633,11 +1633,11 @@ namespace DuckHuntCommon
             duckCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2 ;
 
             Vector2 subpos = bulletCenter - duckCenter;
-            if (subpos.Length() < 20*scale)
+            if (subpos.Length() < 40*scale)
             {
                 Active = false;
                 dead = true;
-                deadPilot = new DeadPilot(this.autoPilot, false);
+                goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKDEAD, flyduckPilot.GetPosition());
 
                 // new a bullet  
                 bullet.SetTarget(this);
@@ -1692,11 +1692,8 @@ namespace DuckHuntCommon
         public void StartPilot()
         {
             // Set the starting position of the player around the middle of the screen and to the back
-            autoPilot.Initialize(duckspace, randomseed);
-            Rectangle startSpace = new Rectangle(duckspace.X, duckspace.Y + (int)(0.9 * duckspace.Height),
-                duckspace.Width, (int)(duckspace.Height * 0.1));
-            autoPilot.LeadDirection(AutoPilot.Direction.RANDOM, AutoPilot.Direction.UP);
-            autoPilot.RadomStartPos(startSpace);
+
+            flyduckPilot.Initialize(duckspace, randomseed);
         }
 
 
@@ -1704,14 +1701,14 @@ namespace DuckHuntCommon
         {
             if (Active)
             {
-                autoPilot.Update(gameTime);
+                flyduckPilot.Update(gameTime);
 
                 // check if it need to go
                 elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
                 if (elapsedTime > 1000 * 10)
                 {
                     Active = false;
-                    deadPilot = new DeadPilot(this.autoPilot, true);
+                    goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKFLYAWAY, flyduckPilot.GetPosition());
                 }
 
             }
@@ -1721,9 +1718,9 @@ namespace DuckHuntCommon
                 {
                     deadstopcount++;
                 }
-                deadPilot.Update(gameTime);
-                if (deadPilot.Position.Y > autoPilot.boundaryRect.Bottom ||
-                    deadPilot.Position.Y < autoPilot.boundaryRect.Top - anationInfoList[AnimationIndex].frameHeight)
+                goneduckPilot.Update(gameTime);
+                if (goneduckPilot.GetPosition().Y > duckspace.Height ||
+                    goneduckPilot.GetPosition().Y < 0 - anationInfoList[AnimationIndex].frameHeight)
                 {
                     Gone = true;
                 }
@@ -1779,7 +1776,7 @@ namespace DuckHuntCommon
                 // get depth, calculate the scale
 
                 //scale = autoPilot.scale;
-                scale = 1 - autoPilot.depthpos/100; 
+                scale = 1 - flyduckPilot.GetDepth() * 1.0f/100; 
             }
 
             return scale;
@@ -1892,33 +1889,37 @@ namespace DuckHuntCommon
                 if (state == DOGSTATE.FindingDuck)
                 {
                     //
-                    return pilot.Position;
+                    return seekPilot.GetPosition();
                 }
                 else if (state == DOGSTATE.Jumping)
                 {
-                    return jumpPilot.Position;
+                    return jumpPilot.GetPosition();
                 }
                 else if (state == DOGSTATE.Showing)
                 {
-                    return showPilot.Position;
+                    return showPilot.GetPosition();
                 }
                 else
                 {
-                    return pilot.Position;
+                    return seekPilot.GetPosition();
                 }
             }
         }
 
-        DogPilot pilot;
+        //DogPilot pilot;
+        AiPilot seekPilot;
+
         int foundmaxstoptime = 50;
         int midseekmaxstoptime = 100;
         int midseekstopcount = 0;
         int foundstopcount = 0;
 
-        DogJumpPilot jumpPilot;
+        //DogJumpPilot jumpPilot;
+        AiPilot jumpPilot;
         bool jumpup = true;
 
-        DogShowPilot showPilot;
+        AiPilot showPilot;
+        //DogShowPilot showPilot;
 
         enum DOGSTATE { FindingDuck, Jumping, Showing };
         DOGSTATE state = DOGSTATE.FindingDuck;
@@ -1995,8 +1996,7 @@ namespace DuckHuntCommon
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
-
-            pilot = new DogPilot();
+            seekPilot = PilotManager.GetInstance().CreatePilot(PilotType.DOGSEEK);
         }
 
 
@@ -2050,8 +2050,8 @@ namespace DuckHuntCommon
         public void ShowDog(int deadduck)
         {
             state = DOGSTATE.Showing;
-            showPilot = new DogShowPilot(pilot);
-
+            showPilot = PilotManager.GetInstance().CreatePilot(PilotType.DOGSHOW, seekPilot.GetPosition());
+            showPilot.Initialize(dogspace, 0);
             deadDuck = deadduck;
 
             gone = false;
@@ -2069,7 +2069,7 @@ namespace DuckHuntCommon
         {
             // Set the starting position of the player around the middle of the screen and to the back
             dogspace = dogrunspace;
-            pilot.Initialize(dogrunspace);
+            seekPilot.Initialize(dogrunspace, 0);
         }
 
 
@@ -2078,7 +2078,7 @@ namespace DuckHuntCommon
             if (state == DOGSTATE.FindingDuck)
             {
                 //
-                if (pilot.Position.X >= dogspace.Width / 4)
+                if (seekPilot.GetPosition().X >= dogspace.Width / 4)
                 {
                     // sleep some time
                     if (midseekstopcount < midseekmaxstoptime)
@@ -2088,7 +2088,7 @@ namespace DuckHuntCommon
                     }
                 }
 
-                if (pilot.Position.X >= dogspace.Width / 2)
+                if (seekPilot.GetPosition().X >= dogspace.Width / 2)
                 {
                     // sleep some time
                     if (foundstopcount < foundmaxstoptime)
@@ -2098,34 +2098,36 @@ namespace DuckHuntCommon
                     }
 
                     state = DOGSTATE.Jumping;
-                    jumpPilot = new DogJumpPilot(pilot);
+                    jumpPilot = PilotManager.GetInstance().CreatePilot(PilotType.DOGJUMP, seekPilot.GetPosition());
+                    jumpPilot.Initialize(dogspace, 0);
                 }
-                pilot.Update(gameTime);
+                seekPilot.Update(gameTime);
                 depth = 0.4F;
             }
             else if (state == DOGSTATE.Jumping)
             {
                 jumpPilot.Update(gameTime);
-                if (jumpPilot.Position.Y <= dogspace.Top)
+                if (jumpPilot.GetPosition().Y <= dogspace.Top)
                 {
                     depth = 0.6F;
                     jumpup = false;
                 }
-                if (jumpPilot.Position.Y > dogspace.Bottom)
+                if (jumpPilot.GetPosition().Y > dogspace.Bottom)
                 {
                     state = DOGSTATE.Showing;
-                    showPilot = new DogShowPilot(pilot);
-
+                    showPilot = PilotManager.GetInstance().CreatePilot(PilotType.DOGSHOW, seekPilot.GetPosition());
+                    showPilot.Initialize(dogspace, 0);
                     gone = true;
                 }
             }
             else if (state == DOGSTATE.Showing)
             {
                 showPilot.Update(gameTime);
-                if (showPilot.Position.Y > dogspace.Bottom)
+                if (showPilot.GetPosition().Y > dogspace.Bottom)
                 {
                     state = DOGSTATE.Showing;
-                    showPilot = new DogShowPilot(pilot);
+                    showPilot = PilotManager.GetInstance().CreatePilot(PilotType.DOGSHOW, seekPilot.GetPosition());
+                    showPilot.Initialize(dogspace, 0);
                     gone = true;
                 }
             }
