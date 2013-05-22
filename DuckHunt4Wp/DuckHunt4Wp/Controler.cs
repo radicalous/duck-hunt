@@ -26,6 +26,7 @@ namespace DuckHuntCommon
         {
             CommonViewObject commViewObj = null;
             ScoreBoardViewObject scoreboardObj = null;
+            HitBoardViewObject hitBoardObj = null;
             ViewObject viewObject = null;
             switch (model.Type())
             {
@@ -42,7 +43,7 @@ namespace DuckHuntCommon
                     break;
                 case ModelType.HITBOARD:
                     {
-                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
+                        hitBoardObj = new HitBoardViewObject(model);
                     }
                     break;
                 case ModelType.DUCKICON:
@@ -79,6 +80,10 @@ namespace DuckHuntCommon
             if (scoreboardObj != null)
             {
                 viewObject = scoreboardObj;
+            }
+            if( hitBoardObj != null )
+            {
+                viewObject = hitBoardObj;
             }
             return viewObject;
         }
@@ -567,7 +572,9 @@ namespace DuckHuntCommon
                 objlst.Add(grass);
 
                 objlst.Add(this.hitBoard);
-                objlst.Add(bulletBoard);
+                //objlst.Add(bulletBoard);
+                objlst.Add(scoreBoard);
+
                 objlst.Add(forground);
 
                 objlst.Add(menuTimeModelItem);
@@ -580,8 +587,8 @@ namespace DuckHuntCommon
                 objlst.Add(grass);
                 objlst.Add(dog);
                 objlst.Add(this.hitBoard);
-                objlst.Add(bulletBoard);
-                //objlst.Add(scoreBoard);
+                //objlst.Add(bulletBoard);
+                objlst.Add(scoreBoard);
                 objlst.Add(forground);
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
@@ -590,7 +597,7 @@ namespace DuckHuntCommon
                 objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(forground);
-                objlst.Add(bulletBoard);
+                //objlst.Add(bulletBoard);
 
                 foreach (DuckModel duck in duckList)
                 {
@@ -609,7 +616,7 @@ namespace DuckHuntCommon
                 objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(forground);
-                objlst.Add(bulletBoard);
+                //objlst.Add(bulletBoard);
 
                 objlst.Add(dog);
                 objlst.Add(this.hitBoard);
@@ -622,7 +629,7 @@ namespace DuckHuntCommon
                 objlst.Add(grass);
                 objlst.Add(forground);
 
-                objlst.Add(bulletBoard);
+                //objlst.Add(bulletBoard);
 
                 objlst.Add(this.hitBoard);
                 objlst.Add(scoreBoard);
@@ -855,15 +862,15 @@ namespace DuckHuntCommon
             HitBoardModel hitBoard1 = new HitBoardModel();
             if (rectBackground.Width < rectBackground.Height)
             {
-                hitBoardSpace.X = (rectBackground.Height - hitBoard1.GetSpace().Width) / 2 + 20;
-                hitBoardSpace.Y = rectBackground.Width-68 -3;
+                hitBoardSpace.X = rectBackground.Top + 20;
+                hitBoardSpace.Y = rectBackground.Left + 10;
                 hitBoardSpace.Width = hitBoard1.GetSpace().Width;
                 hitBoardSpace.Height = hitBoard1.GetSpace().Height;
             }
             else
             {
-                hitBoardSpace.X = (rectBackground.Width - hitBoard1.GetSpace().Width) / 2 + 20;
-                hitBoardSpace.Y = rectBackground.Height - 68 -3;
+                hitBoardSpace.X = rectBackground.Left + 20;
+                hitBoardSpace.Y = rectBackground.Top +10;
                 hitBoardSpace.Width = hitBoard1.GetSpace().Width;
                 hitBoardSpace.Height = hitBoard1.GetSpace().Height;
             }

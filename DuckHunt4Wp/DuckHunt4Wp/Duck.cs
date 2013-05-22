@@ -399,8 +399,200 @@ namespace DuckHuntCommon
             scoreposition.X += 20*_defscale;
             scoreposition.Y += 25*_defscale;
         }
+
+        private void DrawRectangle(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+            Rectangle rcline = new Rectangle();
+            rcline.X = coords.Left;
+            rcline.Y = coords.Top;
+            rcline.Width = 1;
+            rcline.Height = coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X += coords.Width;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X = coords.Left;
+            rcline.Width = coords.Width;
+            rcline.Height = 1;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.Y += coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+        }
+
+
+        private void DrawRectangle2(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+
+            spriteBatch.Draw(rect, coords, color);
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            /*
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+            }
+            else
+            {
+                viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
+            }
+             */
+            Rectangle rc = model.GetSpace();
+            rc.Height = 63; // same height with hitboard
+            rc.Width = 200;
+            rc.Width = (int)(rc.Width * _defscale);
+            rc.Height = (int)(rc.Height * _defscale);
+            rc.X += (int)(scoreposition.X * _defscale);
+            rc.Y += (int)(scoreposition.Y * _defscale);
+
+            Color color = Color.Blue;
+            color.A = 10;
+            DrawRectangle2(spriteBatch, rc, color);
+            DrawRectangle(spriteBatch, rc, Color.Blue);
+
+
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y += 10*_defscale;
+            pos1.X += 10 * _defscale;
+            string value = this.model.TotalScore.ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.White, 0, Vector2.Zero, 1, 
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
+
+
+
+    // draw the score myself
+    class HitBoardViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+        HitBoardModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 scoreposition;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public HitBoardViewObject(ModelObject model1)
+        {
+            model = (HitBoardModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            model = (HitBoardModel)model1;
+
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        orgpoint,
+                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
+                }
+                viewItmList.Add(viewItm);
+            }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() * _defscale;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth / 2) * _defscale;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight / 2) * _defscale;
+                viewItm.animation.scale = model.GetSacle() * _defscale;
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 20 * _defscale;
+            scoreposition.Y += 25 * _defscale;
+        }
+
+        private void DrawRectangle(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+            Rectangle rcline = new Rectangle();
+            rcline.X = coords.Left;
+            rcline.Y = coords.Top;
+            rcline.Width = 1;
+            rcline.Height = coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X += coords.Width;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X = coords.Left;
+            rcline.Width = coords.Width;
+            rcline.Height = 1;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.Y += coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+        }
+
+
+        private void DrawRectangle2(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+
+            spriteBatch.Draw(rect, coords, color);
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            /*
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             if (animationList[model.GetCurrentAnimationIndex()].animation)
             {
@@ -410,18 +602,29 @@ namespace DuckHuntCommon
             {
                 viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
             }
+             */
+            Rectangle rc = model.GetSpace();
+            rc.Width = (int) (rc.Width*_defscale);
+            rc.Height = (int)(rc.Height*_defscale);
+            rc.X += (int)(scoreposition.X*_defscale);
+            rc.Y += (int)(scoreposition.Y*_defscale);
+
+            Color color = Color.Blue;
+            color.A = 10;
+            DrawRectangle2(spriteBatch, rc, color);
+            DrawRectangle(spriteBatch, rc, Color.Blue);
 
             // draw score
             Vector2 pos1 = scoreposition;
-            pos1.Y -= 10*_defscale;
-            string value = this.model.TotalScore.ToString();
+            pos1.Y += 10 * _defscale;
+            pos1.X += 10 * _defscale;
+            string value = "Hit Count: 153";
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.White, 0, Vector2.Zero, 1, 
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Black, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
-
 
 
     // draw the score myself
@@ -2564,9 +2767,7 @@ namespace DuckHuntCommon
     {
         // include the background, duck icon/deadduck icon
         List<AnimationInfo> anationInfoList;
-
-        List<DuckIconModel> duckIcons;
-       
+        List<DuckIconModel> duckIcons;   
 
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
@@ -2601,6 +2802,15 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\HitBoardBackground";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\gameFont";
+#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
