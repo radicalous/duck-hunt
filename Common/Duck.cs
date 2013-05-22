@@ -446,13 +446,14 @@ namespace DuckHuntCommon
                 viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
             }
              */
+            // this rc is logic rc
             Rectangle rc = model.GetSpace();
             rc.Height = 63; // same height with hitboard
             rc.Width = 200;
             rc.Width = (int)(rc.Width * _defscale);
             rc.Height = (int)(rc.Height * _defscale);
-            rc.X += (int)(scoreposition.X * _defscale);
-            rc.Y += (int)(scoreposition.Y * _defscale);
+            rc.X += (int)scoreposition.X ; // scoreposition is position in local view
+            rc.Y += (int)scoreposition.Y;
 
             Color color = Color.Blue;
             color.A = 10;
@@ -467,7 +468,7 @@ namespace DuckHuntCommon
             string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.White, 0, Vector2.Zero, 1, 
+            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.LightGray, 0, Vector2.Zero, 1, 
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -606,8 +607,8 @@ namespace DuckHuntCommon
             Rectangle rc = model.GetSpace();
             rc.Width = (int) (rc.Width*_defscale);
             rc.Height = (int)(rc.Height*_defscale);
-            rc.X += (int)(scoreposition.X*_defscale);
-            rc.Y += (int)(scoreposition.Y*_defscale);
+            rc.X += (int)scoreposition.X;
+            rc.Y += (int)scoreposition.Y;
 
             Color color = Color.Blue;
             color.A = 10;
@@ -621,7 +622,7 @@ namespace DuckHuntCommon
             string value = "Hit Count: 153";
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], value, pos1, Color.Black, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.LightGray, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
