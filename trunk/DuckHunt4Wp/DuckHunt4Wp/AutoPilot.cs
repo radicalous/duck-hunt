@@ -6,45 +6,135 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GameCommon
 {
-    class AutoPilot
+    public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
+    public enum PilotType { DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD,DUCKFLYAWAY, 
+        DOGSEEK, DOGJUMP, DOGSHOW, 
+        CLOUD,
+    };
+
+    interface AiPilot
     {
-        public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
+        void Initialize(Rectangle boundary, int seed);
+        void Update(GameTime gameTime);
+        Direction GetHorizationDirection();
+        Direction GetZDirection();
+        float GetDepth();
+        Vector2 GetPosition();
+        PilotType GetType();
+    }
+
+
+    class PilotManager
+    {
+        static PilotManager instance;
+        public PilotManager()
+        {
+        }
+
+        public static PilotManager GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new PilotManager();
+            }
+            return instance;
+        }
+
+        public AiPilot CreatePilot(PilotType type)
+        {
+            Vector2 pos = Vector2.Zero;
+            return CreatePilot(type, pos);
+        }
+
+        public AiPilot CreatePilot(PilotType type, Vector2 pos)
+        {
+            string name = "";
+            return CreatePilot(type, pos, name);
+        }
+        public AiPilot CreatePilot(PilotType type, Vector2 pos, string clustername)
+        {
+            AiPilot pilot = null;
+
+            switch (type)
+            {
+                case PilotType.DUCKNORMAL:
+                case PilotType.DUCKQUICK:
+                    {
+                        pilot = new DuckNormalPilot();
+                    }
+                    break;
+                case PilotType.DUCKFLYAWAY:
+                case PilotType.DUCKDEAD:
+                    {
+                        pilot = new DuckDeadPilot(pos);
+                    }
+                    break;
+                case PilotType.DOGSEEK:
+                    {
+                        pilot = new DogPilot();
+                    }
+                    break;
+                case PilotType.DOGJUMP:
+                    {
+                        pilot = new DogJumpPilot(pos);
+                    }
+                    break;
+                case PilotType.DOGSHOW:
+                    {
+                        pilot = new DogShowPilot(pos);
+                    }
+                    break;
+                case PilotType.CLOUD:
+                    {
+                        pilot = new CloudPilot();
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+
+            return pilot;
+        }
+
+        public void ReturnPilot(AiPilot pilot)
+        {
+        }
+    }
+
+
+    class DuckNormalPilot: AiPilot
+    {
 
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
 
-        public Direction HorizationDirection
+        public Direction GetHorizationDirection()
         {
-            get
+            if (deltax > 0)
             {
-                if (deltax > 0)
-                {
-                    return Direction.RIGHT;
-                }
-                else
-                {
-                    return Direction.LEFT;
-                }
+                return Direction.RIGHT;
+            }
+            else
+            {
+                return Direction.LEFT;
             }
         }
-        public Direction ZDirection
+        public Direction GetZDirection()
         {
-            get
+            if (detalz > 0)
             {
-                if (detalz > 0)
-                {
-                    return Direction.IN;
-                }
-                else
-                {
-                    return Direction.OUT;
-                }
+                return Direction.IN;
+            }
+            else
+            {
+                return Direction.OUT;
             }
         }
 
         // current position
         Vector2 prePos;
-        public Vector2 Position;
+        Vector2 Position;
         //public float scale = 1.0f;
 
         public float depthpos = 0;
@@ -66,9 +156,29 @@ namespace GameCommon
             Position.X = boundary.Width / 2;
             Position.Y = boundary.Height / 2;
 
+            Rectangle startSpace = new Rectangle(0, 0 + (int)(0.9 * boundaryRect.Height),
+                boundaryRect.Width, (int)(boundaryRect.Height * 0.1));
+
+            LeadDirection(Direction.RANDOM, Direction.UP);
+            RadomStartPos(startSpace);
+
         }
 
-        public void LeadDirection(Direction hor, Direction ver)
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+        public PilotType GetType()
+        {
+            return PilotType.DUCKNORMAL;
+        }
+
+        void LeadDirection(Direction hor, Direction ver)
         {
             if (hor == Direction.RANDOM)
             {
@@ -115,7 +225,7 @@ namespace GameCommon
             }
         }
 
-        public void RadomStartPos(Rectangle startSpace)
+        void RadomStartPos(Rectangle startSpace)
         {
             //
             Position.X = radom.Next(startSpace.Width);
@@ -175,31 +285,55 @@ namespace GameCommon
     }
 
 
-    class DeadPilot
+    class DuckDeadPilot: AiPilot
     {
         // The boundary
         Rectangle boundaryRect = new Rectangle();
 
         // current position
-        public Vector2 Position;
+        Vector2 Position;
         int deltay = 15;
 
         int stopcnt = 0;
 
-        public DeadPilot(AutoPilot pilot, bool up)
+        public DuckDeadPilot(Vector2 pos)
         {
-            Position = pilot.Position;
-            if (up)
-            {
-                deltay = -10;
-            }
-
-            //boundaryRect = pilot.boundaryRect;
+            Position = pos;
         }
 
+        public void Initialize(Rectangle space, int seed)
+        {
+            boundaryRect = space;
+        }
+
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+
+        public float GetDepth()
+        {
+            return 0f;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DUCKDEAD;
+        }
         public void Initialize(Rectangle boundary)
         {
             boundaryRect = boundary;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
         }
 
 
@@ -217,14 +351,78 @@ namespace GameCommon
         }
     }
 
+    class DuckFlyawayPilot : AiPilot
+    {
+        // The boundary
+        Rectangle boundaryRect = new Rectangle();
 
-    class DogPilot
+        // current position
+        Vector2 Position;
+        int deltay = -15;
+
+        int stopcnt = 0;
+
+        public DuckFlyawayPilot(Vector2 pos)
+        {
+            Position = pos;
+        }
+
+        public void Initialize(Rectangle space, int seed)
+        {
+            boundaryRect = space;
+        }
+
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        float depthpos = 0;
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DUCKFLYAWAY;
+        }
+
+        public void Initialize(Rectangle boundary)
+        {
+            boundaryRect = boundary;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (stopcnt < 10)
+            {
+                stopcnt++;
+                return;
+            }
+            Position.Y += deltay;
+        }
+    }
+
+    class DogPilot: AiPilot
     {
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
 
         // current position
-        public Vector2 Position;
+        Vector2 Position;
         int deltax = 1;
         int deltay = 5;
 
@@ -261,13 +459,38 @@ namespace GameCommon
 
         }
 
-        public void Initialize(Rectangle dogspace)
+        public void Initialize(Rectangle dogspace, int seed)
         {
             boundaryRect = dogspace;
             Position.X = dogspace.Left;
             Position.Y = dogspace.Bottom;
         }
 
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+
+        float depth = 0;
+        public float GetDepth()
+        {
+            return depth;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DOGSEEK;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -298,24 +521,49 @@ namespace GameCommon
 
 
 
-    class DogJumpPilot
+    class DogJumpPilot: AiPilot
     {
         // The boundary
         public Rectangle boundaryRect ;
 
         // current position
-        public Vector2 Position;
+        Vector2 Position;
         int deltax = 1;
-        int deltay = 5;
+        int deltay = 6;
 
         int direction = 0; // 0, up, 1, down
 
-        public DogJumpPilot(DogPilot pilot)
+        public void Initialize(Rectangle jumpspace, int seed)
         {
-            boundaryRect = pilot.boundaryRect;
-            Position = pilot.Position;
+            boundaryRect = jumpspace;
         }
 
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DOGJUMP;
+        }
+        public DogJumpPilot(Vector2 pos)
+        {
+            //boundaryRect = pilot.boundaryRect;
+            Position = pos;
+        }
+        public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
+        public float GetDepth()
+        {
+            return 0f;
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -338,24 +586,54 @@ namespace GameCommon
     }
 
 
-    class DogShowPilot
+    class DogShowPilot: AiPilot
     {
        // The boundary
         public Rectangle boundaryRect ;
 
         // current position
-        public Vector2 Position;
+        Vector2 Position;
         int deltax = 1;
-        int deltay = 2;
+        int deltay = 6;
 
         int direction = 0; // 0, up, 1, down
 
-        public DogShowPilot(DogPilot pilot)
+
+        public DogShowPilot(Vector2 pos)
         {
-            boundaryRect = pilot.boundaryRect;
-            Position = pilot.Position;
+            // boundaryRect = pilot.boundaryRect;
+            Position = pos;
+        }
+        
+        public void Initialize(Rectangle space, int seed)
+        {
+            boundaryRect = space;
         }
 
+        public PilotType GetType()
+        {
+            return PilotType.DOGSHOW;
+        }
+
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
+
+        public float GetDepth()
+        {
+            return 0f;
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -377,7 +655,7 @@ namespace GameCommon
         }
     }
 
-    class CloudPilot
+    class CloudPilot: AiPilot
     {
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
@@ -385,7 +663,7 @@ namespace GameCommon
 
         // current position
         Vector2 prePos;
-        public Vector2 Position;
+        Vector2 Position;
         //public float scale = 1.0f;
 
         public float depthpos = 0;
@@ -397,6 +675,11 @@ namespace GameCommon
 
         Random radom;
         int maxRatio = 8;
+
+        public PilotType GetType()
+        {
+            return PilotType.CLOUD;
+        }
         public void Initialize(Rectangle boundary, int seed)
         {
             radom = new Random(seed);
@@ -407,9 +690,26 @@ namespace GameCommon
             Position.Y =  100;
 
         }
+        public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
 
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
 
-        public void RadomStartPos(Rectangle startSpace)
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+
+        void RadomStartPos(Rectangle startSpace)
         {
             //
             Position.X = radom.Next(startSpace.Width);
