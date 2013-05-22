@@ -506,8 +506,6 @@ namespace DuckHuntCommon
         List<GameRound> gameRounds;
 
         int currentduck = 0;
-        int concurrentduckcnt = 2;
-
         int bulletcount = 3;
 
         public DuckHuntGame()
@@ -656,7 +654,7 @@ namespace DuckHuntCommon
             // dog seek duck
             dog = new DogModel();
             dog.Initialize(null, dogRunSpace, 0);
-            dog.StartPilot(dogRunSpace);
+            dog.StartPilot();
         }
 
         int flycount = 0;
@@ -984,17 +982,23 @@ namespace DuckHuntCommon
                         i++;
                     }
                 }
-                GameRound gameround = new GameRound();
-                gameround.deadDuck = deadcount;
-                gameround.shootername = "pennerz";
-                gameRounds.Add(gameround);
 
                 if (finished)
                 {
-                    phase = GAME_PHASE.DOG_SHOW;
-                    dog.ShowDog(deadcount);
+                    //phase = GAME_PHASE.DOG_SHOW;
+                    //dog.ShowDog(deadcount);
+                    NewDuck();
+                    if (duckList.Count > 0)
+                    {
+                        phase = GAME_PHASE.DUCK_FLY;
+                    }
+                    else
+                    {
+                        phase = GAME_PHASE.OVER;
+                    }
                 }
             }
+            /* will not let dog show
             else if (phase == GAME_PHASE.DOG_SHOW)
             {
                 dog.Update(gametime);
@@ -1012,6 +1016,7 @@ namespace DuckHuntCommon
                     round++;
                 }
             }
+            */
         }
 
         Vector2 oldshootposition = Vector2.Zero;

@@ -31,8 +31,8 @@ namespace DuckHuntCommon
         void Update(GameTime gameTime);
 
         List<ResourceItem> GetResourceList();
-        //Vector2 GetAbsolutePosition();  // position is the center of the object based on the parent object
-        Vector2 GetAbsolutePosition(); // the lefttop cornor
+
+        Vector2 GetAbsolutePosition(); // the lefttop cornor based on the parent object
         Rectangle GetSpace();   // space is the rect the object may cover, the lefttop is Zero
         float GetSacle();       // scale is the scale to scale textures 
 
@@ -48,7 +48,6 @@ namespace DuckHuntCommon
         // assist function, improve performance
         ViewObject GetViewObject();
         void SetViewObject(ViewObject viewObject);
-
     }
 
     class ViewItem
@@ -532,144 +531,32 @@ namespace DuckHuntCommon
     class SkyModel : ModelObject
     {
         ModelObject parent = null;
-        string texturesPath = "Graphics\\sky";
-        float Depth
-        {
-            get { return 1.0F; }
-        }
-
-        // Animation representing the player
-        List<AnimationInfo> AnimationTexturesList
-        {
-            get
-            {
-                List<AnimationInfo> anationInfoList;
-                anationInfoList = new List<AnimationInfo>();
-                AnimationInfo animationInfo = new AnimationInfo();
-                animationInfo.animation = false;
-                animationInfo.frameCount = 1;
-                animationInfo.frameWidth = animationInfo.frameHeight = 0;
-                anationInfoList.Add(animationInfo);
-                return anationInfoList;
-            }
-        }
-
-        Vector2 relativePos;
-        public void Initialize(ModelObject parent, Rectangle rect, int seed)
-        {
-            parent = null;
-            space = rect;
-            relativePos.X = rect.Left;
-            relativePos.Y = rect.Top;
-            space.Offset(-space.Left, -space.Y);
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            // no animation
-        }
-
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.SKY;
-        }
-
-        public List<ResourceItem> GetResourceList()
-        {
-            //
-            List<ResourceItem> resourceList = new List<ResourceItem>();
-            ResourceItem resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_2";
-            resourceList.Add(resourceItm);
-            return resourceList;
-        }
-
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return AnimationTexturesList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return 0;
-        }
-
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
-
-        Rectangle space;
-
-        public Vector2 GetAbsolutePosition()
-        {
-            Vector2 absPos = relativePos;
-            if (parent!=null)
-            {
-                absPos += parent.GetAbsolutePosition();
-            }
-            return absPos;
-        }
-        public Rectangle GetSpace()
-        {
-            return space;
-        }
-        public float GetSacle()
-        {
-            return 1.0f;
-        }
-
-        public ModelObject GetParentObject()
-        {
-            return null;
-        }
-
-
-        public List<ModelObject> GetChildrenObjects()
-        {
-            return null;
-        }
-
         ViewObject viewObject;
-        public ViewObject GetViewObject()
-        {
-            return viewObject;
-        }
-        public void SetViewObject(ViewObject viewObject1)
-        {
-            viewObject = viewObject1;
-        }
-    }
-
-
-
-    class GrassMountainModel : ModelObject
-    {
-        ModelObject parent = null;
-        float Depth
-        {
-            get { return 1.0F; }
-        }
-
-        // Animation representing the player
-        List<AnimationInfo> AnimationTexturesList
-        {
-            get
-            {
-                List<AnimationInfo> anationInfoList;
-                anationInfoList = new List<AnimationInfo>();
-                AnimationInfo animationInfo = new AnimationInfo();
-                animationInfo.animation = false;
-                animationInfo.frameCount = 1;
-                animationInfo.frameWidth = animationInfo.frameHeight = 0;
-                anationInfoList.Add(animationInfo);
-                return anationInfoList;
-            }
-        }
 
         Vector2 relativePos;
+        Rectangle space;
+
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+
+        public SkyModel()
+        {
+            anationInfoList = new List<AnimationInfo>();
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            anationInfoList.Add(animationInfo);
+        }
+
+
+        // interfaces implementation
+        public ModelType Type()
+        {
+            // sky 
+            return ModelType.SKY;
+        }
+
         public void Initialize(ModelObject parent, Rectangle rect, int seed)
         {
             parent = null;
@@ -684,13 +571,6 @@ namespace DuckHuntCommon
             // no animation
         }
 
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.SKY;
-        }
-
         public List<ResourceItem> GetResourceList()
         {
             //
@@ -702,21 +582,6 @@ namespace DuckHuntCommon
             return resourceList;
         }
 
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return AnimationTexturesList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return 0;
-        }
-
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
-
-        Rectangle space;
 
         public Vector2 GetAbsolutePosition()
         {
@@ -735,6 +600,133 @@ namespace DuckHuntCommon
         {
             return 1.0f;
         }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 1.0f;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+    }
+
+
+
+    class GrassMountainModel : ModelObject
+    {
+        ModelObject parent = null;
+        Vector2 relativePos;
+        Rectangle space;
+        
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+
+
+        public GrassMountainModel()
+        {
+            anationInfoList = new List<AnimationInfo>();
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            anationInfoList.Add(animationInfo);
+        }
+
+        // interfaces implementation
+
+        public ModelType Type()
+        {
+            // sky 
+
+            return ModelType.SKY;
+        }
+
+        public void Initialize(ModelObject parent, Rectangle rect, int seed)
+        {
+            parent = null;
+            space = rect;
+            relativePos.X = rect.Left;
+            relativePos.Y = rect.Top;
+            space.Offset(-space.Left, -space.Y);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // no animation
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\sky_2";
+            resourceList.Add(resourceItm);
+            return resourceList;
+        }
+
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePos;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 1.0f;
+        }
+
+
 
         public ModelObject GetParentObject()
         {
@@ -764,44 +756,32 @@ namespace DuckHuntCommon
     class CloudModel : ModelObject
     {
         ModelObject parent = null;
-        float Depth
-        {
-            get { return 0.9F; }
-        }
+        AiPilot pilot;
+        Rectangle space;
 
-        CloudPilot pilot;
+        List<AnimationInfo> anationInfoList;
+        Vector2 relativePosInParent;
 
         public CloudModel()
         {
-            pilot = new CloudPilot();
+            pilot = PilotManager.GetInstance().CreatePilot(PilotType.CLOUD);
+
+            anationInfoList = new List<AnimationInfo>();
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.animation = true;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = 518;
+            animationInfo.frameHeight = 398;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
         }
 
-        // Animation representing the player
-        List<AnimationInfo> AnimationTexturesList
+
+        public ModelType Type()
         {
-            get
-            {
-                List<AnimationInfo> anationInfoList;
-                anationInfoList = new List<AnimationInfo>();
-                AnimationInfo animationInfo = new AnimationInfo();
-                animationInfo.animation = true;
-                animationInfo.frameCount = 1;
-                animationInfo.frameWidth = 518;
-                animationInfo.frameHeight = 398;
-                animationInfo.frameTime = 300;
-                anationInfoList.Add(animationInfo);
-                return anationInfoList;
-            }
+            return ModelType.CLOUD;
         }
 
-        Vector2 relativePosInParent;
-        Vector2 RelativePos
-        {
-            get
-            {
-                return pilot.GetPosition();
-            }
-        }
         public void Initialize(ModelObject parent, Rectangle rect, int seed)
         {
             parent = null;
@@ -818,13 +798,6 @@ namespace DuckHuntCommon
             pilot.Update(gameTime);
         }
 
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.CLOUD;
-        }
-
         public List<ResourceItem> GetResourceList()
         {
             //
@@ -836,32 +809,16 @@ namespace DuckHuntCommon
             return resourceList;
         }
 
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return AnimationTexturesList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return 0;
-        }
-
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
-
-        Rectangle space;
-
         public Vector2 GetAbsolutePosition()
         {
-            Vector2 absPos = RelativePos;
+            Vector2 absPos = pilot.GetPosition();
             absPos += relativePosInParent;
             if (parent != null)
             {
                 absPos += parent.GetAbsolutePosition();
             }
-            absPos.X -= AnimationTexturesList[0].frameWidth / 2;
-            absPos.Y -= AnimationTexturesList[0].frameHeight / 2;
+            absPos.X -= anationInfoList[0].frameWidth / 2;
+            absPos.Y -= anationInfoList[0].frameHeight / 2;
 
             return absPos;
         }
@@ -873,6 +830,22 @@ namespace DuckHuntCommon
         {
             return 0.5f;
         }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.9f;
+        }
+
 
         public ModelObject GetParentObject()
         {
@@ -902,31 +875,31 @@ namespace DuckHuntCommon
     class GrassModel : ModelObject
     {
         ModelObject parent = null;
-        float Depth
-        {
-            get { return 0.5F; }
-        }
+        Vector2 relativePos;
+        Rectangle space;
 
         // Animation representing the player
-        List<AnimationInfo> AnimationTexturesList
+        List<AnimationInfo> anationInfoList;
+
+
+        public GrassModel()
         {
-            get
-            {
-                List<AnimationInfo> anationInfoList;
-                anationInfoList = new List<AnimationInfo>();
-                AnimationInfo animationInfo = new AnimationInfo();
-                animationInfo.animation = false;
-                animationInfo.frameCount = 1;
-                animationInfo.frameWidth = 1600; //1600; 
-                animationInfo.frameHeight = 900; // 900;
-                animationInfo.frameTime = 500;
-                anationInfoList.Add(animationInfo);
-                return anationInfoList;
-            }
+            anationInfoList = new List<AnimationInfo>();
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = 1600; //1600; 
+            animationInfo.frameHeight = 900; // 900;
+            animationInfo.frameTime = 500;
+            anationInfoList.Add(animationInfo);
+        }
+
+        public ModelType Type()
+        {
+            return ModelType.GRASS;
         }
 
 
-        Vector2 relativePos;
         public void Initialize(ModelObject parent, Rectangle rect, int seed)
         {
             parent = null;
@@ -941,12 +914,6 @@ namespace DuckHuntCommon
         {
         }
 
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.GRASS;
-        }
 
         public List<ResourceItem> GetResourceList()
         {
@@ -958,21 +925,7 @@ namespace DuckHuntCommon
             resourceList.Add(resourceItm);
             return resourceList;
         }
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return AnimationTexturesList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return 0;
-        }
 
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
-
-        Rectangle space;
         public Vector2 GetAbsolutePosition()
         {
             Vector2 absPos = relativePos;
@@ -990,6 +943,20 @@ namespace DuckHuntCommon
         public float GetSacle()
         {
             return 1.0f;
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.5F;
         }
 
         public ModelObject GetParentObject()
@@ -1017,31 +984,30 @@ namespace DuckHuntCommon
     class ForegroundGrassModel : ModelObject
     {
         ModelObject parent = null;
-        float Depth
-        {
-            get { return 0.2F; }
-        }
+        Vector2 relativePos;
+        Rectangle space;
+
 
         // Animation representing the player
-        List<AnimationInfo> AnimationTexturesList
+        List<AnimationInfo> anationInfoList;
+
+        public ForegroundGrassModel()
         {
-            get
-            {
-                List<AnimationInfo> anationInfoList;
-                anationInfoList = new List<AnimationInfo>();
-                AnimationInfo animationInfo = new AnimationInfo();
-                animationInfo.animation = false;
-                animationInfo.frameCount = 1;
-                animationInfo.frameWidth = 1600; //1600; 
-                animationInfo.frameHeight = 900; // 900;
-                animationInfo.frameTime = 500;
-                anationInfoList.Add(animationInfo);
-                return anationInfoList;
-            }
+            anationInfoList = new List<AnimationInfo>();
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = 1600; //1600; 
+            animationInfo.frameHeight = 900; // 900;
+            animationInfo.frameTime = 500;
+            anationInfoList.Add(animationInfo);
         }
 
+        public ModelType Type()
+        {
+            return ModelType.FORGROUND;
+        }
 
-        Vector2 relativePos;
         public void Initialize(ModelObject parent, Rectangle rect, int seed)
         {
             parent = null;
@@ -1056,12 +1022,6 @@ namespace DuckHuntCommon
         {
         }
 
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.FORGROUND;
-        }
 
         public List<ResourceItem> GetResourceList()
         {
@@ -1073,21 +1033,7 @@ namespace DuckHuntCommon
             resourceList.Add(resourceItm);
             return resourceList;
         }
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return AnimationTexturesList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return 0;
-        }
 
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
-
-        Rectangle space;
         public Vector2 GetAbsolutePosition()
         {
             Vector2 absPos = relativePos;
@@ -1105,6 +1051,21 @@ namespace DuckHuntCommon
         public float GetSacle()
         {
             return 1.0f;
+        }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.2F;
         }
 
         public ModelObject GetParentObject()
@@ -1143,6 +1104,8 @@ namespace DuckHuntCommon
 
     class MenuItemModel : ModelObject
     {
+        ModelObject parent = null;
+
         // Animation representing the player
         List<AnimationInfo> anationInfoList;
         int elapsedTime = 0;
@@ -1150,20 +1113,13 @@ namespace DuckHuntCommon
         List<Vector2> boundingTrigle1;
         List<Vector2> boundingTrigle2;
 
+        Rectangle _itemspace = new Rectangle(0, 0, 482, 114);
+
         float scale = 1.0f;
         float depth = 0.6f;
-        float Depth
-        {
-            get { return depth; }
-        }
 
-        List<AnimationInfo> AnimationTexturesList
-        {
-            get
-            {
-                return anationInfoList;
-            }
-        }
+        bool onHover = false;
+
 
         string content = "test";
         public string Conent
@@ -1178,31 +1134,10 @@ namespace DuckHuntCommon
             }
         }
 
-        bool onHover = false;
-        int AnimationIndex
-        {
-            get
-            {
-                if (onHover)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
 
-        Vector2 postion;
 
-        Vector2 RelativePosition
-        {
-            get
-            {
-                return postion;
-            }
-        }
+        Vector2 relativePostionInParent;
+
 
         public MenuItemModel()
         {
@@ -1232,6 +1167,48 @@ namespace DuckHuntCommon
 
         }
 
+
+
+
+        // interfaces implementation
+        public ModelType Type()
+        {
+            return ModelType.MENUITEM;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        {
+            parent = null;
+            relativePostionInParent.X = itemSpace.Left;
+            relativePostionInParent.Y = itemSpace.Top;
+
+            _itemspace = itemSpace;
+            _itemspace.X -= (int)relativePostionInParent.X;
+            itemSpace.Y -= (int)relativePostionInParent.Y;
+            //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
+
+            Vector2 pos1 = new Vector2();
+            pos1.X = GetAbsolutePosition().X + 12;
+            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            boundingTrigle1.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + 160;
+            pos1.Y = GetAbsolutePosition().Y + 12;
+            boundingTrigle1.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
+            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            boundingTrigle1.Add(pos1);
+
+            pos1.X = GetAbsolutePosition().X + 160;
+            pos1.Y = GetAbsolutePosition().Y + 12;
+            boundingTrigle2.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
+            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            boundingTrigle2.Add(pos1);
+            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 10;
+            pos1.Y = GetAbsolutePosition().Y + 55;
+            boundingTrigle2.Add(pos1);
+        }
+
         public List<ResourceItem> GetResourceList()
         {
             //
@@ -1259,46 +1236,78 @@ namespace DuckHuntCommon
             return resourceList;
         }
 
-        Rectangle _itemspace = new Rectangle(0, 0, 482,114);
 
-        ModelObject parent = null;
-        public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        public Vector2 GetAbsolutePosition()
         {
-            parent = null;
-            postion.X = itemSpace.Left;
-            postion.Y = itemSpace.Top;
+            Vector2 absPos = relativePostionInParent;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+            // pilot return center postion, adjust it to left top conner
+            absPos.X -= 105 / 2;
+            absPos.Y -= 102 / 2;
 
-            _itemspace = itemSpace;
-            _itemspace.X -= (int)postion.X;
-            itemSpace.Y -= (int)postion.Y;
-            //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
-
-            Vector2 pos1 = new Vector2();
-            pos1.X = GetAbsolutePosition().X+12;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
-            boundingTrigle1.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + 160;
-            pos1.Y = GetAbsolutePosition().Y + 12;
-            boundingTrigle1.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width-80;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
-            boundingTrigle1.Add(pos1);
-
-            pos1.X = GetAbsolutePosition().X + 160;
-            pos1.Y = GetAbsolutePosition().Y + 12;
-            boundingTrigle2.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
-            boundingTrigle2.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 10;
-            pos1.Y = GetAbsolutePosition().Y + 55;
-            boundingTrigle2.Add(pos1);
+            return absPos;
         }
+        public Rectangle GetSpace()
+        {
+            return _itemspace;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
 
         public void Update(GameTime gameTime)
         {
 
 
+        }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        public int GetCurrentAnimationIndex()
+        {
+
+                if (onHover)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
         }
 
         public bool Hit(Vector2 absposition)
@@ -1328,141 +1337,39 @@ namespace DuckHuntCommon
              */
         }
 
-        public ModelType Type()
-        {
-            return ModelType.MENUITEM;
-        }
-
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return AnimationTexturesList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return AnimationIndex;
-        }
-
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
 
 
-
-        public Vector2 GetAbsolutePosition()
-        {
-            Vector2 absPos = RelativePosition;
-            if (parent != null)
-            {
-                absPos += parent.GetAbsolutePosition();
-            }
-            // pilot return center postion, adjust it to left top conner
-            absPos.X -= 105 / 2;
-            absPos.Y -= 102 / 2;
-
-            return absPos;
-        }
-        public Rectangle GetSpace()
-        {
-            return _itemspace;
-        }
-        public float GetSacle()
-        {
-            return 1.0f;
-        }
-
-        public ModelObject GetParentObject()
-        {
-            return null;
-        }
-        public List<ModelObject> GetChildrenObjects()
-        {
-            return null;
-        }
-
-        ViewObject viewObject;
-        public ViewObject GetViewObject()
-        {
-            return viewObject;
-        }
-        public void SetViewObject(ViewObject viewObject1)
-        {
-            viewObject = viewObject1;
-        }
     }
 
 
     class DuckModel : ModelObject
     {
+        AiPilot flyduckPilot;
+        AiPilot goneduckPilot;
+
+        public bool Active = true;
+        public bool dead = false;
+
+        public bool Gone = false;
+
+        // Amount of hit points that player has
+        public int Health;
+
+        int deadstopcount = 0;
+
+        List<Vector2> boundingTrigle1;
+        List<Vector2> boundingTrigle2;
+
+        Rectangle duckspace;
+
+        int randomseed = 0;
+        ModelObject parent = null;
         // Animation representing the player
         List<AnimationInfo> anationInfoList;
         int elapsedTime = 0;
 
         float scale = 1.0f;
         float depth = 0.6f;
-        float Depth
-        {
-            get { return depth; }
-        }
-
-        List<AnimationInfo> AnimationTexturesList
-        {
-            get
-            {
-                return anationInfoList;
-            }
-        }
-
-        int AnimationIndex
-        {
-            get
-            {
-                if(dead)
-                {
-                    if (deadstopcount < 10)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        return 2;
-                    }
-                }
-                else
-                {
-                    if (flyduckPilot.GetHorizationDirection() == Direction.LEFT)
-                    {
-                        if (flyduckPilot.GetZDirection() ==  Direction.IN)
-                        {
-                            return 0;
-                        }
-                        else if (flyduckPilot.GetZDirection() == Direction.OUT)
-                        {
-                            return 0;
-                        }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
-                    else
-                    {
-                        if ( flyduckPilot.GetZDirection() == Direction.IN)
-                        {
-                            return 3;
-                        }
-                        else if (flyduckPilot.GetZDirection() == Direction.OUT)
-                        {
-                            return 3;
-                        }
-                        else 
-                        {
-                            return 3;
-                        }
-                    }
-                }
-            }
-        }   
 
 
         Vector2 RelativePosition
@@ -1480,23 +1387,6 @@ namespace DuckHuntCommon
                     return goneduckPilot.GetPosition();
             }
         }
-
-        AiPilot flyduckPilot;
-        AiPilot goneduckPilot;
-
-        public bool Active = true;
-        public bool dead = false;
-
-        public bool Gone = false;
-
-        // Amount of hit points that player has
-        public int Health;
-
-        int deadstopcount = 0;
-
-        List<Vector2> boundingTrigle1;
-        List<Vector2> boundingTrigle2;
-
 
 
         public DuckModel()
@@ -1543,9 +1433,55 @@ namespace DuckHuntCommon
 
             boundingTrigle1 = new List<Vector2>();
             boundingTrigle2 = new List<Vector2>();
-
-
         }
+
+
+
+
+        public ModelType Type()
+        {
+            return ModelType.DUCK;
+        }
+
+
+        public void Initialize(ModelObject parent1, Rectangle duckSpace, int seed)
+        {
+            parent = null;
+
+            // Set the player to be active
+            Active = true;
+
+            // Set the player health
+            Health = 100;
+            randomseed = seed;
+            Random radom = new Random(seed);
+
+            duckspace = duckSpace;
+
+            Vector2 pos1 = new Vector2();
+            pos1.X = 16;
+            pos1.Y = 60;
+            boundingTrigle1.Add(pos1);
+            pos1.X = 26;
+            pos1.Y = 19;
+            boundingTrigle1.Add(pos1);
+            pos1.X = 86;
+            pos1.Y = 40;
+            boundingTrigle1.Add(pos1);
+
+            pos1.X = 26;
+            pos1.Y = 19;
+            boundingTrigle2.Add(pos1);
+            pos1.X = 86;
+            pos1.Y = 40;
+            boundingTrigle2.Add(pos1);
+
+            pos1.X = 75;
+            pos1.Y = 81;
+            boundingTrigle2.Add(pos1);
+        }
+
+
 
         public List<ResourceItem> GetResourceList()
         {
@@ -1573,6 +1509,163 @@ namespace DuckHuntCommon
 
             return resourceList;
         }
+
+
+        //Rectangle space;
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = RelativePosition;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+            // pilot return center postion, adjust it to left top conner
+            absPos.X -= 105 / 2;
+            absPos.Y -= 102 / 2;
+
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            return duckspace;
+        }
+        public float GetSacle()
+        {
+            if (Active)
+            {
+                // get depth, calculate the scale
+
+                //scale = autoPilot.scale;
+                scale = 1 - flyduckPilot.GetDepth() * 1.0f / 100;
+            }
+
+            return scale;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            if (Active)
+            {
+                flyduckPilot.Update(gameTime);
+
+                // check if it need to go
+                elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+                if (elapsedTime > 1000 * 10)
+                {
+                    Active = false;
+                    goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKFLYAWAY, flyduckPilot.GetPosition());
+                }
+
+            }
+            else
+            {
+                if (deadstopcount < 10)
+                {
+                    deadstopcount++;
+                }
+                goneduckPilot.Update(gameTime);
+                if (goneduckPilot.GetPosition().Y > duckspace.Height ||
+                    goneduckPilot.GetPosition().Y < 0 - anationInfoList[GetCurrentAnimationIndex()].frameHeight)
+                {
+                    Gone = true;
+                }
+            }
+
+        }
+
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {  
+            if(dead)
+            {
+                if (deadstopcount < 10)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 2;
+                }
+            }
+            else
+            {
+                if (flyduckPilot.GetHorizationDirection() == Direction.LEFT)
+                {
+                    if (flyduckPilot.GetZDirection() ==  Direction.IN)
+                    {
+                        return 0;
+                    }
+                    else if (flyduckPilot.GetZDirection() == Direction.OUT)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    if ( flyduckPilot.GetZDirection() == Direction.IN)
+                    {
+                        return 3;
+                    }
+                    else if (flyduckPilot.GetZDirection() == Direction.OUT)
+                    {
+                        return 3;
+                    }
+                    else 
+                    {
+                        return 3;
+                    }
+                }
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+
+
+        /// <summary>
+        ///  specific functions
+        /// </summary>
+
+        public void StartPilot()
+        {
+            // Set the starting position of the player around the middle of the screen and to the back
+
+            flyduckPilot.Initialize(duckspace, randomseed);
+        }
+
 
         public void Shoot(BulletModel bullet)
         {
@@ -1629,11 +1722,11 @@ namespace DuckHuntCommon
 
 
             //
-            duckCenter.X += anationInfoList[AnimationIndex].frameWidth / 2 ;
-            duckCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2 ;
+            duckCenter.X += anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            duckCenter.Y += anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
 
             Vector2 subpos = bulletCenter - duckCenter;
-            if (subpos.Length() < 40*scale)
+            if (subpos.Length() < 40 * scale)
             {
                 Active = false;
                 dead = true;
@@ -1645,167 +1738,31 @@ namespace DuckHuntCommon
 
         }
 
-        Rectangle duckspace;
-
-        int randomseed = 0;
-        ModelObject parent = null;
-        public void Initialize(ModelObject parent1, Rectangle duckSpace, int seed)
-        {
-            parent = null;
-
-            // Set the player to be active
-            Active = true;
-
-            // Set the player health
-            Health = 100;
-            randomseed = seed;
-            Random radom = new Random(seed);
-
-            duckspace = duckSpace;
-
-
-
-            Vector2 pos1 = new Vector2();
-            pos1.X = 16;
-            pos1.Y = 60;
-            boundingTrigle1.Add(pos1);
-            pos1.X = 26;
-            pos1.Y = 19;
-            boundingTrigle1.Add(pos1);
-            pos1.X = 86;
-            pos1.Y = 40;
-            boundingTrigle1.Add(pos1);
-
-            pos1.X = 26;
-            pos1.Y = 19;
-            boundingTrigle2.Add(pos1);
-            pos1.X = 86;
-            pos1.Y = 40;
-            boundingTrigle2.Add(pos1);
-
-            pos1.X = 75;
-            pos1.Y = 81;
-            boundingTrigle2.Add(pos1);
-
-        }
-
-        public void StartPilot()
-        {
-            // Set the starting position of the player around the middle of the screen and to the back
-
-            flyduckPilot.Initialize(duckspace, randomseed);
-        }
-
-
-        public void Update(GameTime gameTime)
-        {
-            if (Active)
-            {
-                flyduckPilot.Update(gameTime);
-
-                // check if it need to go
-                elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
-                if (elapsedTime > 1000 * 10)
-                {
-                    Active = false;
-                    goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKFLYAWAY, flyduckPilot.GetPosition());
-                }
-
-            }
-            else
-            {
-                if (deadstopcount < 10)
-                {
-                    deadstopcount++;
-                }
-                goneduckPilot.Update(gameTime);
-                if (goneduckPilot.GetPosition().Y > duckspace.Height ||
-                    goneduckPilot.GetPosition().Y < 0 - anationInfoList[AnimationIndex].frameHeight)
-                {
-                    Gone = true;
-                }
-            }
-
-        }
-
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.DUCK;
-        }
-
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return AnimationTexturesList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return AnimationIndex;
-        }
-
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
-
-
-        //Rectangle space;
-
-        public Vector2 GetAbsolutePosition()
-        {
-            Vector2 absPos = RelativePosition;
-            if (parent != null)
-            {
-                absPos += parent.GetAbsolutePosition();
-            }
-            // pilot return center postion, adjust it to left top conner
-            absPos.X -= 105 / 2;
-            absPos.Y -= 102 / 2;
-
-            return absPos;
-        }
-        public Rectangle GetSpace()
-        {
-            return duckspace;
-        }
-        public float GetSacle()
-        {
-            if (Active)
-            {
-                // get depth, calculate the scale
-
-                //scale = autoPilot.scale;
-                scale = 1 - flyduckPilot.GetDepth() * 1.0f/100; 
-            }
-
-            return scale;
-        }
-
-        public ModelObject GetParentObject()
-        {
-            return null;
-        }
-        public List<ModelObject> GetChildrenObjects()
-        {
-            return null;
-        }
-
-        ViewObject viewObject;
-        public ViewObject GetViewObject()
-        {
-            return viewObject;
-        }
-        public void SetViewObject(ViewObject viewObject1)
-        {
-            viewObject = viewObject1;
-        }
     }
 
 
 
     class DogModel : ModelObject
     {
+        //DogPilot pilot;
+        AiPilot seekPilot;
+
+        int foundmaxstoptime = 50;
+        int midseekmaxstoptime = 100;
+        int midseekstopcount = 0;
+        int foundstopcount = 0;
+
+        //DogJumpPilot jumpPilot;
+        AiPilot jumpPilot;
+        bool jumpup = true;
+
+        AiPilot showPilot;
+        //DogShowPilot showPilot;
+
+        enum DOGSTATE { FindingDuck, Jumping, Showing };
+        DOGSTATE state = DOGSTATE.FindingDuck;
+
+
         // Animation representing the player
         public string animationTexturesPath = "Graphics\\dogs";
 
@@ -1824,65 +1781,8 @@ namespace DuckHuntCommon
         int deadDuck = 0;
 
 
-        int AnimationIndex
-        {
-            get
-            {
-                if (state == DOGSTATE.FindingDuck)
-                {
-                    if (midseekstopcount > 0 && midseekstopcount < midseekmaxstoptime)
-                    {
-                        // stop animation
-                        return 1;
-                    }
-                    else if (foundstopcount > 0)
-                    {
-                        return 2;
-                    }
-                    else
-                    {
-                        return 0;
-                    }
-                }
-                else if (state == DOGSTATE.Jumping)
-                {
-                    if (jumpup)
-                    {
-                        return 3;
-                    }
-                    else
-                    {
-                        return 4;
-                    }
-                }
-                else if (state == DOGSTATE.Showing)
-                {
-                    if (deadDuck == 0)
-                    {
-                        // laughing
-                        return 5;
-                    }
-                    else if (deadDuck == 1)
-                    {
-                        // show 1
-                        return 6;
-                    }
-                    else if (deadDuck == 2)
-                    {
-                        return 6;
-                    }
 
-                }
-                return 0;
-            }
-        } 
-
-        float Depth
-        {
-            get { return depth; }
-        }
-
-        Vector2 Position
+        Vector2 RelativePosition
         {
             get
             {
@@ -1905,24 +1805,6 @@ namespace DuckHuntCommon
                 }
             }
         }
-
-        //DogPilot pilot;
-        AiPilot seekPilot;
-
-        int foundmaxstoptime = 50;
-        int midseekmaxstoptime = 100;
-        int midseekstopcount = 0;
-        int foundstopcount = 0;
-
-        //DogJumpPilot jumpPilot;
-        AiPilot jumpPilot;
-        bool jumpup = true;
-
-        AiPilot showPilot;
-        //DogShowPilot showPilot;
-
-        enum DOGSTATE { FindingDuck, Jumping, Showing };
-        DOGSTATE state = DOGSTATE.FindingDuck;
 
 
 
@@ -2000,6 +1882,18 @@ namespace DuckHuntCommon
         }
 
 
+
+        public ModelType Type()
+        {
+            return ModelType.DOG;
+        }
+
+
+        public void Initialize(ModelObject parent1, Rectangle dogSpace, int seed)
+        {
+            dogspace = dogSpace;
+        }
+
         public List<ResourceItem> GetResourceList()
         {
             //
@@ -2047,29 +1941,26 @@ namespace DuckHuntCommon
             return resourceList;
         }
 
-        public void ShowDog(int deadduck)
+        public Vector2 GetAbsolutePosition()
         {
-            state = DOGSTATE.Showing;
-            showPilot = PilotManager.GetInstance().CreatePilot(PilotType.DOGSHOW, seekPilot.GetPosition());
-            showPilot.Initialize(dogspace, 0);
-            deadDuck = deadduck;
-
-            gone = false;
+            Vector2 abspos = RelativePosition;
+            // adjust from lefttop conner to center
+            abspos.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            abspos.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+            return abspos;
         }
 
-        ModelObject parent = null;
-
-        public void Initialize(ModelObject parent1, Rectangle dogSpace, int seed)
+        public Rectangle GetSpace()
         {
-            parent = null;
-            //dogspace = dogSpace;
+            Rectangle space = new Rectangle(0, 0
+            , anationInfoList[GetCurrentAnimationIndex()].frameWidth
+            , anationInfoList[GetCurrentAnimationIndex()].frameHeight);
+
+            return space;
         }
-
-        public void StartPilot(Rectangle dogrunspace)
+        public float GetSacle()
         {
-            // Set the starting position of the player around the middle of the screen and to the back
-            dogspace = dogrunspace;
-            seekPilot.Initialize(dogrunspace, 0);
+            return 1.0f;
         }
 
 
@@ -2135,48 +2026,67 @@ namespace DuckHuntCommon
         }
 
 
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.DOG;
-        }
-
         public List<AnimationInfo> GetAnimationInfoList()
         {
             return anationInfoList;
         }
+
         public int GetCurrentAnimationIndex()
         {
-            return AnimationIndex;
+            if (state == DOGSTATE.FindingDuck)
+            {
+                if (midseekstopcount > 0 && midseekstopcount < midseekmaxstoptime)
+                {
+                    // stop animation
+                    return 1;
+                }
+                else if (foundstopcount > 0)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else if (state == DOGSTATE.Jumping)
+            {
+                if (jumpup)
+                {
+                    return 3;
+                }
+                else
+                {
+                    return 4;
+                }
+            }
+            else if (state == DOGSTATE.Showing)
+            {
+                if (deadDuck == 0)
+                {
+                    // laughing
+                    return 5;
+                }
+                else if (deadDuck == 1)
+                {
+                    // show 1
+                    return 6;
+                }
+                else if (deadDuck == 2)
+                {
+                    return 6;
+                }
+
+            }
+            return 0;
         }
 
         public float GetAnimationDepth()
         {
-            return Depth;
+            return depth;
         }
 
-        public Vector2 GetAbsolutePosition()
-        {
-            Vector2 abspos = Position;
-            // adjust from lefttop conner to center
-            abspos.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
-            abspos.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
-            return abspos;
-        }
-        public Rectangle GetSpace()
-        {
-            Rectangle space = new Rectangle(0, 0
-            , anationInfoList[AnimationIndex].frameWidth
-            , anationInfoList[AnimationIndex].frameHeight);
-
-            return space;
-        }
-        public float GetSacle()
-        {
-            return 1.0f;
-        }
-
+ 
         public ModelObject GetParentObject()
         {
             return null;
@@ -2196,18 +2106,43 @@ namespace DuckHuntCommon
         {
             viewObject = viewObject1;
         }
-    }
 
+
+
+        public void ShowDog(int deadduck)
+        {
+            state = DOGSTATE.Showing;
+            showPilot = PilotManager.GetInstance().CreatePilot(PilotType.DOGSHOW, seekPilot.GetPosition());
+            showPilot.Initialize(dogspace, 0);
+            deadDuck = deadduck;
+
+            gone = false;
+        }
+
+        public void StartPilot()
+        {
+            // Set the starting position of the player around the middle of the screen and to the back
+            //dogspace = dogrunspace;
+            seekPilot.Initialize(dogspace, 0);
+        }
+
+    }
 
 
 
     class BulletModel : ModelObject
     {
+        ModelObject parent = null;
+        Vector2 relativePositionInParent = Vector2.Zero;
+        Vector2 targetposition = Vector2.Zero;
+        List<DuckModel> shootduckList;
+
         // Animation representing the player
         List<AnimationInfo> anationInfoList;
         Rectangle bulletspace;
 
         bool gone = false;
+        float scale = 1.0f;
 
         public bool Gone
         {
@@ -2216,30 +2151,6 @@ namespace DuckHuntCommon
 
         float depth = 0.6F;
 
-        int AnimationIndex
-        {
-            get
-            {
-                return 0;
-            }
-        }
-
-        float Depth
-        {
-            get { return depth; }
-        }
-
-        Vector2 Position
-        {
-            get
-            {
-                return position;
-            }
-        }
-
-        Vector2 position = Vector2.Zero;
-        Vector2 targetposition = Vector2.Zero;
-        List<DuckModel> shootduckList;
 
 
         public BulletModel()
@@ -2263,6 +2174,7 @@ namespace DuckHuntCommon
 
             shootduckList = new List<DuckModel>();
         }
+
         public BulletModel(Vector2 position1)
         {
             //
@@ -2277,9 +2189,9 @@ namespace DuckHuntCommon
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
-            position = position1;
-            position.X -= animationInfo.frameWidth / 2;
-            position.Y -= animationInfo.frameHeight / 2;
+            relativePositionInParent = position1;
+            relativePositionInParent.X -= animationInfo.frameWidth / 2;
+            relativePositionInParent.Y -= animationInfo.frameHeight / 2;
             bulletspace.X = 0;
             bulletspace.Y = 0;
             bulletspace.Width = animationInfo.frameWidth;
@@ -2291,30 +2203,15 @@ namespace DuckHuntCommon
         float deltax = 40f; //40f;
         float deltay = -20f; //-20f;
 
-        public List<DuckModel> GetShootDucks()
-        {
-            if (shootduckList.Count > 0)
-            {
-                return shootduckList;
-            }
 
-            return null;
+
+        public ModelType Type()
+        {
+            // sky 
+
+            return ModelType.BULLET;
         }
 
-        public void SetTarget(DuckModel duck)
-        {
-            if (duck != null)
-            {
-                shootduckList.Add(duck);
-                depth = duck.GetAnimationDepth() + 0.1f;
-                //position = duck.GetAbsolutePosition();
-                targetposition = position;
-                position.X = position.X - 20*6 ;
-                position.Y = position.Y + 10*6 ;
-            }   
-        }
-
-        ModelObject parent = null;
 
         public void Initialize(ModelObject parent1, Rectangle space, int seed)
         {
@@ -2322,33 +2219,32 @@ namespace DuckHuntCommon
 
             bulletspace = new Rectangle();
             bulletspace = space;
-            position.X = bulletspace.Left;
-            position.Y = bulletspace.Y;
+            relativePositionInParent.X = bulletspace.Left;
+            relativePositionInParent.Y = bulletspace.Y;
 
             bulletspace.X = 0;
             bulletspace.Y = 0;
-            bulletspace.Width = anationInfoList[AnimationIndex].frameWidth;
-            bulletspace.Height = anationInfoList[AnimationIndex].frameHeight;
+            bulletspace.Width = anationInfoList[GetCurrentAnimationIndex()].frameWidth;
+            bulletspace.Height = anationInfoList[GetCurrentAnimationIndex()].frameHeight;
 
             // Set the starting position of the player around the middle of the screen and to the back
         }
 
-        float scale = 1.0f;
 
         public void Update(GameTime gameTime)
         {
             if (shootduckList.Count > 0)
             {
 
-                if (position.X < targetposition.X)
+                if (relativePositionInParent.X < targetposition.X)
                 {
-                    position.X += deltax;
+                    relativePositionInParent.X += deltax;
                 }
-                if (position.Y > targetposition.Y)
+                if (relativePositionInParent.Y > targetposition.Y)
                 {
-                    position.Y += deltay;
+                    relativePositionInParent.Y += deltay;
                 }
-                if (position.X >= targetposition.X && position.Y <= targetposition.Y)
+                if (relativePositionInParent.X >= targetposition.X && relativePositionInParent.Y <= targetposition.Y)
                 {
                     scale = 0;
                 }
@@ -2370,16 +2266,6 @@ namespace DuckHuntCommon
             }
         }
 
-
-        public ModelType Type()
-        {
-            // sky 
-
-            return ModelType.BULLET;
-        }
-
-
-
         public List<ResourceItem> GetResourceList()
         {
             //
@@ -2398,28 +2284,18 @@ namespace DuckHuntCommon
         }
 
 
-        public List<AnimationInfo> GetAnimationInfoList()
-        {
-            return anationInfoList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return AnimationIndex;
-        }
-
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
-
-
         public Vector2 GetAbsolutePosition()
         {
+            Vector2 abspos = relativePositionInParent;
+            if (parent != null)
+            {
+                abspos += parent.GetAbsolutePosition();
+            }
             if (shootduckList.Count > 0)
             {
                 //return shootduck.GetAbsolutePosition();
             }
-            return Position;
+            return abspos;
         }
         public Rectangle GetSpace()
         {
@@ -2429,6 +2305,22 @@ namespace DuckHuntCommon
         {
             return scale;
         }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
 
         public ModelObject GetParentObject()
         {
@@ -2447,6 +2339,31 @@ namespace DuckHuntCommon
         public void SetViewObject(ViewObject viewObject1)
         {
             viewObject = viewObject1;
+        }
+
+
+        // specific functions
+        public List<DuckModel> GetShootDucks()
+        {
+            if (shootduckList.Count > 0)
+            {
+                return shootduckList;
+            }
+
+            return null;
+        }
+
+        public void SetTarget(DuckModel duck)
+        {
+            if (duck != null)
+            {
+                shootduckList.Add(duck);
+                depth = duck.GetAnimationDepth() + 0.1f;
+                //position = duck.GetAbsolutePosition();
+                targetposition = relativePositionInParent;
+                relativePositionInParent.X = relativePositionInParent.X - 20 * 6;
+                relativePositionInParent.Y = relativePositionInParent.Y + 10 * 6;
+            }
         }
     }
 
@@ -2519,6 +2436,10 @@ namespace DuckHuntCommon
             return resourceList;
         }
 
+        public ModelType Type()
+        {
+            return ModelType.DUCKICON;
+        }
 
         public void Initialize(ModelObject parent1, Rectangle rect, int seed)
         {
@@ -2560,14 +2481,7 @@ namespace DuckHuntCommon
             space.Height = 19;
 
         }
-        public void Update(GameTime gameTime)
-        {
 
-        }
-        public ModelType Type()
-        {
-            return ModelType.DUCKICON;
-        }
 
         public Vector2 GetAbsolutePosition()
         {
@@ -2588,6 +2502,13 @@ namespace DuckHuntCommon
         {
             return 1.0f;
         }
+
+
+        public void Update(GameTime gameTime)
+        {
+
+        }
+
 
         public List<AnimationInfo> GetAnimationInfoList()
         {
@@ -2646,29 +2567,9 @@ namespace DuckHuntCommon
 
         List<DuckIconModel> duckIcons;
        
-        int AnimationIndex
-        {
-            get
-            {
-                return 0;
-            }
-        }
-
-        float Depth
-        {
-            get { return 0.35f; }
-        }
-
-        Vector2 Position
-        {
-            get
-            {
-                return position;
-            }
-        }
 
         Rectangle space; //indicate the object view range
-        Vector2 position = Vector2.Zero; // no use
+        Vector2 relativePosition = Vector2.Zero; // no use
 
         public HitBoardModel()
         {
@@ -2719,55 +2620,12 @@ namespace DuckHuntCommon
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
-            position = position1;
+            relativePosition = position1;
 
             space.Width = 318;
             space.Height = 63;
 
             duckIcons = new List<DuckIconModel>();
-        }
-      
-
-        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
-        {
-            space = rangespace;
-            position.X = space.Left;
-            position.Y = space.Top;
-            space.Offset(-space.Left, -space.Top);
-        }
-
-        int duckcount = 10;
-        public void LoadDuckIconsModel(int duckcount1)
-        {
-            duckcount = 10;
-            Rectangle duckIconRc = new Rectangle();
-            duckIconRc.X = 90;
-            duckIconRc.Y = 12;
-            for (int i = 0; i < duckcount; i++)
-            {
-                DuckIconModel duckIconModel = new DuckIconModel();
-                duckIconModel.Initialize(this, duckIconRc, 0);
-                duckIcons.Add(duckIconModel);
-                duckIconRc.Offset(22, 0);
-            }
-        }
-
-        public void SetDuckIconsState(int duckIndex, DuckIconModel.DuckIconState state)
-        {
-            if (duckIcons == null || duckIndex >= duckIcons.Count)
-            {
-                return;
-            }
-            DuckIconModel duckIcon = duckIcons[duckIndex];
-            duckIcon.SetState(state);
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            // no update for itself
-
-
-            // update child object
         }
 
 
@@ -2776,23 +2634,24 @@ namespace DuckHuntCommon
             return ModelType.HITBOARD;
         }
 
-        public List<AnimationInfo> GetAnimationInfoList()
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
         {
-            return anationInfoList;
-        }
-        public int GetCurrentAnimationIndex()
-        {
-            return AnimationIndex;
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
         }
 
-        public float GetAnimationDepth()
-        {
-            return Depth;
-        }
 
         public Vector2 GetAbsolutePosition()
         {
-            return Position;
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
         }
 
         public Rectangle GetSpace()
@@ -2803,6 +2662,31 @@ namespace DuckHuntCommon
         {
             return 1;
         }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+
+
+            // update child object
+        }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
 
         public ModelObject GetParentObject()
         {
@@ -2829,6 +2713,34 @@ namespace DuckHuntCommon
         public void SetViewObject(ViewObject viewObject1)
         {
             viewObject = viewObject1;
+        }
+
+
+
+        int duckcount = 10;
+        public void LoadDuckIconsModel(int duckcount1)
+        {
+            duckcount = 10;
+            Rectangle duckIconRc = new Rectangle();
+            duckIconRc.X = 90;
+            duckIconRc.Y = 12;
+            for (int i = 0; i < duckcount; i++)
+            {
+                DuckIconModel duckIconModel = new DuckIconModel();
+                duckIconModel.Initialize(this, duckIconRc, 0);
+                duckIcons.Add(duckIconModel);
+                duckIconRc.Offset(22, 0);
+            }
+        }
+
+        public void SetDuckIconsState(int duckIndex, DuckIconModel.DuckIconState state)
+        {
+            if (duckIcons == null || duckIndex >= duckIcons.Count)
+            {
+                return;
+            }
+            DuckIconModel duckIcon = duckIcons[duckIndex];
+            duckIcon.SetState(state);
         }
     }
 
@@ -2859,17 +2771,11 @@ namespace DuckHuntCommon
         }
 
 
-        public List<ResourceItem> GetResourceList()
+        public ModelType Type()
         {
-            //
-            List<ResourceItem> resourceList = new List<ResourceItem>();
-            ResourceItem resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\bulletIcon";
-            resourceList.Add(resourceItm);
-
-            return resourceList;
+            return ModelType.BULLETICON;
         }
+
         public void Initialize(ModelObject parent1, Rectangle rect, int seed)
         {
             parent = parent1;
@@ -2892,14 +2798,19 @@ namespace DuckHuntCommon
             space.Height = 19;
 
         }
-        public void Update(GameTime gameTime)
-        {
 
-        }
-        public ModelType Type()
+        public List<ResourceItem> GetResourceList()
         {
-            return ModelType.BULLETICON;
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\bulletIcon";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
         }
+
 
         public Vector2 GetAbsolutePosition()
         {
@@ -2919,6 +2830,13 @@ namespace DuckHuntCommon
         {
             return 1.0f;
         }
+
+
+        public void Update(GameTime gameTime)
+        {
+
+        }
+
 
         public List<AnimationInfo> GetAnimationInfoList()
         {
@@ -2959,30 +2877,8 @@ namespace DuckHuntCommon
         // include the background, duck icon/deadduck icon
         List<AnimationInfo> anationInfoList;
         List<BulletIconModel> bulletIcons;
-
-        int AnimationIndex
-        {
-            get
-            {
-                return 0;
-            }
-        }
-
-        float Depth
-        {
-            get { return 0.35f; }
-        }
-
-        Vector2 Position
-        {
-            get
-            {
-                return position;
-            }
-        }
-
         Rectangle space; //indicate the object view range
-        Vector2 position = Vector2.Zero; // no use
+        Vector2 relativePosition = Vector2.Zero; // no use
 
         public BulletBoardModel()
         {
@@ -3006,17 +2902,6 @@ namespace DuckHuntCommon
             bulletIcons = new List<BulletIconModel>();
 
         }
-        public List<ResourceItem> GetResourceList()
-        {
-            //
-            List<ResourceItem> resourceList = new List<ResourceItem>();
-            ResourceItem resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\BulletBoard";
-            resourceList.Add(resourceItm);
-
-            return resourceList;
-        }
 
         public BulletBoardModel(Vector2 position1)
         {
@@ -3032,7 +2917,7 @@ namespace DuckHuntCommon
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
-            position = position1;
+            relativePosition = position1;
 
             space.Width = 318;
             space.Height = 63;
@@ -3044,30 +2929,41 @@ namespace DuckHuntCommon
         public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
         {
             space = rangespace;
-            position.X = space.Left;
-            position.Y = space.Top;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
             space.Offset(-space.Left, -space.Top);
         }
 
-        int bulletcount = 3;
-        public void LoadBullet(int count)
+        public List<ResourceItem> GetResourceList()
         {
-            if (bulletIcons.Count > 0)
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\BulletBoard";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
             {
-                bulletIcons.RemoveRange(0, bulletIcons.Count - 1);
+                abspos += GetParentObject().GetAbsolutePosition();
             }
-            viewObject = null;
-            bulletcount = count;
-            Rectangle bulletIconRc = new Rectangle();
-            bulletIconRc.X = 14;
-            bulletIconRc.Y = 8;
-            for (int i = 0; i < bulletcount; i++)
-            {
-                BulletIconModel bulletIconModel = new BulletIconModel();
-                bulletIconModel.Initialize(this, bulletIconRc, 0);
-                bulletIcons.Add(bulletIconModel);
-                bulletIconRc.Offset(20, 0);
-            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
         }
 
 
@@ -3091,26 +2987,13 @@ namespace DuckHuntCommon
         }
         public int GetCurrentAnimationIndex()
         {
-            return AnimationIndex;
+            return 0;
         }
 
         public float GetAnimationDepth()
         {
-            return Depth;
-        }
 
-        public Vector2 GetAbsolutePosition()
-        {
-            return Position;
-        }
-
-        public Rectangle GetSpace()
-        {
-            return space;
-        }
-        public float GetSacle()
-        {
-            return 1;
+            return 0.35f;
         }
 
         public ModelObject GetParentObject()
@@ -3128,15 +3011,6 @@ namespace DuckHuntCommon
             return childrenlst;
         }
 
-        public void RemoveFirstBullet()
-        {
-            if (bulletIcons.Count > 0)
-            {
-                bulletIcons.RemoveAt(0);
-                this.viewObject = null;
-            }
-        }
-
 
         ViewObject viewObject;
         public ViewObject GetViewObject()
@@ -3147,6 +3021,46 @@ namespace DuckHuntCommon
         {
             viewObject = viewObject1;
         }
+
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void RemoveFirstBullet()
+        {
+            if (bulletIcons.Count > 0)
+            {
+                bulletIcons.RemoveAt(0);
+                this.viewObject = null;
+            }
+        }
+
+
+        int bulletcount = 3;
+        public void LoadBullet(int count)
+        {
+            if (bulletIcons.Count > 0)
+            {
+                bulletIcons.RemoveRange(0, bulletIcons.Count - 1);
+            }
+            viewObject = null;
+            bulletcount = count;
+            Rectangle bulletIconRc = new Rectangle();
+            bulletIconRc.X = 14;
+            bulletIconRc.Y = 8;
+            for (int i = 0; i < bulletcount; i++)
+            {
+                BulletIconModel bulletIconModel = new BulletIconModel();
+                bulletIconModel.Initialize(this, bulletIconRc, 0);
+                bulletIcons.Add(bulletIconModel);
+                bulletIconRc.Offset(20, 0);
+            }
+        }
+
+
+
     }
 
 
@@ -3157,29 +3071,8 @@ namespace DuckHuntCommon
         List<AnimationInfo> anationInfoList;
         List<BulletIconModel> bulletIcons;
 
-        int AnimationIndex
-        {
-            get
-            {
-                return 0;
-            }
-        }
-
-        float Depth
-        {
-            get { return 0.35f; }
-        }
-
-        Vector2 Position
-        {
-            get
-            {
-                return position;
-            }
-        }
-
         Rectangle space; //indicate the object view range
-        Vector2 position = Vector2.Zero; // no use
+        Vector2 relativePosition = Vector2.Zero; // no use
 
         public ScroeBoardModel()
         {
@@ -3204,28 +3097,6 @@ namespace DuckHuntCommon
 
         }
 
-        public List<ResourceItem> GetResourceList()
-        {
-            //
-            List<ResourceItem> resourceList = new List<ResourceItem>();
-            ResourceItem resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\ScoreBoard";
-            resourceList.Add(resourceItm);
-
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
-#else
-            resourceItm.path = "Graphics\\gameFont";
-#endif
-            resourceList.Add(resourceItm);
-
-            return resourceList;
-        }
-
-
         public ScroeBoardModel(Vector2 position1)
         {
             //
@@ -3248,12 +3119,58 @@ namespace DuckHuntCommon
         }
 
 
+        public ModelType Type()
+        {
+            return ModelType.SCOREBOARD;
+        }
+
         public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
         {
             space = rangespace;
-            position.X = space.Left;
-            position.Y = space.Top;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
             space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\ScoreBoard";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\gameFont";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
         }
 
 
@@ -3265,39 +3182,20 @@ namespace DuckHuntCommon
             // update child object
         }
 
-
-        public ModelType Type()
-        {
-            return ModelType.SCOREBOARD;
-        }
-
         public List<AnimationInfo> GetAnimationInfoList()
         {
             return anationInfoList;
         }
         public int GetCurrentAnimationIndex()
         {
-            return AnimationIndex;
+            return 0;
         }
 
         public float GetAnimationDepth()
         {
-            return Depth;
+            return 0.35f;
         }
 
-        public Vector2 GetAbsolutePosition()
-        {
-            return Position;
-        }
-
-        public Rectangle GetSpace()
-        {
-            return space;
-        }
-        public float GetSacle()
-        {
-            return 1;
-        }
 
         public ModelObject GetParentObject()
         {
@@ -3314,6 +3212,16 @@ namespace DuckHuntCommon
             return childrenlst;
         }
 
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
 
         int totalscore = 0;
         public void AddScore(int score)
@@ -3327,18 +3235,6 @@ namespace DuckHuntCommon
             {
                 return totalscore;
             }
-        }
-
-
-
-        ViewObject viewObject;
-        public ViewObject GetViewObject()
-        {
-            return viewObject;
-        }
-        public void SetViewObject(ViewObject viewObject1)
-        {
-            viewObject = viewObject1;
         }
     }
 

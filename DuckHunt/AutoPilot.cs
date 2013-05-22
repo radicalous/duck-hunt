@@ -63,6 +63,7 @@ namespace GameCommon
                         pilot = new DuckNormalPilot();
                     }
                     break;
+                case PilotType.DUCKFLYAWAY:
                 case PilotType.DUCKDEAD:
                     {
                         pilot = new DuckDeadPilot(pos);
@@ -81,6 +82,11 @@ namespace GameCommon
                 case PilotType.DOGSHOW:
                     {
                         pilot = new DogShowPilot(pos);
+                    }
+                    break;
+                case PilotType.CLOUD:
+                    {
+                        pilot = new CloudPilot();
                     }
                     break;
                 default:
@@ -523,7 +529,7 @@ namespace GameCommon
         // current position
         Vector2 Position;
         int deltax = 1;
-        int deltay = 5;
+        int deltay = 6;
 
         int direction = 0; // 0, up, 1, down
 
@@ -588,7 +594,7 @@ namespace GameCommon
         // current position
         Vector2 Position;
         int deltax = 1;
-        int deltay = 2;
+        int deltay = 6;
 
         int direction = 0; // 0, up, 1, down
 
