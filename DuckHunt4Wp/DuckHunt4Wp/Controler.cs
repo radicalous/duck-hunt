@@ -895,15 +895,15 @@ namespace DuckHuntCommon
             ScroeBoardModel scoreBoard1 = new ScroeBoardModel();
             if (rectBackground.Width < rectBackground.Height)
             {
-                scoreBoardSpace.X = rectBackground.Height - 250;
-                scoreBoardSpace.Y = rectBackground.Left + 10;
+                scoreBoardSpace.X = rectBackground.Top + 20;
+                scoreBoardSpace.Y = rectBackground.Left + 80;
                 scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
                 scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
             }
             else
             {
-                scoreBoardSpace.X = rectBackground.Width - 250;
-                scoreBoardSpace.Y = rectBackground.Top + 10;
+                scoreBoardSpace.X = rectBackground.Left + 20;
+                scoreBoardSpace.Y = rectBackground.Top + 80;
                 scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
                 scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
             }

@@ -436,16 +436,7 @@ namespace DuckHuntCommon
         public void Draw(SpriteBatch spriteBatch)
         {
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
-            /*
-            if (animationList[model.GetCurrentAnimationIndex()].animation)
-            {
-                viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
-            }
-            else
-            {
-                viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
-            }
-             */
+
             // this rc is logic rc
             Rectangle rc = model.GetSpace();
             rc.Height = 63; // same height with hitboard
@@ -455,9 +446,131 @@ namespace DuckHuntCommon
             rc.X += (int)scoreposition.X ; // scoreposition is position in local view
             rc.Y += (int)scoreposition.Y;
 
-            Color color = Color.Blue;
+            Color color = new Color(167,167,167);
             color.A = 10;
+
+            color = new Color(253, 253, 253);
+            //color.A = 10;
+            /*
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(251, 251, 251);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(248, 248, 248);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(243, 243, 243);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(239, 239, 239);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(232, 232, 232);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(226, 226, 226);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(218, 218, 218);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(209, 209, 209);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(192, 192, 192);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(192, 192, 192);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(169, 169, 169);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(140, 140, 140);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+            */
+            /*
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(140, 140, 140);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, Color.Black);
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            color = new Color(237, 237, 237);
+            //color.A = 10;
+            DrawRectangle(spriteBatch, rc, color);
+
+            rc.X += 1;
+            rc.Width -= 2;
+            rc.Y += 1;
+            rc.Height -= 2;
+            */
+            /*
+            color = new Color(167, 167, 167);
+            color = Color.Blue;
+            color.A = 10;
+
             DrawRectangle2(spriteBatch, rc, color);
+             */
+            Color color1 = Color.Blue;
+            color1.A = 10;
+            DrawRectangle2(spriteBatch, rc, color1);
             DrawRectangle(spriteBatch, rc, Color.Blue);
 
 
