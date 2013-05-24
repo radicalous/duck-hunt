@@ -64,6 +64,10 @@ namespace GameCommon
                     }
                     break;
                 case PilotType.DUCKFLYAWAY:
+                    {
+                        pilot = new DuckFlyawayPilot(pos);
+                    }
+                    break;
                 case PilotType.DUCKDEAD:
                     {
                         pilot = new DuckDeadPilot(pos);

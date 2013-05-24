@@ -13,7 +13,7 @@ using GameCommon;
 namespace DuckHuntCommon 
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
-        DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, MENUITEM};
+        DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD,SCORELISTBOARD, MENUITEM};
     
     enum ResourceType { TEXTURE, SOUND, FONT };
     class ResourceItem
@@ -844,6 +844,109 @@ namespace DuckHuntCommon
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
+
+
+    // draw the score myself
+    class ScoreListBoardViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+        ScroeListBoardModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 scoreposition;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public ScoreListBoardViewObject(ModelObject model1)
+        {
+            model = (ScroeListBoardModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            model = (ScroeListBoardModel)model1;
+
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        orgpoint,
+                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
+                }
+                viewItmList.Add(viewItm);
+            }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() * _defscale;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth / 2) * _defscale;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight / 2) * _defscale;
+                viewItm.animation.scale = model.GetSacle() * _defscale;
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 210 * _defscale;
+            scoreposition.Y += 210 * _defscale;
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+
+            viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y += 10 * _defscale;
+            pos1.X += 10 * _defscale;
+            //string value = this.model.TotalScore.ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], "Penner: " + "1000", pos1, Color.LightGray, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
+
+
 
     class SkyModel : ModelObject
     {
@@ -2677,9 +2780,21 @@ namespace DuckHuntCommon
                 shootduckList.Add(duck);
                 depth = duck.GetAnimationDepth() + 0.1f;
                 //position = duck.GetAbsolutePosition();
+                //targetposition = relativePositionInParent;
+                //targetposition.X += 10;
+                //targetposition.Y -= 5;
+                //relativePositionInParent.X = relativePositionInParent.X - 20 * 6;
+                //relativePositionInParent.Y = relativePositionInParent.Y + 10 * 6;
+            }
+        }
+        public void AdjustForFlyEffect()
+        {
+            if (shootduckList.Count > 0)
+            {
                 targetposition = relativePositionInParent;
                 relativePositionInParent.X = relativePositionInParent.X - 20 * 6;
                 relativePositionInParent.Y = relativePositionInParent.Y + 10 * 6;
+
             }
         }
     }
@@ -2902,12 +3017,36 @@ namespace DuckHuntCommon
 
             // get least of duck icon
 
-            space.Width = 318;
+            space.Width = 200;
             space.Height = 63;
 
             duckIcons = new List<DuckIconModel>();
 
         }
+
+
+        public HitBoardModel(Vector2 position1)
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\HitBoardBackground";
+            animationInfo.frameWidth = 318;
+            animationInfo.frameHeight = 63;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            relativePosition = position1;
+
+            space.Width = 200;
+            space.Height = 63;
+
+            duckIcons = new List<DuckIconModel>();
+        }
+
 
         public List<ResourceItem> GetResourceList()
         {
@@ -2928,28 +3067,6 @@ namespace DuckHuntCommon
             resourceList.Add(resourceItm);
 
             return resourceList;
-        }
-
-        public HitBoardModel(Vector2 position1)
-        {
-            //
-            anationInfoList = new List<AnimationInfo>();
-
-            // flying duck
-            AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\HitBoardBackground";
-            animationInfo.frameWidth = 318;
-            animationInfo.frameHeight = 63;
-            animationInfo.frameCount = 1;
-            animationInfo.frameTime = 300;
-            anationInfoList.Add(animationInfo);
-
-            relativePosition = position1;
-
-            space.Width = 318;
-            space.Height = 63;
-
-            duckIcons = new List<DuckIconModel>();
         }
 
 
@@ -3414,8 +3531,8 @@ namespace DuckHuntCommon
 
             // get least of duck icon
 
-            space.Width = 148;
-            space.Height = 65;
+            space.Width = 200;
+            space.Height = 63;
 
             bulletIcons = new List<BulletIconModel>();
 
@@ -3436,8 +3553,8 @@ namespace DuckHuntCommon
 
             // get least of duck icon
 
-            space.Width = 148;
-            space.Height = 65;
+            space.Width = 200;
+            space.Height = 63;
 
             bulletIcons = new List<BulletIconModel>();
         }
@@ -3558,6 +3675,172 @@ namespace DuckHuntCommon
             get
             {
                 return totalscore;
+            }
+        }
+    }
+
+
+
+    class ScroeListBoardModel : ModelObject
+    {
+        // include the background, duck icon/deadduck icon
+        List<AnimationInfo> anationInfoList;
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        List<Tuple<string, int>> scorelist;
+
+        // score list
+        public ScroeListBoardModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // background
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 652;
+            animationInfo.frameHeight = 644;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            // get least of duck icon
+
+            space.Width = 652;
+            space.Height = 644;
+
+            scorelist = new List<Tuple<string, int>>();
+        }
+
+        public ScroeListBoardModel(Vector2 position1)
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 652;
+            animationInfo.frameHeight = 644;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            // get least of duck icon
+
+            space.Width = 652;
+            space.Height = 644;
+
+            scorelist = new List<Tuple<string, int>>();
+        }
+
+
+        public ModelType Type()
+        {
+            return ModelType.SCORELISTBOARD;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\scorelistboard";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\gameFont";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+
+
+            // update child object
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+
+        public void AddScore(string name, int score)
+        {
+        }
+
+        public List<Tuple<string, int>> ScoreList
+        {
+            get
+            {
+                return scorelist;
             }
         }
     }

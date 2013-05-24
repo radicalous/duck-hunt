@@ -27,6 +27,7 @@ namespace DuckHuntCommon
             CommonViewObject commViewObj = null;
             ScoreBoardViewObject scoreboardObj = null;
             HitBoardViewObject hitBoardObj = null;
+            ScoreListBoardViewObject scorelistobj = null;
             ViewObject viewObject = null;
             switch (model.Type())
             {
@@ -44,6 +45,11 @@ namespace DuckHuntCommon
                 case ModelType.HITBOARD:
                     {
                         hitBoardObj = new HitBoardViewObject(model);
+                    }
+                    break;
+                case ModelType.SCORELISTBOARD:
+                    {
+                        scorelistobj = new ScoreListBoardViewObject(model);
                     }
                     break;
                 case ModelType.DUCKICON:
@@ -84,6 +90,10 @@ namespace DuckHuntCommon
             if( hitBoardObj != null )
             {
                 viewObject = hitBoardObj;
+            }
+            if (scorelistobj != null)
+            {
+                viewObject = scorelistobj;
             }
             return viewObject;
         }
@@ -265,7 +275,7 @@ namespace DuckHuntCommon
 
 
 
-    enum GAME_PHASE { GAME_SELECT, SEEK_DUCK, DUCK_FLY, DOG_SHOW, OVER };
+    enum GAME_PHASE { GAME_SELECT, SEEK_DUCK, DUCK_FLY, DOG_SHOW,SCORELIST_SHOW, OVER };
     class GameSound
     {
         public GAME_PHASE phase;
@@ -484,11 +494,18 @@ namespace DuckHuntCommon
 
         MenuItemModel menuTimeModelItem;
         MenuItemModel menuFreeModelItem;
+
         MenuItemModel menuGameOverItem;
         MenuItemModel menuRestartItem;
 
+        MenuItemModel menuScoreListItem;
+        MenuItemModel menuReturnItem;
+
         Rectangle timeModelMenuSpace;
         Rectangle freeModelModelMenuSpace;
+
+        Rectangle scoreListMenuSpace;
+        Rectangle returnMenuSpace;
 
 
         List<BulletModel> bulletsList;
@@ -507,15 +524,15 @@ namespace DuckHuntCommon
         ScroeBoardModel scoreBoard;
         Rectangle scoreBoardSpace;
 
-        int round = 1;
-        List<GameRound> gameRounds;
+        ScroeListBoardModel scoreListBoard;
+        Rectangle scoreListBoardSpace;
+
 
         int currentduck = 0;
         int bulletcount = 3;
 
         public DuckHuntGame()
         {
-            gameRounds = new List<GameRound>();
             bulletsList = new List<BulletModel>();
 
             gameChapterMgr = new GameChapterManager();
@@ -551,6 +568,7 @@ namespace DuckHuntCommon
             objlst.Add(new BulletIconModel());
             objlst.Add(new ScroeBoardModel());
             objlst.Add(new MenuItemModel());
+            objlst.Add(new ScroeListBoardModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -571,14 +589,20 @@ namespace DuckHuntCommon
                 objlst.Add(cloud);
                 objlst.Add(grass);
 
-                objlst.Add(this.hitBoard);
-                //objlst.Add(bulletBoard);
-                objlst.Add(scoreBoard);
-
                 objlst.Add(forground);
 
                 objlst.Add(menuTimeModelItem);
                 objlst.Add(menuFreeModelItem);
+            }
+            else if (phase == GAME_PHASE.SCORELIST_SHOW)
+            {
+                objlst.Add(blueSky);
+                objlst.Add(cloud);
+                objlst.Add(grass);
+                objlst.Add(forground);
+                objlst.Add(scoreListBoard);
+                objlst.Add(menuReturnItem);
+
             }
             else if (phase == GAME_PHASE.SEEK_DUCK)
             {
@@ -586,9 +610,6 @@ namespace DuckHuntCommon
                 objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(dog);
-                objlst.Add(this.hitBoard);
-                //objlst.Add(bulletBoard);
-                objlst.Add(scoreBoard);
                 objlst.Add(forground);
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
@@ -597,7 +618,6 @@ namespace DuckHuntCommon
                 objlst.Add(cloud);
                 objlst.Add(grass);
                 objlst.Add(forground);
-                //objlst.Add(bulletBoard);
 
                 foreach (DuckModel duck in duckList)
                 {
@@ -629,13 +649,9 @@ namespace DuckHuntCommon
                 objlst.Add(grass);
                 objlst.Add(forground);
 
-                //objlst.Add(bulletBoard);
-
-                objlst.Add(this.hitBoard);
-                objlst.Add(scoreBoard);
                 objlst.Add(menuGameOverItem);
                 objlst.Add(menuRestartItem);
-                
+                objlst.Add(menuScoreListItem);
 
             }
         }
@@ -773,6 +789,12 @@ namespace DuckHuntCommon
             scoreBoard.Initialize(null, scoreBoardSpace, 0);
         }
 
+        void NewScoreListBoard()
+        {
+            scoreListBoard = new ScroeListBoardModel();
+            scoreListBoard.Initialize(null, scoreListBoardSpace, 0);
+        }
+
         void NewMenu()
         {
             menuTimeModelItem = new MenuItemModel();
@@ -784,11 +806,19 @@ namespace DuckHuntCommon
 
             menuGameOverItem = new MenuItemModel();
             menuGameOverItem.Initialize(null, timeModelMenuSpace, 0);
-            menuGameOverItem.Conent = "Game Over";
+            menuGameOverItem.Conent = "Quit";
 
             menuRestartItem = new MenuItemModel();
             menuRestartItem.Initialize(null, freeModelModelMenuSpace, 0);
-            menuRestartItem.Conent = "Restart";  
+            menuRestartItem.Conent = "Retry";
+
+            menuScoreListItem = new MenuItemModel();
+            menuScoreListItem.Initialize(null, scoreListMenuSpace, 0);
+            menuScoreListItem.Conent = "Score List";
+
+            menuReturnItem = new MenuItemModel();
+            menuReturnItem.Initialize(null, returnMenuSpace, 0);
+            menuReturnItem.Conent = "Return";
         }
 
         void NewGame()
@@ -908,6 +938,26 @@ namespace DuckHuntCommon
                 scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
             }
 
+            ScroeListBoardModel scoreListBoard1 = new ScroeListBoardModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                scoreListBoardSpace.X = rectBackground.Top +
+                    (rectBackground.Height - scoreListBoard1.GetSpace().Width) / 2 - 100;
+                scoreListBoardSpace.Y = rectBackground.Left + 30;
+                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
+                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
+            }
+            else
+            {
+                scoreListBoardSpace.X = rectBackground.Left +
+                    (rectBackground.Width-scoreListBoard1.GetSpace().Width)/2 - 100;
+                scoreListBoardSpace.Y = rectBackground.Top + 30;
+                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
+                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
+            }
+
+            
+
             MenuItemModel menuItem = new MenuItemModel();
             if (rectBackground.Width < rectBackground.Height)
             {
@@ -918,6 +968,13 @@ namespace DuckHuntCommon
 
                 freeModelModelMenuSpace = timeModelMenuSpace;
                 freeModelModelMenuSpace.Y += 100;
+
+                scoreListMenuSpace = freeModelModelMenuSpace;
+                scoreListMenuSpace.Y += 100;
+
+                returnMenuSpace = timeModelMenuSpace;
+                returnMenuSpace.X += 300;
+
             }
             else
             {
@@ -928,6 +985,13 @@ namespace DuckHuntCommon
 
                 freeModelModelMenuSpace = timeModelMenuSpace;
                 freeModelModelMenuSpace.Y += 100;
+
+                scoreListMenuSpace = freeModelModelMenuSpace;
+                scoreListMenuSpace.Y += 100;
+
+                returnMenuSpace = timeModelMenuSpace;
+                returnMenuSpace.X += 300;
+
             }
 
             NewBackground();
@@ -936,6 +1000,7 @@ namespace DuckHuntCommon
             NewHitBoard();
             NewBulletBoard();
             NewScoreBoard();
+            NewScoreListBoard();
         }
 
         GameChapter chapter;
@@ -1067,8 +1132,29 @@ namespace DuckHuntCommon
                     NewGame();
                     return;
                 }
+                if (menuScoreListItem.Hit(shootposition))
+                {
+                    phase = GAME_PHASE.SCORELIST_SHOW;
+                    return;
+                }
 
             }
+
+
+            if (phase == GAME_PHASE.SCORELIST_SHOW)
+            {
+                if (menuReturnItem.Hit(shootposition))
+                {
+                    // free model
+
+                    phase = GAME_PHASE.GAME_SELECT;
+                    gameMode = GameMode.GAME_FREE_MODE;
+                    NewGame();
+                    return;
+                }
+
+            }
+
             if (phase != GAME_PHASE.DUCK_FLY)
             {
                 return;
@@ -1083,6 +1169,7 @@ namespace DuckHuntCommon
             {
                 duck.Shoot(bullet);
             }
+            bullet.AdjustForFlyEffect();
             bulletsList.Add(bullet);
 
             if (bullet.GetShootDucks() != null)
