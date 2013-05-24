@@ -3688,7 +3688,7 @@ namespace DuckHuntCommon
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
 
-        List<Tuple<string, int>> scorelist;
+        List<KeyValuePair<string, int>> scorelist;
 
         // score list
         public ScroeListBoardModel()
@@ -3709,7 +3709,7 @@ namespace DuckHuntCommon
             space.Width = 652;
             space.Height = 644;
 
-            scorelist = new List<Tuple<string, int>>();
+            scorelist = new List<KeyValuePair<string, int>>();
         }
 
         public ScroeListBoardModel(Vector2 position1)
@@ -3729,7 +3729,7 @@ namespace DuckHuntCommon
             space.Width = 652;
             space.Height = 644;
 
-            scorelist = new List<Tuple<string, int>>();
+            scorelist = new List<KeyValuePair<string, int>>();
         }
 
 
@@ -3836,7 +3836,7 @@ namespace DuckHuntCommon
         {
         }
 
-        public List<Tuple<string, int>> ScoreList
+        public List<KeyValuePair<string, int>> ScoreList
         {
             get
             {

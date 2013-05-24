@@ -113,6 +113,7 @@
     <None Include="Content\Graphics\mineAnimation.xnb" />
     <None Include="Content\Graphics\player.xnb" />
     <None Include="Content\Graphics\ScoreBoard.xnb" />
+    <None Include="Content\Graphics\scorelistboard.xnb" />
     <None Include="Content\Graphics\shipAnimation.xnb" />
     <None Include="Content\Graphics\sky.xnb" />
     <None Include="Content\Graphics\sky_2.xnb" />
