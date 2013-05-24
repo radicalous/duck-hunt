@@ -8,6 +8,7 @@ namespace GameCommon
 {
     public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
     public enum PilotType { DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD,DUCKFLYAWAY, 
+							DUCKEIGHT, DUCKCIRCLE, DUCKELLIPSE, DUCKSIN,
         DOGSEEK, DOGJUMP, DOGSHOW, 
         CLOUD,
     };
@@ -71,6 +72,26 @@ namespace GameCommon
                 case PilotType.DUCKDEAD:
                     {
                         pilot = new DuckDeadPilot(pos);
+                    }
+                    break;
+				case PilotType.DUCKEIGHT:
+					{
+						pilot = new DuckEightPilot(pos);	
+					}
+					break;
+                case PilotType.DUCKCIRCLE:
+                    {
+                        pilot = new DuckCirclePilot(pos);
+                    }
+                    break;
+                case PilotType.DUCKELLIPSE:
+                    {
+                        pilot = new DuckEllipsePilot(pos);
+                    }
+                    break;
+                case PilotType.DUCKSIN:
+                    {
+                        pilot = new DuckSinPilot(pos);
                     }
                     break;
                 case PilotType.DOGSEEK:
@@ -419,6 +440,359 @@ namespace GameCommon
             Position.Y += deltay;
         }
     }
+
+    static class Constants
+    {
+        public const double Pi = 3.14159;
+        public const int Ratio = 2;
+    }
+
+	class DuckEightPilot : AiPilot
+    {
+        // The boundary
+        Rectangle boundaryRect = new Rectangle();
+
+		// origin
+		Vector2 Ori;
+
+        // current position
+        Vector2 Position;
+		float depthpos = 0;
+
+		double cur_angle = 0;
+        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
+
+        int stopcnt = 0;
+
+        public DuckEightPilot(Vector2 pos)
+        {
+        	Ori = pos;
+            Position = pos;
+        }
+
+        public void Initialize(Rectangle space, int seed)
+        {
+            boundaryRect = space;
+        }
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DUCKEIGHT;
+        }
+
+        public void Initialize(Rectangle boundary)
+        {
+            boundaryRect = boundary;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+            {
+                return Direction.RIGHT;
+            }
+            else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+            {
+                return Direction.LEFT;
+            }
+            else
+            {
+                return Direction.RIGHT;
+            }
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (stopcnt < 10)
+            {
+                stopcnt++;
+                return;
+            }
+
+			cur_angle += delta_angle;
+            if (cur_angle > 2 * Constants.Pi)
+				cur_angle = 0;
+
+            float a = Math.Min(boundaryRect.Width, boundaryRect.Height);
+            a /= Constants.Ratio;
+
+			Position.X = Ori.X + (float)(a * Math.Sin(cur_angle));
+            Position.Y = Ori.Y + (float)(a * Math.Cos(cur_angle) * Math.Sin(cur_angle));
+        }
+    }
+
+    class DuckCirclePilot : AiPilot
+    {
+        // The boundary
+        Rectangle boundaryRect = new Rectangle();
+
+        // origin
+        Vector2 Ori;
+
+        // current position
+        Vector2 Position;
+        float depthpos = 0;
+
+        double cur_angle = 0;
+        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
+
+        int stopcnt = 0;
+
+        public DuckCirclePilot(Vector2 pos)
+        {
+            Ori = pos;
+            Position = pos;
+        }
+
+        public void Initialize(Rectangle space, int seed)
+        {
+            boundaryRect = space;
+        }
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DUCKEIGHT;
+        }
+
+        public void Initialize(Rectangle boundary)
+        {
+            boundaryRect = boundary;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+            {
+                return Direction.RIGHT;
+            }
+            else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+            {
+                return Direction.LEFT;
+            }
+            else
+            {
+                return Direction.RIGHT;
+            }
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (stopcnt < 10)
+            {
+                stopcnt++;
+                return;
+            }
+
+            cur_angle += delta_angle;
+            if (cur_angle > 2 * Constants.Pi)
+                cur_angle = 0;
+
+            float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
+            r /= Constants.Ratio;
+
+            Position.X = Ori.X + (float)(r * Math.Cos(cur_angle));
+            Position.Y = Ori.Y + (float)(r * Math.Sin(cur_angle));
+        }
+    }
+
+    class DuckEllipsePilot : AiPilot
+    {
+        // The boundary
+        Rectangle boundaryRect = new Rectangle();
+
+        // origin
+        Vector2 Ori;
+
+        // current position
+        Vector2 Position;
+        float depthpos = 0;
+
+        double cur_angle = 0;
+        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
+
+        int stopcnt = 0;
+
+        public DuckEllipsePilot(Vector2 pos)
+        {
+            Ori = pos;
+            Position = pos;
+        }
+
+        public void Initialize(Rectangle space, int seed)
+        {
+            boundaryRect = space;
+        }
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DUCKEIGHT;
+        }
+
+        public void Initialize(Rectangle boundary)
+        {
+            boundaryRect = boundary;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+            {
+                return Direction.RIGHT;
+            }
+            else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+            {
+                return Direction.LEFT;
+            }
+            else
+            {
+                return Direction.RIGHT;
+            }
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (stopcnt < 10)
+            {
+                stopcnt++;
+                return;
+            }
+
+            cur_angle += delta_angle;
+            if (cur_angle > 2 * Constants.Pi)
+                cur_angle = 0;
+
+            float a = boundaryRect.Width / Constants.Ratio;
+            float b = boundaryRect.Height / Constants.Ratio;
+
+            Position.X = Ori.X + (float)(a * Math.Cos(cur_angle));
+            Position.Y = Ori.Y + (float)(b * Math.Sin(cur_angle));
+        }
+    }
+
+    class DuckSinPilot : AiPilot
+    {
+        // The boundary
+        Rectangle boundaryRect = new Rectangle();
+
+        // origin
+        Vector2 Ori;
+
+        // current position
+        Vector2 Position;
+        float depthpos = 0;
+
+        double cur_angle = 0;
+        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
+
+        int stopcnt = 0;
+
+        public DuckSinPilot(Vector2 pos)
+        {
+            Ori = pos;
+            Position = pos;
+        }
+
+        public void Initialize(Rectangle space, int seed)
+        {
+            boundaryRect = space;
+        }
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+
+        public PilotType GetType()
+        {
+            return PilotType.DUCKEIGHT;
+        }
+
+        public void Initialize(Rectangle boundary)
+        {
+            boundaryRect = boundary;
+        }
+
+        public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        public Direction GetZDirection()
+        {
+            return Direction.IN;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (stopcnt < 10)
+            {
+                stopcnt++;
+                return;
+            }
+
+            cur_angle += delta_angle;
+
+            //float a = boundaryRect.Width / Constants.Ratio;
+            float b = boundaryRect.Height / Constants.Ratio;
+
+            Position.X = Ori.X + (float)cur_angle;
+            if (Position.X >= boundaryRect.Right)
+                Position.X = 0;
+            Position.Y = Ori.Y + (float)(b * Math.Sin(cur_angle));
+        }
+    }
+
 
     class DogPilot: AiPilot
     {
