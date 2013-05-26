@@ -310,7 +310,7 @@ namespace DuckHuntCommon
                             ducks = null;
                             return false;
                         }
-                        duck = new DuckModel();
+                        duck = new DuckModel(PilotType.DUCKEIGHT);
                         ducks.Add(duck);
                         duckcount++;
                     }

@@ -117,6 +117,7 @@
     <None Include="Content\Graphics\shipAnimation.xnb" />
     <None Include="Content\Graphics\sky.xnb" />
     <None Include="Content\Graphics\sky_2.xnb" />
+    <None Include="Content\Graphics\sky_3.xnb" />
     <None Include="Content\Sound\explosion.xnb" />
     <None Include="Content\Sound\gameMusic.xnb" />
     <None Include="Content\Sound\laserFire.xnb" />

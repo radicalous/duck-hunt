@@ -450,128 +450,11 @@ namespace DuckHuntCommon
             color.A = 10;
 
             color = new Color(253, 253, 253);
-            //color.A = 10;
-            /*
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(251, 251, 251);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(248, 248, 248);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(243, 243, 243);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(239, 239, 239);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(232, 232, 232);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(226, 226, 226);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
 
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(218, 218, 218);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(209, 209, 209);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(192, 192, 192);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(192, 192, 192);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(169, 169, 169);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(140, 140, 140);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-            */
-            /*
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(140, 140, 140);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, Color.Black);
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            color = new Color(237, 237, 237);
-            //color.A = 10;
-            DrawRectangle(spriteBatch, rc, color);
-
-            rc.X += 1;
-            rc.Width -= 2;
-            rc.Y += 1;
-            rc.Height -= 2;
-            */
-            /*
-            color = new Color(167, 167, 167);
-            color = Color.Blue;
-            color.A = 10;
-
-            DrawRectangle2(spriteBatch, rc, color);
-             */
             Color color1 = Color.Blue;
             color1.A = 10;
-            DrawRectangle2(spriteBatch, rc, color1);
-            DrawRectangle(spriteBatch, rc, Color.Blue);
+            //DrawRectangle2(spriteBatch, rc, color1);
+            //DrawRectangle(spriteBatch, rc, Color.Blue);
 
 
             // draw score
@@ -706,17 +589,6 @@ namespace DuckHuntCommon
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            /*
-            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
-            if (animationList[model.GetCurrentAnimationIndex()].animation)
-            {
-                viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
-            }
-            else
-            {
-                viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
-            }
-             */
             Rectangle rc = model.GetSpace();
             rc.Width = (int) (rc.Width*_defscale);
             rc.Height = (int)(rc.Height*_defscale);
@@ -725,8 +597,8 @@ namespace DuckHuntCommon
 
             Color color = Color.Blue;
             color.A = 10;
-            DrawRectangle2(spriteBatch, rc, color);
-            DrawRectangle(spriteBatch, rc, Color.Blue);
+            //DrawRectangle2(spriteBatch, rc, color);
+            //DrawRectangle(spriteBatch, rc, Color.Blue);
 
             // draw score
             Vector2 pos1 = scoreposition;
@@ -837,7 +709,7 @@ namespace DuckHuntCommon
             // draw score
             Vector2 pos1 = menuContentPos;
             Rectangle space = model.GetSpace();
-            pos1.Y += (space.Height/2 - 40) * _defscale;
+            pos1.Y += (space.Height/2 - 60) * _defscale;
             pos1.X += 150 * _defscale;
             string value = this.model.Conent.ToString();
             spriteBatch.DrawString(fontList[0], value, pos1, Color.Blue, 0, Vector2.Zero, 1,
@@ -932,7 +804,7 @@ namespace DuckHuntCommon
         {
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
 
-            viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+            //viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
             // draw score
             Vector2 pos1 = scoreposition;
             pos1.Y += 10 * _defscale;
@@ -997,7 +869,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_2";
+            resourceItm.path = "Graphics\\sky_3";
             resourceList.Add(resourceItm);
             return resourceList;
         }
@@ -1566,19 +1438,17 @@ namespace DuckHuntCommon
 
             // 0. unselected duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\MenuItemBg_selected";
-            animationInfo.frameWidth = 482;
-            animationInfo.frameHeight = 114;
+            animationInfo.frameWidth = 467;
+            animationInfo.frameHeight = 91;
             animationInfo.frameCount = 1;
-            animationInfo.frameTime = 300;
+            animationInfo.frameTime = 600;
             anationInfoList.Add(animationInfo);
 
             //1. hover duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\MenuItemBg_unselected";
             animationInfo.frameWidth = 482;
             animationInfo.frameHeight = 114;
-            animationInfo.frameCount = 1;
+            animationInfo.frameCount = 4;
             animationInfo.frameTime = 3000;
             anationInfoList.Add(animationInfo);
 
@@ -1856,6 +1726,51 @@ namespace DuckHuntCommon
         }
 
 
+        public DuckModel(PilotType type)
+        {
+            //
+            flyduckPilot = PilotManager.GetInstance().CreatePilot(type);
+            anationInfoList = new List<AnimationInfo>();
+
+            // 0. flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\duck_black_flying";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            animationInfo.frameTime = 100;
+            anationInfoList.Add(animationInfo);
+
+            //1. dying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\duck_black_shot";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 3000;
+            anationInfoList.Add(animationInfo);
+
+            // 2. dead duck
+            animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\duck_black_dead";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 2;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            // 3. reverse fly duck
+            animationInfo = new AnimationInfo();
+            animationInfo.texturesPath = "Graphics\\duck_black_flying_r";
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            animationInfo.frameTime = 100;
+            anationInfoList.Add(animationInfo);
+
+            boundingTrigle1 = new List<Vector2>();
+            boundingTrigle2 = new List<Vector2>();
+        }
 
 
         public ModelType Type()
@@ -2673,6 +2588,10 @@ namespace DuckHuntCommon
             }
             else
             {
+
+                    relativePositionInParent.X += deltax;
+
+                    relativePositionInParent.Y += deltay;
 
                 if (scale >= 0)
                 {
@@ -3698,8 +3617,8 @@ namespace DuckHuntCommon
 
             // background
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 652;
-            animationInfo.frameHeight = 644;
+            animationInfo.frameWidth = 500;
+            animationInfo.frameHeight = 500;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);

@@ -460,7 +460,7 @@ namespace GameCommon
 		float depthpos = 0;
 
 		double cur_angle = 0;
-        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
+        double delta_angle =  Constants.Pi * 0.005; //20 loops repeat
 
         int stopcnt = 0;
 
