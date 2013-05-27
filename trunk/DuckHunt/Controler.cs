@@ -593,6 +593,8 @@ namespace DuckHuntCommon
 
                 objlst.Add(menuTimeModelItem);
                 objlst.Add(menuFreeModelItem);
+                objlst.Add(menuGameOverItem);
+
             }
             else if (phase == GAME_PHASE.SCORELIST_SHOW)
             {
@@ -805,7 +807,7 @@ namespace DuckHuntCommon
             menuFreeModelItem.Conent = "Free Model";
 
             menuGameOverItem = new MenuItemModel();
-            menuGameOverItem.Initialize(null, timeModelMenuSpace, 0);
+            menuGameOverItem.Initialize(null, returnMenuSpace, 0);
             menuGameOverItem.Conent = "Quit";
 
             menuRestartItem = new MenuItemModel();
@@ -973,7 +975,7 @@ namespace DuckHuntCommon
                 scoreListMenuSpace.Y += 100;
 
                 returnMenuSpace = timeModelMenuSpace;
-                returnMenuSpace.X += 300;
+                returnMenuSpace.Y -= 100;
 
             }
             else
@@ -990,7 +992,7 @@ namespace DuckHuntCommon
                 scoreListMenuSpace.Y += 100;
 
                 returnMenuSpace = timeModelMenuSpace;
-                returnMenuSpace.X += 300;
+                returnMenuSpace.Y -= 100;
 
             }
 
