@@ -1,6 +1,7 @@
 Fallson:
 
 Duck flying out
-BG image replace
-Game mode click pictures
+//BG image replace
+//Game mode click pictures
 Dog images.
+Cartoon fonts.
