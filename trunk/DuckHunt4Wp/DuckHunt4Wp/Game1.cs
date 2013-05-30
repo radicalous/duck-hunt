@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using Microsoft.Xna.Framework.Media;
 
+using System.Collections.Generic;
+
 using DuckHuntCommon;
 using GameCommon;
 
@@ -125,10 +127,11 @@ namespace DuckHunt4Wp
             spriteBatch.End(); 
         }
 
+        List<Vector2> pointpositions = new List<Vector2>();
         ButtonState lastButtonState = new ButtonState();
         private void HuntDuck(GameTime gameTime)
         {
-            // Get Thumbstick Controls
+           // Get Thumbstick Controls
             /*
             player.Position.X += currentGamePadState.ThumbSticks.Left.X * playerMoveSpeed;
             player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * playerMoveSpeed;
@@ -160,28 +163,75 @@ namespace DuckHunt4Wp
             player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
             */
 
+            pointpositions.Clear();
             // Windows 8 Touch Gestures for MonoGame
-            /*
             while (TouchPanel.IsGestureAvailable)
             {
+                IsMouseVisible = false;
 
                 GestureSample gesture = TouchPanel.ReadGesture();
 
                 if (gesture.GestureType == GestureType.Tap)
                 {
-                    //duck.Shoot(gesture.Position);
-                    controler.HuntDuck(gesture.Position);
+                    /*
+                    Vector2 off = gesture.Position-lastpos;
+                    if(gameTime.ElapsedGameTime.Milliseconds - lastinputtime.ElapsedGameTime.Milliseconds < 20 || (off.Length() < 1))
+                    {
+                        return ;
+                    }
+                    lastinputtime = gameTime;
+                    lastpos = gesture.Position;
+                     */
+                    pointpositions.Add(gesture.Position);
                 }
-
+                    /*
+                else if (gesture.GestureType == GestureType.Pinch)
+                {
+                    if (gesture.Delta.X * gesture.Delta.X + gesture.Delta.Y * gesture.Delta.Y <= 0.00001)
+                    {
+                        pointslist.Add(gesture.Position);
+                    }
+                    else
+                    {
+                        pointpositions.Add(gesture.Position); 
+                    }
+                    if (gesture.Delta2.X * gesture.Delta2.X + gesture.Delta2.Y * gesture.Delta2.Y <= 0.00001)
+                    {
+                        pointslist.Add(gesture.Position2);
+                    }
+                    else
+                    {
+                        pointpositions.Add(gesture.Position2);
+                    }
+                }
+                     */
+            }
+            /*
+            pointpositions.Clear();
+            foreach (Vector2 pos in pointslist)
+            {
+                pointpositions.Add(pos);
             }
              */
+            if (pointpositions.Count > 0)
+            {
+                controler.Click(pointpositions);
+                pointpositions.Clear();
+
+                return;
+            }
 
             //Get Mouse State then Capture the Button type and Respond Button Press
+
             currentMouseState = Mouse.GetState();
             Vector2 mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
             if (currentMouseState.LeftButton == ButtonState.Released && lastButtonState == ButtonState.Pressed)
             {
-                controler.HuntDuck(mousePosition);
+                IsMouseVisible = true;
+
+                pointpositions.Add(mousePosition);
+                controler.Click(pointpositions);
+                pointpositions.Clear();
             }
             lastButtonState = currentMouseState.LeftButton;
         } 

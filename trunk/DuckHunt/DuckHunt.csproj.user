@@ -17,9 +17,9 @@
     <RemoteDebugEnabled>true</RemoteDebugEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <RemoteDebugMachine>192.168.2.101 (pennerz-surface)</RemoteDebugMachine>
+    <RemoteDebugMachine>10.94.90.143</RemoteDebugMachine>
     <UseAuthentication>True</UseAuthentication>
-    <RemoteDebugEnabled>true</RemoteDebugEnabled>
+    <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <UseSimulator>False</UseSimulator>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">

@@ -7,6 +7,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
+using Microsoft.Xna.Framework.GamerServices;
+using Windows.ApplicationModel;
+using Windows.UI.Xaml;
+
+
 using GameCommon;
 
 namespace DuckHuntCommon 
@@ -247,7 +254,7 @@ namespace DuckHuntCommon
         }
 
 
-        public void HuntDuck(Vector2 shootPosition)
+        public void Click(List<Vector2> clickPositions)
         {
             //
             // local rect, global rect
@@ -255,8 +262,13 @@ namespace DuckHuntCommon
             // local rect = orgpoint + global rect * default scale
             // global rect = (local rect - orgpoint)/ defalult scale
             //
-            Vector2 globalshotpos = (shootPosition - game.orgpoint) / game.defscale;
-            game.ShootDuck(globalshotpos);
+            //Vector2 globalshotpos = (shootPosition - game.orgpoint) / game.defscale;
+            List<Vector2> globalpointposlst = new List<Vector2>();
+            foreach (Vector2 localclickpos in clickPositions)
+            {
+                globalpointposlst.Add((localclickpos - game.orgpoint) / game.defscale);
+            }
+            game.Click(globalpointposlst);
         }
 
     }
@@ -775,7 +787,6 @@ namespace DuckHuntCommon
         {
             hitBoard = new HitBoardModel();
             hitBoard.Initialize(null, hitBoardSpace, 0);
-            hitBoard.LoadDuckIconsModel(10);
         }
 
         void NewBulletBoard()
@@ -1092,68 +1103,127 @@ namespace DuckHuntCommon
             }
             */
         }
+        string sipResult = "You type stuff here.";
+
+        /// <summary>
+        /// 输入完成回调方法
+        /// </summary>
+        /// <param name="result"></param>
+        void keyboardCallback(IAsyncResult result)
+        {
+            string retval = Guide.EndShowKeyboardInput(result);
+
+            if (retval != null)
+            {
+                sipResult = retval;
+            }
+        }
+
 
         Vector2 oldshootposition = Vector2.Zero;
-        public void ShootDuck(Vector2 shootposition)
+        public void Click(List<Vector2> clickpositionlist)
         {
 
             if (phase == GAME_PHASE.GAME_SELECT)
             {
-                if (menuTimeModelItem.Hit(shootposition))
+                foreach (Vector2 clickpos in clickpositionlist)
                 {
-                    // time model game begin
-                    phase = GAME_PHASE.SEEK_DUCK;
-                    gameMode = GameMode.GAME_TIME_LIMIT;
-                    NewGame();
 
-                    return;
+                    if (menuTimeModelItem.Hit(clickpos))
+                    {
+                        // time model game begin
+                        phase = GAME_PHASE.SEEK_DUCK;
+                        gameMode = GameMode.GAME_TIME_LIMIT;
+                        NewGame();
+
+                        return;
+                    }
+
+                    if (menuFreeModelItem.Hit(clickpos))
+                    {
+                        // free model
+
+                        phase = GAME_PHASE.SEEK_DUCK;
+                        gameMode = GameMode.GAME_FREE_MODE;
+                        NewGame();
+
+                        return;
+                    }
+
+
+                    if (menuGameOverItem.Hit(clickpos))
+                    {
+                        // free model
+                        /*
+                        if (!Guide.IsVisible)
+                            //弹出软键盘输入框
+                            Guide.BeginShowKeyboardInput(PlayerIndex.One, "test", "test description",
+                                sipResult, keyboardCallback, new object());
+                        */
+                        DuckHunt.App app = (DuckHunt.App)DuckHunt.App.Current;
+
+                        if (app.playerPage == null)
+                        {
+                            app.playerPage = new DuckHunt.PlayerInputPage();
+                        }
+                        app.playerPage.PreviousPage = Window.Current.Content;
+                        app.playerPage.Focus(FocusState.Keyboard);
+                        Window.Current.Content = app.playerPage;
+                        Window.Current.Activate();
+                        app.playerPage.Focus(FocusState.Keyboard);
+
+                        return;
+                    }
+
                 }
-
-                if (menuFreeModelItem.Hit(shootposition))
-                {
-                    // free model
-
-                    phase = GAME_PHASE.SEEK_DUCK;
-                    gameMode = GameMode.GAME_FREE_MODE;
-                    NewGame();
-
-                    return;
-                }
-
                 return;
             }
 
             if (phase == GAME_PHASE.OVER)
             {
-                if (menuRestartItem.Hit(shootposition))
+                foreach (Vector2 clickpos in clickpositionlist)
                 {
-                    // free model
 
-                    phase = GAME_PHASE.GAME_SELECT;
-                    gameMode = GameMode.GAME_FREE_MODE;
-                    NewGame();
-                    return;
-                }
-                if (menuScoreListItem.Hit(shootposition))
-                {
-                    phase = GAME_PHASE.SCORELIST_SHOW;
-                    return;
+
+                    if (menuRestartItem.Hit(clickpos))
+                    {
+                        // free model
+
+                        phase = GAME_PHASE.GAME_SELECT;
+                        gameMode = GameMode.GAME_FREE_MODE;
+                        NewGame();
+                        return;
+                    }
+                    if (menuScoreListItem.Hit(clickpos))
+                    {
+                        phase = GAME_PHASE.SCORELIST_SHOW;
+                        return;
+                    }
                 }
 
+
+                return;
             }
 
 
             if (phase == GAME_PHASE.SCORELIST_SHOW)
             {
-                if (menuReturnItem.Hit(shootposition))
-                {
-                    // free model
 
-                    phase = GAME_PHASE.GAME_SELECT;
-                    gameMode = GameMode.GAME_FREE_MODE;
-                    NewGame();
-                    return;
+                foreach (Vector2 clickpos in clickpositionlist)
+                {
+
+                    if (menuReturnItem.Hit(clickpos))
+                    {
+                        // free model
+
+                        phase = GAME_PHASE.GAME_SELECT;
+                        gameMode = GameMode.GAME_FREE_MODE;
+                        NewGame();
+                        return;
+                    }
+
                 }
+
 
             }
 
@@ -1166,41 +1236,48 @@ namespace DuckHuntCommon
                 return;
             }
             // new a bullet
-            BulletModel bullet = new BulletModel(shootposition);
-            foreach (DuckModel duck in duckList)
+            foreach (Vector2 clickpos in clickpositionlist)
             {
-                duck.Shoot(bullet);
-            }
-            bullet.AdjustForFlyEffect();
-            bulletsList.Add(bullet);
 
-            if (bullet.GetShootDucks() != null)
-            {
-                //
-                float score = 100;
-                for (int i = 0; i < bullet.GetShootDucks().Count; i++)
+                BulletModel bullet = new BulletModel(clickpos);
+                foreach (DuckModel duck in duckList)
                 {
-                    score = 100;
-                    score *= (i+1);
-                    score /= bullet.GetShootDucks()[i].GetSacle();
-                    scoreBoard.AddScore((int)score);
-
+                    duck.Shoot(bullet);
                 }
 
-                int ii = 0;
-                foreach (DuckModel duck2 in duckList)
+                bullet.AdjustForFlyEffect();
+                bulletsList.Add(bullet);
+
+                if (bullet.GetShootDucks() != null)
                 {
-                    if (duck2.dead)
+                    //
+                    float score = 100;
+                    for (int i = 0; i < bullet.GetShootDucks().Count; i++)
                     {
-                        hitBoard.SetDuckIconsState(currentduck + ii, DuckIconModel.DuckIconState.Dead);
+                        score = 100;
+                        score *= (i + 1);
+                        score /= bullet.GetShootDucks()[i].GetSacle();
+                        scoreBoard.AddScore((int)score);
+
                     }
-                    ii++;
+
+                    int ii = 0;
+                    foreach (DuckModel duck2 in duckList)
+                    {
+                        if (duck2.dead)
+                        {
+                            //hitBoard.SetDuckIconsState(currentduck + ii, DuckIconModel.DuckIconState.Dead);
+                            hitBoard.AddHitCount(1);
+                        }
+                        ii++;
+                    }
+
                 }
 
             }
 
-            bulletcount--;
-            bulletBoard.RemoveFirstBullet();
+            //bulletcount--;
+            //bulletBoard.RemoveFirstBullet();
         }
     }
 

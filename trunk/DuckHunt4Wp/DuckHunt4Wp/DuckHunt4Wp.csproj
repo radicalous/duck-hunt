@@ -118,10 +118,12 @@
     <None Include="Content\Graphics\sky.xnb" />
     <None Include="Content\Graphics\sky_2.xnb" />
     <None Include="Content\Graphics\sky_3.xnb" />
+    <None Include="Content\Sound\dog_found.xnb" />
     <None Include="Content\Sound\explosion.xnb" />
     <None Include="Content\Sound\gameMusic.xnb" />
     <None Include="Content\Sound\laserFire.xnb" />
     <None Include="Content\Sound\menuMusic.xnb" />
+    <None Include="Content\Sound\shoot.xnb" />
     <None Include="Properties\AppManifest.xml">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </None>
@@ -132,8 +134,10 @@
     <Compile Include="Game1.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Sound\dog_found.wma" />
     <Content Include="Content\Sound\gameMusic.mp3" />
     <Content Include="Content\Sound\menuMusic.mp3" />
+    <Content Include="Content\Sound\shoot.wma" />
     <Content Include="Game.ico" />
     <Content Include="PhoneGameThumb.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
