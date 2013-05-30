@@ -10,9 +10,10 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using Microsoft.Xna.Framework.GamerServices;
+#if !WINDOWS_PHONE
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
-
+#endif
 
 using GameCommon;
 
@@ -1154,12 +1155,14 @@ namespace DuckHuntCommon
                     if (menuGameOverItem.Hit(clickpos))
                     {
                         // free model
+#if WINDOWS_PHONE
                         /*
                         if (!Guide.IsVisible)
                             //弹出软键盘输入框
                             Guide.BeginShowKeyboardInput(PlayerIndex.One, "test", "test description",
                                 sipResult, keyboardCallback, new object());
                         */
+#else
                         DuckHunt.App app = (DuckHunt.App)DuckHunt.App.Current;
 
                         if (app.playerPage == null)
@@ -1171,6 +1174,7 @@ namespace DuckHuntCommon
                         Window.Current.Content = app.playerPage;
                         Window.Current.Activate();
                         app.playerPage.Focus(FocusState.Keyboard);
+#endif
 
                         return;
                     }

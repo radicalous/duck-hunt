@@ -1433,7 +1433,6 @@ namespace DuckHuntCommon
     {
         public bool fontTexture = false;
         public bool animation = true;
-        public string texturesPath;
 
         public int frameWidth = 115;
         public int frameHeight = 69;
@@ -1740,7 +1739,6 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -1749,7 +1747,6 @@ namespace DuckHuntCommon
 
             //1. dying duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_shot";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 1;
@@ -1758,7 +1755,6 @@ namespace DuckHuntCommon
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_dead";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 2;
@@ -1767,7 +1763,6 @@ namespace DuckHuntCommon
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying_r";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -1787,7 +1782,6 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -1796,7 +1790,6 @@ namespace DuckHuntCommon
 
             //1. dying duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_shot";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 1;
@@ -1805,7 +1798,6 @@ namespace DuckHuntCommon
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_dead";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 2;
@@ -1814,7 +1806,6 @@ namespace DuckHuntCommon
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying_r";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -2209,65 +2200,57 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogs";
-            animationInfo.frameWidth = 142;
-            animationInfo.frameHeight = 168;
-            animationInfo.frameCount = 6;
-            animationInfo.frameTime = 150;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
+            animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogseeking";
-            animationInfo.frameWidth = 147;
-            animationInfo.frameHeight = 168;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogfound";
-            animationInfo.frameWidth = 154;
-            animationInfo.frameHeight = 168;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogjumpup";
-            animationInfo.frameWidth = 132;
-            animationInfo.frameHeight = 168;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogjumpdown";
-            animationInfo.frameWidth = 116;
-            animationInfo.frameHeight = 105;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\doglaugh";
-            animationInfo.frameWidth = 103;
-            animationInfo.frameHeight = 130;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 150;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogshowduck1";
-            animationInfo.frameWidth = 108;
-            animationInfo.frameHeight = 130;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogshowduck1";
-            animationInfo.frameWidth = 108;
-            animationInfo.frameHeight = 130;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
@@ -2294,27 +2277,27 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogs";
+            resourceItm.path = "Graphics\\baby_pluto";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogseeking";
+            resourceItm.path = "Graphics\\plutoseeking";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogfound";
+            resourceItm.path = "Graphics\\pluto_found";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogjumpup";
+            resourceItm.path = "Graphics\\plutojumpup";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogjumpdown";
+            resourceItm.path = "Graphics\\plutojumpdown";
             resourceList.Add(resourceItm);
             
             resourceItm = new ResourceItem();
@@ -2575,7 +2558,6 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\laser1";
             animationInfo.frameWidth = 47;
             animationInfo.frameHeight = 23;
             animationInfo.frameCount = 1;
@@ -2597,7 +2579,6 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\laser1";
             animationInfo.frameWidth = 35;
             animationInfo.frameHeight = 27;
             animationInfo.frameCount = 1;
@@ -2825,7 +2806,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duckIconAlive";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 2;
@@ -2833,7 +2813,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duckIconOngoing";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -2841,7 +2820,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duckIconDead";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -2894,7 +2872,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\AliveDuckIcon";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -2902,7 +2879,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\OngoingDuckIcon";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 2;
@@ -2910,7 +2886,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\DeadDuckIcon";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -3200,7 +3175,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\bulletIcon";
             animationInfo.frameWidth = 10;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -3228,7 +3202,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\bulletIcon";
             animationInfo.frameWidth = 10;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -3333,7 +3306,6 @@ namespace DuckHuntCommon
 
             // background
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\BulletBoard";
             animationInfo.frameWidth = 78;
             animationInfo.frameHeight = 58;
             animationInfo.frameCount = 1;
@@ -3356,7 +3328,6 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\BulletBoard";
             animationInfo.frameWidth = 78;
             animationInfo.frameHeight = 58;
             animationInfo.frameCount = 1;
@@ -3532,7 +3503,6 @@ namespace DuckHuntCommon
 
             // background
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ScoreBoard";
             animationInfo.frameWidth = 148;
             animationInfo.frameHeight = 65;
             animationInfo.frameCount = 1;
@@ -3554,7 +3524,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ScoreBoard";
             animationInfo.frameWidth = 148;
             animationInfo.frameHeight = 65;
             animationInfo.frameCount = 1;
