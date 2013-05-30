@@ -41,6 +41,8 @@ namespace DuckHuntCommon
         int GetCurrentAnimationIndex(); // current animation index
         float GetAnimationDepth();      // animation depth
 
+        int GetSoundIndex();
+
 
         ModelObject GetParentObject();              
         List<ModelObject> GetChildrenObjects();
@@ -98,12 +100,14 @@ namespace DuckHuntCommon
             }
         }
 
+        Dictionary<ModelType, ObjectTexturesItem> _resLst;
         public void Init(Vector2 orgpointinscreen, float defscaleinscreen, ModelObject model1, 
             Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle spaceInLogic)
         {
             _orgpointinscreen = orgpointinscreen;
             _defscaleinscreen = defscaleinscreen;
 
+            _resLst = objTextureLst;
             // try to calculate how may textures are needed by children
 
             // create view items for this object
@@ -229,6 +233,7 @@ namespace DuckHuntCommon
                 viewItmList.Add(viewItm);
             }
             //play init sound
+            /*
             if (objTextureLst[model.Type()].soundList.Count > 0)
             {//SoundEffect.MasterVolume
                 //SoundEffect.
@@ -236,6 +241,7 @@ namespace DuckHuntCommon
                 float mastvol = SoundEffect.MasterVolume;
                 objTextureLst[model.Type()].soundList[0].Play(1,0, 0);
             }
+             */
             
 
             
@@ -287,6 +293,21 @@ namespace DuckHuntCommon
                 {
                     viewObj.Update(gameTime);
                 }
+            }
+
+            // check need to play audio
+            //play init sound
+            if (_resLst[model.Type()].soundList.Count > 0)
+            {//SoundEffect.MasterVolume
+                //SoundEffect.
+                //SoundEf
+                int soundindex = model.GetSoundIndex();
+                if (soundindex >= 0 && soundindex < _resLst[model.Type()].soundList.Count)
+                {
+                    float mastvol = SoundEffect.MasterVolume;
+                    _resLst[model.Type()].soundList[0].Play(1, 0, 0);
+                }
+
             }
 
         }
@@ -604,7 +625,7 @@ namespace DuckHuntCommon
             Vector2 pos1 = scoreposition;
             pos1.Y += 10 * _defscale;
             pos1.X += 10 * _defscale;
-            string value = "Hit Count: 153";
+            string value = "Hit Count: " + model.GetHitCount().ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
             spriteBatch.DrawString(fontList[0], value, pos1, Color.LightGray, 0, Vector2.Zero, 1,
@@ -812,8 +833,13 @@ namespace DuckHuntCommon
             //string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "Penner: " + "1000", pos1, Color.LightGray, 0, Vector2.Zero, 1,
-                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            for (int i = 0; i < model.ScoreList.Count; i++)
+            {
+                spriteBatch.DrawString(fontList[0], model.ScoreList[i].Key + ":     " + model.ScoreList[i].Value.ToString(),
+                    pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                    SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+                pos1.Y += 30 * _defscale;
+            }
         }
     }
 
@@ -907,6 +933,12 @@ namespace DuckHuntCommon
         {
             return 1.0f;
         }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
 
         public ModelObject GetParentObject()
         {
@@ -1018,7 +1050,10 @@ namespace DuckHuntCommon
             return 1.0f;
         }
 
-
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -1138,6 +1173,10 @@ namespace DuckHuntCommon
             return 0.9f;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -1251,6 +1290,11 @@ namespace DuckHuntCommon
             return 0.5F;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
         public ModelObject GetParentObject()
         {
             return null;
@@ -1358,6 +1402,11 @@ namespace DuckHuntCommon
         public float GetAnimationDepth()
         {
             return 0.2F;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
         }
 
         public ModelObject GetParentObject()
@@ -1580,6 +1629,10 @@ namespace DuckHuntCommon
             return depth;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -1968,6 +2021,10 @@ namespace DuckHuntCommon
             return depth;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -2105,6 +2162,8 @@ namespace DuckHuntCommon
         Rectangle dogspace;
 
         bool gone = false;
+
+        int dog_sound_index = -1;
 
         public bool Gone
         {
@@ -2273,6 +2332,12 @@ namespace DuckHuntCommon
             resourceItm.path = "Graphics\\dogshowduck1";
             resourceList.Add(resourceItm);
 
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\dog_found";
+            //resourceItm.path = "Sound\\laserFire";
+            resourceList.Add(resourceItm);
+
             return resourceList;
         }
 
@@ -2317,6 +2382,10 @@ namespace DuckHuntCommon
                 if (seekPilot.GetPosition().X >= dogspace.Width / 2)
                 {
                     // sleep some time
+                    if (dog_sound_index == -1)
+                    {
+                        dog_sound_index = 0;
+                    }
                     if (foundstopcount < foundmaxstoptime)
                     {
                         foundstopcount++;
@@ -2421,6 +2490,16 @@ namespace DuckHuntCommon
             return depth;
         }
 
+        public int GetSoundIndex()
+        {
+            if (dog_sound_index >= 0)
+            {
+                int returnindex = dog_sound_index;
+                dog_sound_index = -2;
+                return returnindex;
+            }
+            return -1;
+        }
  
         public ModelObject GetParentObject()
         {
@@ -2486,6 +2565,7 @@ namespace DuckHuntCommon
 
         float depth = 0.6F;
 
+        int sound_index = 0;
 
 
         public BulletModel()
@@ -2616,7 +2696,8 @@ namespace DuckHuntCommon
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.SOUND;
-            resourceItm.path = "Sound\\laserFire";
+            resourceItm.path = "Sound\\shoot";
+            //resourceItm.path = "Sound\\laserFire";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -2660,6 +2741,16 @@ namespace DuckHuntCommon
             return depth;
         }
 
+        public int GetSoundIndex()
+        {
+            if (sound_index >= 0)
+            {
+                int returnindex = sound_index;
+                sound_index = -1;
+                return returnindex;
+            }
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -2723,11 +2814,11 @@ namespace DuckHuntCommon
     {
         public enum DuckIconState { Alive, Ongoing, Dead };
         DuckIconState state;
-
         List<AnimationInfo> anationInfoList;
         ModelObject parent;
         Rectangle space;
         Vector2 relativePos;
+
 
         public  DuckIconModel()
         {
@@ -2886,6 +2977,11 @@ namespace DuckHuntCommon
             return 0.3f;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
         public ModelObject GetParentObject()
         {
             return parent;
@@ -2915,7 +3011,8 @@ namespace DuckHuntCommon
     {
         // include the background, duck icon/deadduck icon
         List<AnimationInfo> anationInfoList;
-        List<DuckIconModel> duckIcons;   
+        List<DuckIconModel> duckIcons;
+        int hitcount = 0;
 
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
@@ -2927,7 +3024,6 @@ namespace DuckHuntCommon
 
             // background
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\HitBoardBackground";
             animationInfo.frameWidth = 318;
             animationInfo.frameHeight = 63;
             animationInfo.frameCount = 1;
@@ -2951,7 +3047,6 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\HitBoardBackground";
             animationInfo.frameWidth = 318;
             animationInfo.frameHeight = 63;
             animationInfo.frameCount = 1;
@@ -3047,6 +3142,10 @@ namespace DuckHuntCommon
             return 0.35f;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -3076,31 +3175,13 @@ namespace DuckHuntCommon
         }
 
 
-
-        int duckcount = 10;
-        public void LoadDuckIconsModel(int duckcount1)
+        public int GetHitCount()
         {
-            duckcount = 10;
-            Rectangle duckIconRc = new Rectangle();
-            duckIconRc.X = 90;
-            duckIconRc.Y = 12;
-            for (int i = 0; i < duckcount; i++)
-            {
-                DuckIconModel duckIconModel = new DuckIconModel();
-                duckIconModel.Initialize(this, duckIconRc, 0);
-                duckIcons.Add(duckIconModel);
-                duckIconRc.Offset(22, 0);
-            }
+            return hitcount;
         }
-
-        public void SetDuckIconsState(int duckIndex, DuckIconModel.DuckIconState state)
+        public void AddHitCount(int hitCount)
         {
-            if (duckIcons == null || duckIndex >= duckIcons.Count)
-            {
-                return;
-            }
-            DuckIconModel duckIcon = duckIcons[duckIndex];
-            duckIcon.SetState(state);
+            hitcount += hitCount;
         }
     }
 
@@ -3209,6 +3290,11 @@ namespace DuckHuntCommon
         public float GetAnimationDepth()
         {
             return 0.3f;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
         }
 
         public ModelObject GetParentObject()
@@ -3354,6 +3440,11 @@ namespace DuckHuntCommon
         {
 
             return 0.35f;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
         }
 
         public ModelObject GetParentObject()
@@ -3556,6 +3647,10 @@ namespace DuckHuntCommon
             return 0.35f;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -3629,6 +3724,9 @@ namespace DuckHuntCommon
             space.Height = 644;
 
             scorelist = new List<KeyValuePair<string, int>>();
+
+            this.AddScore("Penner", 3565);
+            this.AddScore("Fallson", 5000);
         }
 
         public ScroeListBoardModel(Vector2 position1)
@@ -3729,6 +3827,10 @@ namespace DuckHuntCommon
             return 0.35f;
         }
 
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
 
         public ModelObject GetParentObject()
         {
@@ -3753,6 +3855,7 @@ namespace DuckHuntCommon
 
         public void AddScore(string name, int score)
         {
+            scorelist.Add(new KeyValuePair<string, int>(name, score));
         }
 
         public List<KeyValuePair<string, int>> ScoreList

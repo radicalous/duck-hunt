@@ -11,6 +11,9 @@ namespace DuckHunt
     /// </summary>
     sealed partial class App : Application
     {
+        public GamePage gamePage;
+        public PlayerInputPage playerPage;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -28,8 +31,8 @@ namespace DuckHunt
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs args)
-        {
-            var gamePage = Window.Current.Content as GamePage;
+        { 
+            gamePage = Window.Current.Content as GamePage;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -46,9 +49,10 @@ namespace DuckHunt
                 // Place the GamePage in the current Window
                 Window.Current.Content = gamePage;
             }
-
+ 
             // Ensure the current window is active
             Window.Current.Activate();
+            
         }
 
         /// <summary>
