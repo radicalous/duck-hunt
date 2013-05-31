@@ -1,0 +1,19 @@
+﻿<Page
+    x:Class="DuckHunt.PlayerInputPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DuckHunt"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <Grid HorizontalAlignment="Left" Height="748" Margin="0,10,0,0" VerticalAlignment="Top" Width="1356">
+            <TextBlock HorizontalAlignment="Left" Margin="312,374,0,0" TextWrapping="Wrap" Text="Please input Player's Name" VerticalAlignment="Top"/>
+            <TextBox HorizontalAlignment="Left" Margin="312,414,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="252"/>
+            <Button Content="Button" HorizontalAlignment="Left" Margin="312,485,0,0" VerticalAlignment="Top" Width="161" Click="Button_Click_1"/>
+            <TextBox HorizontalAlignment="Left" Margin="663,431,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" TextChanged="TextBox_TextChanged_1"/>
+        </Grid>
+
+    </Grid>
+</Page>
