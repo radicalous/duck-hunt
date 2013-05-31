@@ -13,7 +13,9 @@ using GameCommon;
 namespace DuckHuntCommon 
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
-        DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD,SCORELISTBOARD, MENUITEM};
+        DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
+        LOSTDUCKBOARD, MENUITEM
+    };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
     class ResourceItem
@@ -397,10 +399,17 @@ namespace DuckHuntCommon
                 }
                 viewItmList.Add(viewItm);
             }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 20 * _defscale;
+            scoreposition.Y += 25 * _defscale;
+
         }
 
         public void Update(GameTime gameTime)
         {
+            return;
+
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             if (animationList[model.GetCurrentAnimationIndex()].animation)
             {
@@ -416,9 +425,6 @@ namespace DuckHuntCommon
                 viewItm.staticBackground.Update(gameTime);
             }
 
-            scoreposition = model.GetAbsolutePosition()*_defscale + _orgpoint;
-            scoreposition.X += 20*_defscale;
-            scoreposition.Y += 25*_defscale;
         }
 
         private void DrawRectangle(SpriteBatch spriteBatch, Rectangle coords, Color color)
@@ -485,11 +491,157 @@ namespace DuckHuntCommon
             string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.LightGray, 0, Vector2.Zero, 1, 
+            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1, 
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
 
+
+    // draw the score myself
+    class TimeBoardViewObject : ViewObject
+    {
+        TimeBoardModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 scoreposition;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public TimeBoardViewObject(ModelObject model1)
+        {
+            model = (TimeBoardModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            model = (TimeBoardModel)model1;
+
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            // background
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 20 * _defscale;
+            scoreposition.Y += 25 * _defscale;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+
+        }
+
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            // this rc is logic rc
+            Rectangle rc = model.GetSpace();
+            rc.Height = 63; // same height with hitboard
+            rc.Width = 200;
+            rc.Width = (int)(rc.Width * _defscale);
+            rc.Height = (int)(rc.Height * _defscale);
+            rc.X += (int)scoreposition.X; // scoreposition is position in local view
+            rc.Y += (int)scoreposition.Y;
+
+            Color color = new Color(167, 167, 167);
+            color.A = 10;
+
+            color = new Color(253, 253, 253);
+
+            Color color1 = Color.Blue;
+            color1.A = 10;
+
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y += 10 * _defscale;
+            pos1.X += 10 * _defscale;
+            string value = this.model.LeftTime.ToString();
+
+            spriteBatch.DrawString(fontList[0], "Left Time: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
+
+
+    // draw the score myself
+    class LostDuckBoardViewObject : ViewObject
+    {
+        LostDuckBoardModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 scoreposition;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public LostDuckBoardViewObject(ModelObject model1)
+        {
+            model = (LostDuckBoardModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            model = (LostDuckBoardModel)model1;
+
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            // background
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 20 * _defscale;
+            scoreposition.Y += 25 * _defscale;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+
+        }
+
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            // this rc is logic rc
+            Rectangle rc = model.GetSpace();
+            rc.Height = 63; // same height with hitboard
+            rc.Width = 200;
+            rc.Width = (int)(rc.Width * _defscale);
+            rc.Height = (int)(rc.Height * _defscale);
+            rc.X += (int)scoreposition.X; // scoreposition is position in local view
+            rc.Y += (int)scoreposition.Y;
+
+            Color color = new Color(167, 167, 167);
+            color.A = 10;
+
+            color = new Color(253, 253, 253);
+
+            Color color1 = Color.Blue;
+            color1.A = 10;
+
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y += 10 * _defscale;
+            pos1.X += 10 * _defscale;
+            string value = this.model.LostDuckCount.ToString();
+
+            spriteBatch.DrawString(fontList[0], "Lost Duck Count: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
 
 
 
@@ -628,7 +780,7 @@ namespace DuckHuntCommon
             string value = "Hit Count: " + model.GetHitCount().ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], value, pos1, Color.LightGray, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -1433,7 +1585,6 @@ namespace DuckHuntCommon
     {
         public bool fontTexture = false;
         public bool animation = true;
-        public string texturesPath;
 
         public int frameWidth = 115;
         public int frameHeight = 69;
@@ -1740,7 +1891,6 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -1749,7 +1899,6 @@ namespace DuckHuntCommon
 
             //1. dying duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_shot";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 1;
@@ -1758,7 +1907,6 @@ namespace DuckHuntCommon
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_dead";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 2;
@@ -1767,7 +1915,6 @@ namespace DuckHuntCommon
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying_r";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -1787,7 +1934,6 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -1796,7 +1942,6 @@ namespace DuckHuntCommon
 
             //1. dying duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_shot";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 1;
@@ -1805,7 +1950,6 @@ namespace DuckHuntCommon
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_dead";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 2;
@@ -1814,7 +1958,6 @@ namespace DuckHuntCommon
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duck_black_flying_r";
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
@@ -2209,65 +2352,57 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogs";
-            animationInfo.frameWidth = 142;
-            animationInfo.frameHeight = 168;
-            animationInfo.frameCount = 6;
-            animationInfo.frameTime = 150;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
+            animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogseeking";
-            animationInfo.frameWidth = 147;
-            animationInfo.frameHeight = 168;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogfound";
-            animationInfo.frameWidth = 154;
-            animationInfo.frameHeight = 168;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogjumpup";
-            animationInfo.frameWidth = 132;
-            animationInfo.frameHeight = 168;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogjumpdown";
-            animationInfo.frameWidth = 116;
-            animationInfo.frameHeight = 105;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\doglaugh";
-            animationInfo.frameWidth = 103;
-            animationInfo.frameHeight = 130;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 150;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogshowduck1";
-            animationInfo.frameWidth = 108;
-            animationInfo.frameHeight = 130;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\dogshowduck1";
-            animationInfo.frameWidth = 108;
-            animationInfo.frameHeight = 130;
+            animationInfo.frameWidth = 250;
+            animationInfo.frameHeight = 152;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
@@ -2294,27 +2429,27 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogs";
+            resourceItm.path = "Graphics\\baby_pluto";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogseeking";
+            resourceItm.path = "Graphics\\plutoseeking";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogfound";
+            resourceItm.path = "Graphics\\pluto_found";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogjumpup";
+            resourceItm.path = "Graphics\\plutojumpup";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\dogjumpdown";
+            resourceItm.path = "Graphics\\plutojumpdown";
             resourceList.Add(resourceItm);
             
             resourceItm = new ResourceItem();
@@ -2575,7 +2710,6 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\laser1";
             animationInfo.frameWidth = 47;
             animationInfo.frameHeight = 23;
             animationInfo.frameCount = 1;
@@ -2597,7 +2731,6 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\laser1";
             animationInfo.frameWidth = 35;
             animationInfo.frameHeight = 27;
             animationInfo.frameCount = 1;
@@ -2825,7 +2958,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duckIconAlive";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 2;
@@ -2833,7 +2965,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duckIconOngoing";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -2841,7 +2972,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\duckIconDead";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -2894,7 +3024,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\AliveDuckIcon";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -2902,7 +3031,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\OngoingDuckIcon";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 2;
@@ -2910,7 +3038,6 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\DeadDuckIcon";
             animationInfo.frameWidth = 19;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -3076,7 +3203,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\SpriteFontTexture2";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3200,7 +3327,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\bulletIcon";
             animationInfo.frameWidth = 10;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -3228,7 +3354,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\bulletIcon";
             animationInfo.frameWidth = 10;
             animationInfo.frameHeight = 19;
             animationInfo.frameCount = 1;
@@ -3333,7 +3458,6 @@ namespace DuckHuntCommon
 
             // background
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\BulletBoard";
             animationInfo.frameWidth = 78;
             animationInfo.frameHeight = 58;
             animationInfo.frameCount = 1;
@@ -3356,7 +3480,6 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\BulletBoard";
             animationInfo.frameWidth = 78;
             animationInfo.frameHeight = 58;
             animationInfo.frameCount = 1;
@@ -3532,7 +3655,6 @@ namespace DuckHuntCommon
 
             // background
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ScoreBoard";
             animationInfo.frameWidth = 148;
             animationInfo.frameHeight = 65;
             animationInfo.frameCount = 1;
@@ -3554,7 +3676,6 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.texturesPath = "Graphics\\ScoreBoard";
             animationInfo.frameWidth = 148;
             animationInfo.frameHeight = 65;
             animationInfo.frameCount = 1;
@@ -3598,7 +3719,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\carton_font";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3863,6 +3984,295 @@ namespace DuckHuntCommon
             get
             {
                 return scorelist;
+            }
+        }
+    }
+
+
+    class TimeBoardModel : ModelObject
+    {
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        public TimeBoardModel()
+        {
+
+            space.Width = 220;
+            space.Height = 63;
+
+        }
+
+        public TimeBoardModel(Vector2 position1)
+        {
+            // get least of duck icon
+
+            space.Width = 220;
+            space.Height = 63;
+        }
+
+
+        public ModelType Type()
+        {
+            return ModelType.TIMEBOARD;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font_test";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+            if (lefttime >= 0)
+            {
+                lefttime -= gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (lefttime < 0)
+            {
+                lefttime = 0;
+            }
+
+            // update child object
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return null;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return -1;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+
+        double lefttime = 0;
+        public void SetTime(int time)
+        {
+            lefttime = time;
+        }
+
+        public int LeftTime
+        {
+            get
+            {
+                return (int)lefttime;
+            }
+        }
+    }
+
+
+
+    class LostDuckBoardModel : ModelObject
+    {
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        public LostDuckBoardModel()
+        {
+            //
+  
+            // get least of duck icon
+
+            space.Width = 220;
+            space.Height = 63;
+
+        }
+
+        public LostDuckBoardModel(Vector2 position1)
+        {
+            //
+            // get least of duck icon
+
+            space.Width = 220;
+            space.Height = 63;
+        }
+
+
+        public ModelType Type()
+        {
+            return ModelType.LOSTDUCKBOARD;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\gameFont";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
+        }
+
+
+        double lasttime = 0;
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+            // update child object
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return null;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            return -1;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+
+        int lostDuckCount = 0;
+        public void AddDuck(int count)
+        {
+            lostDuckCount += count;
+        }
+        public void ResetLostCount()
+        {
+            lostDuckCount = 0;
+        }
+
+        public int LostDuckCount
+        {
+            get
+            {
+                return lostDuckCount;
             }
         }
     }

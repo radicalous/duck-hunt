@@ -85,6 +85,16 @@ namespace DuckHuntCommon
                         viewObject = new MenuItemViewObject(model);
                     }
                     break;
+                case ModelType.TIMEBOARD:
+                    {
+                        viewObject = new TimeBoardViewObject(model);
+                    }
+                    break;
+                case ModelType.LOSTDUCKBOARD:
+                    {
+                        viewObject = new LostDuckBoardViewObject(model);
+                    }
+                    break;
             }
             if (commViewObj != null)
             {
@@ -520,6 +530,10 @@ namespace DuckHuntCommon
         Rectangle scoreListMenuSpace;
         Rectangle returnMenuSpace;
 
+        TimeBoardModel leftTime;
+        LostDuckBoardModel lostDuck;
+        Rectangle leftTimeBoardSpace;
+
 
         List<BulletModel> bulletsList;
         List<DuckModel> duckList;
@@ -582,6 +596,8 @@ namespace DuckHuntCommon
             objlst.Add(new ScroeBoardModel());
             objlst.Add(new MenuItemModel());
             objlst.Add(new ScroeListBoardModel());
+            objlst.Add(new TimeBoardModel());
+            objlst.Add(new LostDuckBoardModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -644,6 +660,15 @@ namespace DuckHuntCommon
                 }
                 objlst.Add(this.hitBoard);
                 objlst.Add(scoreBoard);
+
+                if (this.gameMode == GameMode.GAME_TIME_LIMIT)
+                {
+                    objlst.Add(leftTime);
+                }
+                else
+                {
+                    objlst.Add(lostDuck);
+                }
             }
             else if (phase == GAME_PHASE.DOG_SHOW)
             {
@@ -724,16 +749,25 @@ namespace DuckHuntCommon
                 currentduck += duckList.Count;
                  */
 
-                if (  gameMode != GameMode.GAME_TIME_LIMIT)
+                if (gameMode != GameMode.GAME_TIME_LIMIT)
                 {
                     foreach (DuckModel duck2 in duckList)
                     {
-                        if ( !duck2.dead)
+                        if (!duck2.dead)
                         {
-                            flycount++;
+                            //flycount++;
+                            lostDuck.AddDuck(1);
                         }
                     }
-                    if (flycount >= 3)
+                    if (lostDuck.LostDuckCount >= 3)
+                    {
+                        duckList.Clear();
+                        return;
+                    }
+                }
+                else
+                {
+                    if (leftTime.LeftTime <= 0)
                     {
                         duckList.Clear();
                         return;
@@ -788,6 +822,12 @@ namespace DuckHuntCommon
         {
             hitBoard = new HitBoardModel();
             hitBoard.Initialize(null, hitBoardSpace, 0);
+
+            leftTime = new TimeBoardModel();
+            leftTime.Initialize(null, leftTimeBoardSpace, 0);
+
+            lostDuck = new LostDuckBoardModel();
+            lostDuck.Initialize(null, leftTimeBoardSpace, 0);
         }
 
         void NewBulletBoard()
@@ -801,6 +841,7 @@ namespace DuckHuntCommon
         {
             scoreBoard = new ScroeBoardModel();
             scoreBoard.Initialize(null, scoreBoardSpace, 0);
+
         }
 
         void NewScoreListBoard()
@@ -838,6 +879,8 @@ namespace DuckHuntCommon
         void NewGame()
         {
             gameChapterMgr.Init(gameMode);
+            leftTime.SetTime(5 * 60);
+            lostDuck.ResetLostCount();
         }
         public void StartGame(Rectangle screenRect)
         {
@@ -1008,6 +1051,23 @@ namespace DuckHuntCommon
 
             }
 
+            TimeBoardModel timeBoard = new TimeBoardModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                leftTimeBoardSpace.X = rectBackground.Height - timeBoard.GetSpace().Width - 20;
+                leftTimeBoardSpace.Y = 20;
+                leftTimeBoardSpace.Width = timeBoard.GetSpace().Width;
+                leftTimeBoardSpace.Height = timeBoard.GetSpace().Height;
+            }
+            else
+            {
+
+                leftTimeBoardSpace.X = rectBackground.Width - timeBoard.GetSpace().Width - 20 ;
+                leftTimeBoardSpace.Y = 20;
+                leftTimeBoardSpace.Width = timeBoard.GetSpace().Width;
+                leftTimeBoardSpace.Height = timeBoard.GetSpace().Height;
+            }
+
             NewBackground();
             NewMenu();
             NewDog();
@@ -1040,6 +1100,11 @@ namespace DuckHuntCommon
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
+                if (gameMode == GameMode.GAME_TIME_LIMIT)
+                {
+                    leftTime.Update(gametime);
+                }
+
                 bool finished = true;
                 int deadcount = 0;
                 foreach (DuckModel duck in duckList)
