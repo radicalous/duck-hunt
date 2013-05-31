@@ -24,6 +24,11 @@ namespace GameCommon
         PilotType GetType();
     }
 
+    class PilotGroup
+    {
+        string name;
+
+    }
 
     class PilotManager
     {
