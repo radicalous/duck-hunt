@@ -5,3 +5,8 @@ Duck flying out
 //Game mode click pictures
 Dog images.
 Cartoon fonts.
+
+1. 大小可能有偏差
+2. 前后上下位置不一样， 所有走起来有点不流畅的感觉
+3. 有毛刺，感觉有点粗糙
+4. 看看能否把狗的颜色换换， 想我上次的那个baby pluto
