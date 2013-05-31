@@ -3203,7 +3203,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\SpriteFontTexture2";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3719,7 +3719,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\carton_font";
 #endif
             resourceList.Add(resourceItm);
 
@@ -4035,7 +4035,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\font_test";
 #endif
             resourceList.Add(resourceItm);
 
