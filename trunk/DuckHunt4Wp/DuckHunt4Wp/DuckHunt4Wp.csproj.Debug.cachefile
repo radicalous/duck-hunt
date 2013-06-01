@@ -39,7 +39,6 @@ Content\Graphics\duckForest_2.xnb
 Content\Graphics\sky_2.xnb
 Content\Graphics\duckForest_3.xnb
 Content\Graphics\duckForest_4.xnb
-Content\Graphics\bg_grass_a.xnb
 Content\Graphics\Cloud.xnb
 Content\Graphics\bg_grass.xnb
 Content\Graphics\bg_tree.xnb
@@ -64,5 +63,6 @@ Content\Sound\shoot.xnb
 Content\Sound\gameMusic.xnb
 Content\Sound\menuMusic.xnb
 Content\Graphics\font.xnb
+Content\Graphics\font1.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma

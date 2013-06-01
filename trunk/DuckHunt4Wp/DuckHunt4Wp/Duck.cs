@@ -478,8 +478,8 @@ namespace DuckHuntCommon
 
             color = new Color(253, 253, 253);
 
-            Color color1 = Color.Blue;
-            color1.A = 10;
+            Color color1 = Color.Yellow;
+            color1.A = 80;
             //DrawRectangle2(spriteBatch, rc, color1);
             //DrawRectangle(spriteBatch, rc, Color.Blue);
 
@@ -1047,7 +1047,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_3";
+            resourceItm.path = "Graphics\\sky_2";
             resourceList.Add(resourceItm);
             return resourceList;
         }
@@ -1719,7 +1719,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\font";
 #endif
             resourceList.Add(resourceItm);
 
@@ -2353,7 +2353,7 @@ namespace DuckHuntCommon
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 221;
-            animationInfo.frameHeight = 150;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
@@ -2748,8 +2748,8 @@ namespace DuckHuntCommon
             shootduckList = new List<DuckModel>();
         }
 
-        float deltax = 40f; //40f;
-        float deltay = -20f; //-20f;
+        float deltax = 48f; //40f;
+        float deltay = -18f; //-20f;
 
 
 
@@ -3203,7 +3203,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\SpriteFontTexture2";
+            resourceItm.path = "Graphics\\font";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3719,7 +3719,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\carton_font";
+            resourceItm.path = "Graphics\\font";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3899,7 +3899,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\font";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3997,7 +3997,7 @@ namespace DuckHuntCommon
         public TimeBoardModel()
         {
 
-            space.Width = 220;
+            space.Width = 300;
             space.Height = 63;
 
         }
@@ -4006,7 +4006,7 @@ namespace DuckHuntCommon
         {
             // get least of duck icon
 
-            space.Width = 220;
+            space.Width = 300;
             space.Height = 63;
         }
 
@@ -4035,7 +4035,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\font_test";
+            resourceItm.path = "Graphics\\font";
 #endif
             resourceList.Add(resourceItm);
 
@@ -4184,7 +4184,7 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
 #else
-            resourceItm.path = "Graphics\\gameFont";
+            resourceItm.path = "Graphics\\font";
 #endif
             resourceList.Add(resourceItm);
 
