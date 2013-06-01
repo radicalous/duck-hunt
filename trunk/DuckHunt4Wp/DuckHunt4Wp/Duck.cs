@@ -2352,57 +2352,57 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 150;
             animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 30000;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 150;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 250;
-            animationInfo.frameHeight = 152;
+            animationInfo.frameWidth = 221;
+            animationInfo.frameHeight = 200;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
