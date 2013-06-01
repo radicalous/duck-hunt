@@ -304,13 +304,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\bg_grass_a.png">
-      <Name>bg_grass_a</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Graphics\gameFont_10.spritefont">
       <Name>gameFont_10</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -429,6 +422,13 @@
   <ItemGroup>
     <Compile Include="Graphics\font.png">
       <Name>font</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\font1.png">
+      <Name>font1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>FontTextureProcessor</Processor>
     </Compile>

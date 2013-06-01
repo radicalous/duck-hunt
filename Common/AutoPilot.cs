@@ -24,6 +24,11 @@ namespace GameCommon
         PilotType GetType();
     }
 
+    class PilotGroup
+    {
+        string name;
+
+    }
 
     class PilotManager
     {
@@ -947,7 +952,7 @@ namespace GameCommon
         {
 
             // Update the elapsed time
-            //Position.X += deltax * factorx;
+            Position.X += 2;
             if (direction == 0)
             {
                 Position.Y -= deltay;

@@ -491,7 +491,7 @@ namespace DuckHuntCommon
             string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, color1/*Color.Yellow*/, 0, Vector2.Zero, 1, 
+            spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1, 
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -3997,7 +3997,7 @@ namespace DuckHuntCommon
         public TimeBoardModel()
         {
 
-            space.Width = 220;
+            space.Width = 300;
             space.Height = 63;
 
         }
@@ -4006,7 +4006,7 @@ namespace DuckHuntCommon
         {
             // get least of duck icon
 
-            space.Width = 220;
+            space.Width = 300;
             space.Height = 63;
         }
 

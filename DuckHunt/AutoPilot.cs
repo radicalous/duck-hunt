@@ -952,7 +952,7 @@ namespace GameCommon
         {
 
             // Update the elapsed time
-            //Position.X += deltax * factorx;
+            Position.X += 2;
             if (direction == 0)
             {
                 Position.Y -= deltay;
