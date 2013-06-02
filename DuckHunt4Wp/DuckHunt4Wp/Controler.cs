@@ -937,12 +937,12 @@ namespace DuckHuntCommon
             {
                 dogRunSpace.Width = rectBackground.Height;
                 dogRunSpace.Y = rectBackground.Width - 200 - 180;
-                dogRunSpace.Height = 180;
+                dogRunSpace.Height = 150;
             }
             else
             {
                 dogRunSpace.Width = rectBackground.Width;
-                dogRunSpace.Y = rectBackground.Height - 150-150;
+                dogRunSpace.Y = rectBackground.Height -(150+140);
                 dogRunSpace.Height = 150;
             }
 
