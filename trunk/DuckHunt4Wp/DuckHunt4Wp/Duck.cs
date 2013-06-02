@@ -462,7 +462,7 @@ namespace DuckHuntCommon
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            //ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
 
             // this rc is logic rc
             Rectangle rc = model.GetSpace();
@@ -703,10 +703,15 @@ namespace DuckHuntCommon
                 }
                 viewItmList.Add(viewItm);
             }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 20 * _defscale;
+            scoreposition.Y += 25 * _defscale;
         }
 
         public void Update(GameTime gameTime)
         {
+            /*
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             if (animationList[model.GetCurrentAnimationIndex()].animation)
             {
@@ -725,6 +730,7 @@ namespace DuckHuntCommon
             scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
             scoreposition.X += 20 * _defscale;
             scoreposition.Y += 25 * _defscale;
+             */
         }
 
         private void DrawRectangle(SpriteBatch spriteBatch, Rectangle coords, Color color)
@@ -1704,11 +1710,13 @@ namespace DuckHuntCommon
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
+            /*
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\MenuItemBg_selected";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
+             */
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\MenuItemBg_unselected";
             resourceList.Add(resourceItm);
@@ -2452,6 +2460,7 @@ namespace DuckHuntCommon
             resourceItm.path = "Graphics\\plutojumpdown";
             resourceList.Add(resourceItm);
             
+            /*
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\doglaugh";
@@ -2466,7 +2475,7 @@ namespace DuckHuntCommon
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\dogshowduck1";
             resourceList.Add(resourceItm);
-
+            */
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.SOUND;
             resourceItm.path = "Sound\\dog_found";
@@ -2989,6 +2998,7 @@ namespace DuckHuntCommon
         {
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
+            /*
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duckIconAlive";
@@ -3003,6 +3013,7 @@ namespace DuckHuntCommon
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duckIconDead";
             resourceList.Add(resourceItm);
+             */
 
 
             return resourceList;
@@ -3194,11 +3205,13 @@ namespace DuckHuntCommon
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
+            /*
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\HitBoardBackground";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
+             */
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
@@ -3369,11 +3382,12 @@ namespace DuckHuntCommon
         {
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
+            /*
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\bulletIcon";
             resourceList.Add(resourceItm);
-
+            */
             return resourceList;
         }
 
@@ -3507,10 +3521,12 @@ namespace DuckHuntCommon
         {
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
+            /*
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\BulletBoard";
             resourceList.Add(resourceItm);
+             */
 
             return resourceList;
         }
@@ -3710,11 +3726,13 @@ namespace DuckHuntCommon
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
+            /*
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\ScoreBoard";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
+             */
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
@@ -3890,11 +3908,13 @@ namespace DuckHuntCommon
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
+            /*
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\scorelistboard";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
+             */
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\gameFont_10";
