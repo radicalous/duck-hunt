@@ -13,6 +13,8 @@ using Microsoft.Xna.Framework.GamerServices;
 #if !WINDOWS_PHONE
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
+using System.Diagnostics;
+using System.IO;
 #endif
 
 using GameCommon;
@@ -30,7 +32,22 @@ namespace DuckHuntCommon
 
     class ViewObjectFactory
     {
-        public static ViewObject CreateViewObject(Rectangle screerc, ModelObject model, Vector2 orgpoint, float defscale)
+        static Vector2 s_playgroundOrgPoint;
+        static float s_playgroundDefScale;
+        static Vector2 s_backgroundOrgPoint;
+        static float s_backgroundDefScale;
+        static Rectangle s_localViewRect;
+
+        public static void SetLocalViewInfo(Rectangle localViewRc, Vector2 playgroundOrgPoint, float playgroundDefScale, Vector2 backgroundOrgPoint, float backgroundDefScale)
+        {
+            s_playgroundOrgPoint = playgroundOrgPoint;
+            s_playgroundDefScale = playgroundDefScale;
+            s_backgroundOrgPoint = backgroundOrgPoint;
+            s_backgroundDefScale = backgroundDefScale;
+            s_localViewRect = localViewRc;
+        }
+
+        public static ViewObject CreateViewObject(ModelObject model)
         {
             CommonViewObject commViewObj = null;
             ScoreBoardViewObject scoreboardObj = null;
@@ -43,11 +60,15 @@ namespace DuckHuntCommon
                 case ModelType.CLOUD:
                 case ModelType.GRASS:
                 case ModelType.FORGROUND:
+                    {
+                        commViewObj = new CommonViewObject(model, s_backgroundOrgPoint, s_backgroundDefScale);
+                    }
+                    break;
                 case ModelType.DOG:
                 case ModelType.DUCK:
                 case ModelType.BULLET:
                     {
-                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
                     }
                     break;
                 case ModelType.HITBOARD:
@@ -62,17 +83,17 @@ namespace DuckHuntCommon
                     break;
                 case ModelType.DUCKICON:
                     {
-                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
                     }
                     break;
                 case ModelType.BULLETBOARD:
                     {
-                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
                     }
                     break;
                 case ModelType.BULLETICON:
                     {
-                        commViewObj = new CommonViewObject(model, orgpoint, defscale);
+                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
                     }
                     break;
                 case ModelType.SCOREBOARD:
@@ -98,7 +119,7 @@ namespace DuckHuntCommon
             }
             if (commViewObj != null)
             {
-                commViewObj.screenRc = screerc;
+                commViewObj.screenRc = s_localViewRect;
                 viewObject = commViewObj;
             }
             if (scoreboardObj != null)
@@ -229,7 +250,11 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = ViewObjectFactory.CreateViewObject(this.viewRect, obj, game.orgpoint, game.defscale);
+                    //viewObject = ViewObjectFactory.CreateViewObject(this.viewRect, obj, game.orgpoint, game.defscale);
+                    Vector2 bgorgpoint = game.GetBgOrgPointInLocalView();
+                    float bgdefscale = game.GetLogicBgDefScale();
+                    viewObject = ViewObjectFactory.CreateViewObject(obj);
+
                     viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
@@ -256,7 +281,9 @@ namespace DuckHuntCommon
                 ViewObject viewObject = obj.GetViewObject();
                 if (viewObject == null)
                 {
-                    viewObject = ViewObjectFactory.CreateViewObject(this.viewRect, obj, game.orgpoint, game.defscale);
+                    Vector2 bgorgpoint = game.GetBgOrgPointInLocalView();
+                    float bgdefscale = game.GetLogicBgDefScale();
+                    viewObject = ViewObjectFactory.CreateViewObject(obj);
                     viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
                 }
@@ -479,56 +506,27 @@ namespace DuckHuntCommon
         }
     }
 
+    interface GamePage
+    {
+        void InitGamePage(DuckHuntGame game);
+        void GetObjects(out List<ModelObject> objlst);
+        void Update(GameTime gametime);
+        void Click(List<Vector2> clickpositionlist);
+    }
 
-    class DuckHuntGame
+    class GamePlayPage: GamePage
     {
 
         GAME_PHASE phase = GAME_PHASE.GAME_SELECT;
 
         GameChapterManager gameChapterMgr;
 
-        // org point
-        public Vector2 orgpoint;
-        // default scale
-        public float defscale;
-
-        Rectangle localViewRect = new Rectangle();
-        Rectangle globalViewRect = new Rectangle(0,0, 1600,900);
-
 
         // local rect, global rect
         // (local rect - orgpoint ) = global rect * default scale
         // local rect = orgpoint + global rect * default scale
         //
-       
 
-        // we need to extend the backgound so that local screen has black screen
-        Vector2 bgorgpoint;
-        float bgdefscale;
-        Rectangle localViewRect4Background = new Rectangle();
-
-
-
-        Rectangle rectBackground;
-        SkyModel blueSky;
-        CloudModel cloud;
-        GrassModel grass;
-        ForegroundGrassModel forground;
-
-        MenuItemModel menuTimeModelItem;
-        MenuItemModel menuFreeModelItem;
-
-        MenuItemModel menuGameOverItem;
-        MenuItemModel menuRestartItem;
-
-        MenuItemModel menuScoreListItem;
-        MenuItemModel menuReturnItem;
-
-        Rectangle timeModelMenuSpace;
-        Rectangle freeModelModelMenuSpace;
-
-        Rectangle scoreListMenuSpace;
-        Rectangle returnMenuSpace;
 
         TimeBoardModel leftTime;
         LostDuckBoardModel lostDuck;
@@ -542,386 +540,29 @@ namespace DuckHuntCommon
         DogModel dog;
         Rectangle dogRunSpace;
 
+
         HitBoardModel hitBoard;
         Rectangle hitBoardSpace;
-
-        BulletBoardModel bulletBoard;
-        Rectangle bulletBoardSpace;
 
         ScroeBoardModel scoreBoard;
         Rectangle scoreBoardSpace;
 
-        ScroeListBoardModel scoreListBoard;
-        Rectangle scoreListBoardSpace;
 
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
 
-        int currentduck = 0;
-        int bulletcount = 3;
-
-        public DuckHuntGame()
+        public  GamePlayPage()
         {
             bulletsList = new List<BulletModel>();
-
             gameChapterMgr = new GameChapterManager();
         }
 
-        public List<GameSound> GetSoundList()
+        public void InitGamePage(DuckHuntGame game)
         {
-            List<GameSound> soundList = new List<GameSound>();
-            GameSound sound = new GameSound();
-            sound.phase = GAME_PHASE.SEEK_DUCK;
-            sound.soundpath = "Sound\\gameMusic";
-            soundList.Add(sound);
-            return soundList;
-        }
+            duckHuntGame = game;
+            backgroundPage = game.GetBackgroundPage();
 
-
-        public void GetResources(out List<ObjectResourceItem> resourceList)
-        {
-            resourceList = new List<ObjectResourceItem>();
-
-            List<ModelObject> objlst = new List<ModelObject>();
-            // sky
-            objlst.Add(new SkyModel());
-            objlst.Add(new CloudModel());
-            objlst.Add(new GrassModel());
-            objlst.Add(new ForegroundGrassModel());
-            objlst.Add(new DuckModel());
-            objlst.Add(new DogModel());
-            objlst.Add(new BulletModel());
-            objlst.Add(new HitBoardModel());
-            objlst.Add(new DuckIconModel());
-            objlst.Add(new BulletBoardModel());
-            objlst.Add(new BulletIconModel());
-            objlst.Add(new ScroeBoardModel());
-            objlst.Add(new MenuItemModel());
-            objlst.Add(new ScroeListBoardModel());
-            objlst.Add(new TimeBoardModel());
-            objlst.Add(new LostDuckBoardModel());
-
-            foreach (ModelObject obj in objlst)
-            {
-                ObjectResourceItem objResItem = new ObjectResourceItem();
-                objResItem.objType = obj.Type();
-                objResItem.resourceList = obj.GetResourceList();
-                resourceList.Add(objResItem);
-            }
-
-        }
-
-        public void GetObjects(out List<ModelObject> objlst)
-        {
-            objlst = new List<ModelObject>();
-            if (phase == GAME_PHASE.GAME_SELECT)
-            {
-                objlst.Add(blueSky);
-                objlst.Add(cloud);
-                objlst.Add(grass);
-
-                objlst.Add(forground);
-
-                objlst.Add(menuTimeModelItem);
-                objlst.Add(menuFreeModelItem);
-                objlst.Add(menuGameOverItem);
-
-            }
-            else if (phase == GAME_PHASE.SCORELIST_SHOW)
-            {
-                objlst.Add(blueSky);
-                objlst.Add(cloud);
-                objlst.Add(grass);
-                objlst.Add(forground);
-                objlst.Add(scoreListBoard);
-                objlst.Add(menuReturnItem);
-
-            }
-            else if (phase == GAME_PHASE.SEEK_DUCK)
-            {
-                objlst.Add(blueSky);
-                objlst.Add(cloud);
-                objlst.Add(grass);
-                objlst.Add(dog);
-                objlst.Add(forground);
-            }
-            else if (phase == GAME_PHASE.DUCK_FLY)
-            {
-                objlst.Add(blueSky);
-                objlst.Add(cloud);
-                objlst.Add(grass);
-                objlst.Add(forground);
-
-                foreach (DuckModel duck in duckList)
-                {
-                    objlst.Add(duck);
-                }
-                foreach (BulletModel bullet in bulletsList)
-                {
-                    objlst.Add(bullet);
-                }
-                objlst.Add(this.hitBoard);
-                objlst.Add(scoreBoard);
-
-                if (this.gameMode == GameMode.GAME_TIME_LIMIT)
-                {
-                    objlst.Add(leftTime);
-                }
-                else
-                {
-                    objlst.Add(lostDuck);
-                }
-            }
-            else if (phase == GAME_PHASE.DOG_SHOW)
-            {
-                objlst.Add(blueSky);
-                objlst.Add(cloud);
-                objlst.Add(grass);
-                objlst.Add(forground);
-                //objlst.Add(bulletBoard);
-
-                objlst.Add(dog);
-                objlst.Add(this.hitBoard);
-                objlst.Add(scoreBoard);
-            }
-            else if (phase == GAME_PHASE.OVER)
-            {
-                objlst.Add(blueSky);
-                objlst.Add(cloud);
-                objlst.Add(grass);
-                objlst.Add(forground);
-
-                objlst.Add(menuGameOverItem);
-                objlst.Add(menuRestartItem);
-                objlst.Add(menuScoreListItem);
-
-            }
-        }
-
-        void NewBackground()
-        {
-            // dog seek duck
-            blueSky = new SkyModel();
-            blueSky.Initialize(null, rectBackground, 0);
-
-            cloud = new CloudModel();
-            cloud.Initialize(null, rectBackground, 0);
-
-            grass = new GrassModel();
-            grass.Initialize(null, rectBackground, 0);
-
-            forground = new ForegroundGrassModel();
-            forground.Initialize(null, rectBackground, 0);
-        }
-
-        void NewDog()
-        {
-            // dog seek duck
-            dog = new DogModel();
-            dog.Initialize(null, dogRunSpace, 0);
-            dog.StartPilot();
-        }
-
-        int flycount = 0;
-
-        GameMode gameMode = GameMode.GAME_TIME_LIMIT;
-        void NewDuck()
-        {
-            if (duckList == null)
-            {
-                duckList = new List<DuckModel>();
-            }
-            else
-            {
-                // set duck state
-                int ii = 0;
-                /*
-                foreach (DuckModel duck2 in duckList)
-                {
-                    if (duck2.dead)
-                    {
-                        hitBoard.SetDuckIconsState(currentduck + ii, DuckIconModel.DuckIconState.Dead);
-                    }
-                    else
-                    {
-                        hitBoard.SetDuckIconsState(currentduck + ii, DuckIconModel.DuckIconState.Alive);
-                    }
-                    ii++;
-                }
-                currentduck += duckList.Count;
-                 */
-
-                if (gameMode != GameMode.GAME_TIME_LIMIT)
-                {
-                    foreach (DuckModel duck2 in duckList)
-                    {
-                        if (!duck2.dead)
-                        {
-                            //flycount++;
-                            lostDuck.AddDuck(1);
-                        }
-                    }
-                    if (lostDuck.LostDuckCount >= 3)
-                    {
-                        duckList.Clear();
-                        return;
-                    }
-                }
-                else
-                {
-                    if (leftTime.LeftTime <= 0)
-                    {
-                        duckList.Clear();
-                        return;
-                    }
-                }
-                duckList.Clear();
-
-                /*
-                bulletcount = 3;
-                bulletBoard.LoadBullet(bulletcount);
-                 */
-            }
-
-            List<DuckModel> ducks = null;
-
-            do
-            {
-                if (chapter != null && chapter.GetDuckList(out ducks) && ducks != null && ducks.Count > 0)
-                {
-                    break;
-                }
-                gameChapterMgr.GetNextChapter(out chapter);
-            }while(chapter != null);
-
-            if (ducks == null)
-            {
-                return;
-            }
-
-            int i = 0;
-            DateTime now = System.DateTime.Now;
-            foreach (DuckModel duck in ducks)
-            {
-                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
-                duck.Initialize(null, duckFlySpace, s + (i++) * 7);
-                duck.StartPilot();
-                duckList.Add(duck);
-
-                /*
-                for (i = 0; i < concurrentduckcnt; i++)
-                {
-                    hitBoard.SetDuckIconsState(this.currentduck + i, DuckIconModel.DuckIconState.Ongoing);
-                }
-                 */
-            
-            }
-
-
-        }
-
-        void NewHitBoard()
-        {
-            hitBoard = new HitBoardModel();
-            hitBoard.Initialize(null, hitBoardSpace, 0);
-
-            leftTime = new TimeBoardModel();
-            leftTime.Initialize(null, leftTimeBoardSpace, 0);
-
-            lostDuck = new LostDuckBoardModel();
-            lostDuck.Initialize(null, leftTimeBoardSpace, 0);
-        }
-
-        void NewBulletBoard()
-        {
-            bulletBoard = new BulletBoardModel();
-            bulletBoard.Initialize(null, bulletBoardSpace, 0);
-            bulletBoard.LoadBullet(3);
-        }
-
-        void NewScoreBoard()
-        {
-            scoreBoard = new ScroeBoardModel();
-            scoreBoard.Initialize(null, scoreBoardSpace, 0);
-
-        }
-
-        void NewScoreListBoard()
-        {
-            scoreListBoard = new ScroeListBoardModel();
-            scoreListBoard.Initialize(null, scoreListBoardSpace, 0);
-        }
-
-        void NewMenu()
-        {
-            menuTimeModelItem = new MenuItemModel();
-            menuTimeModelItem.Initialize(null, timeModelMenuSpace, 0);
-            menuTimeModelItem.Conent = "Time Model";
-            menuFreeModelItem = new MenuItemModel();
-            menuFreeModelItem.Initialize(null, freeModelModelMenuSpace, 0);
-            menuFreeModelItem.Conent = "Free Model";
-
-            menuGameOverItem = new MenuItemModel();
-            menuGameOverItem.Initialize(null, returnMenuSpace, 0);
-            menuGameOverItem.Conent = "Quit";
-
-            menuRestartItem = new MenuItemModel();
-            menuRestartItem.Initialize(null, freeModelModelMenuSpace, 0);
-            menuRestartItem.Conent = "Retry";
-
-            menuScoreListItem = new MenuItemModel();
-            menuScoreListItem.Initialize(null, scoreListMenuSpace, 0);
-            menuScoreListItem.Conent = "Score List";
-
-            menuReturnItem = new MenuItemModel();
-            menuReturnItem.Initialize(null, returnMenuSpace, 0);
-            menuReturnItem.Conent = "Return";
-        }
-
-        void NewGame()
-        {
-            gameChapterMgr.Init(gameMode);
-            leftTime.SetTime(5 * 60);
-            lostDuck.ResetLostCount();
-        }
-        public void StartGame(Rectangle screenRect)
-        {
-
-            // logic rect 1600x900
-            // calculate our background rect
-            if ((float)screenRect.Width / screenRect.Height > 16.0 / 9)
-            {
-                // to wide, will full filll height
-                float occupiedw = screenRect.Height * 16.0f / 9;
-                this.orgpoint.X = (screenRect.Width-occupiedw)/2;
-                this.orgpoint.Y = 0;
-
-                localViewRect.X = (int)orgpoint.X;
-                localViewRect.Y = (int)orgpoint.Y;
-                localViewRect.Width = (int)occupiedw;
-                localViewRect.Height = screenRect.Height;
-            }
-            else
-            {
-                // to high, will full fill width
-                float occupiedh = screenRect.Width * 9.0f / 16;
-                this.orgpoint.X = 0;
-                this.orgpoint.Y = (screenRect.Height - occupiedh)/2;
-
-                localViewRect.X = (int)orgpoint.X;
-                localViewRect.Y = (int)orgpoint.Y;
-                localViewRect.Width = screenRect.Width;
-                localViewRect.Height = (int)occupiedh;
-            }       
-            // calculate default scale
-            this.defscale = localViewRect.Width * 1.0f / globalViewRect.Width;
-
-            // calculate background settings
-
-
-
-            //
-            // load textures
-
-            rectBackground = globalViewRect;
+            Rectangle rectBackground = duckHuntGame.GetGlobalViewRect();
             if (rectBackground.Width < rectBackground.Height)
             {
                 duckFlySpace.Width = rectBackground.Height - 150;
@@ -942,9 +583,10 @@ namespace DuckHuntCommon
             else
             {
                 dogRunSpace.Width = rectBackground.Width;
-                dogRunSpace.Y = rectBackground.Height -(150+140);
+                dogRunSpace.Y = rectBackground.Height - (150 + 140);
                 dogRunSpace.Height = 150;
             }
+
 
             HitBoardModel hitBoard1 = new HitBoardModel();
             if (rectBackground.Width < rectBackground.Height)
@@ -957,26 +599,9 @@ namespace DuckHuntCommon
             else
             {
                 hitBoardSpace.X = rectBackground.Left + 20;
-                hitBoardSpace.Y = rectBackground.Top +10;
+                hitBoardSpace.Y = rectBackground.Top + 10;
                 hitBoardSpace.Width = hitBoard1.GetSpace().Width;
                 hitBoardSpace.Height = hitBoard1.GetSpace().Height;
-            }
-
-
-            BulletBoardModel bulletBoard1 = new BulletBoardModel();
-            if (rectBackground.Width < rectBackground.Height)
-            {
-                bulletBoardSpace.X = 52;
-                bulletBoardSpace.Y = rectBackground.Width - 68;
-                bulletBoardSpace.Width = bulletBoard1.GetSpace().Width;
-                bulletBoardSpace.Height = bulletBoard1.GetSpace().Height;
-            }
-            else
-            {
-                bulletBoardSpace.X = 52;
-                bulletBoardSpace.Y = rectBackground.Height - 68;
-                bulletBoardSpace.Width = bulletBoard1.GetSpace().Width;
-                bulletBoardSpace.Height = bulletBoard1.GetSpace().Height;
             }
 
             ScroeBoardModel scoreBoard1 = new ScroeBoardModel();
@@ -995,61 +620,6 @@ namespace DuckHuntCommon
                 scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
             }
 
-            ScroeListBoardModel scoreListBoard1 = new ScroeListBoardModel();
-            if (rectBackground.Width < rectBackground.Height)
-            {
-                scoreListBoardSpace.X = rectBackground.Top +
-                    (rectBackground.Height - scoreListBoard1.GetSpace().Width) / 2 - 100;
-                scoreListBoardSpace.Y = rectBackground.Left + 30;
-                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
-                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
-            }
-            else
-            {
-                scoreListBoardSpace.X = rectBackground.Left +
-                    (rectBackground.Width-scoreListBoard1.GetSpace().Width)/2 - 100;
-                scoreListBoardSpace.Y = rectBackground.Top + 30;
-                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
-                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
-            }
-
-            
-
-            MenuItemModel menuItem = new MenuItemModel();
-            if (rectBackground.Width < rectBackground.Height)
-            {
-                timeModelMenuSpace.X = rectBackground.Height - 150;
-                timeModelMenuSpace.Y = rectBackground.Width - 150;
-                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
-                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
-
-                freeModelModelMenuSpace = timeModelMenuSpace;
-                freeModelModelMenuSpace.Y += 100;
-
-                scoreListMenuSpace = freeModelModelMenuSpace;
-                scoreListMenuSpace.Y += 100;
-
-                returnMenuSpace = timeModelMenuSpace;
-                returnMenuSpace.Y -= 100;
-
-            }
-            else
-            {
-                timeModelMenuSpace.X = rectBackground.Width/2 - 150;
-                timeModelMenuSpace.Y = rectBackground.Height/2 - 150;
-                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
-                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
-
-                freeModelModelMenuSpace = timeModelMenuSpace;
-                freeModelModelMenuSpace.Y += 100;
-
-                scoreListMenuSpace = freeModelModelMenuSpace;
-                scoreListMenuSpace.Y += 100;
-
-                returnMenuSpace = timeModelMenuSpace;
-                returnMenuSpace.Y -= 100;
-
-            }
 
             TimeBoardModel timeBoard = new TimeBoardModel();
             if (rectBackground.Width < rectBackground.Height)
@@ -1062,26 +632,60 @@ namespace DuckHuntCommon
             else
             {
 
-                leftTimeBoardSpace.X = rectBackground.Width - timeBoard.GetSpace().Width - 20 ;
+                leftTimeBoardSpace.X = rectBackground.Width - timeBoard.GetSpace().Width - 20;
                 leftTimeBoardSpace.Y = 20;
                 leftTimeBoardSpace.Width = timeBoard.GetSpace().Width;
                 leftTimeBoardSpace.Height = timeBoard.GetSpace().Height;
             }
 
-            NewBackground();
-            NewMenu();
             NewDog();
-            NewHitBoard();
-            NewBulletBoard();
             NewScoreBoard();
-            NewScoreListBoard();
+            NewAssistBoard();
         }
 
+
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+            if (phase == GAME_PHASE.SEEK_DUCK)
+            {
+                objlst.Add(dog);
+            }
+            else if (phase == GAME_PHASE.DUCK_FLY)
+            {
+                foreach (DuckModel duck in duckList)
+                {
+                    objlst.Add(duck);
+                }
+                foreach (BulletModel bullet in bulletsList)
+                {
+                    objlst.Add(bullet);
+                }
+                objlst.Add(hitBoard);
+                objlst.Add(scoreBoard);
+
+                if (this.gameMode == GameMode.GAME_TIME_LIMIT)
+                {
+                    objlst.Add(leftTime);
+                }
+                else
+                {
+                    objlst.Add(lostDuck);
+                }
+            }
+
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+        }
         GameChapter chapter;
         public void Update(GameTime gametime)
         {
             //
-            cloud.Update(gametime);
+            backgroundPage.Update(gametime);
             if (phase == GAME_PHASE.GAME_SELECT)
             {
             }
@@ -1146,28 +750,811 @@ namespace DuckHuntCommon
                     else
                     {
                         phase = GAME_PHASE.OVER;
+                        duckHuntGame.GotoMainMenuPage();
                     }
                 }
             }
-            /* will not let dog show
-            else if (phase == GAME_PHASE.DOG_SHOW)
+        }
+
+        public void Click(List<Vector2> clickpositionlist)
+        {
+            if (phase != GAME_PHASE.DUCK_FLY)
             {
-                dog.Update(gametime);
-                if (dog.Gone)
-                {
-                    NewDuck();
-                    if (duckList.Count > 0 )
-                    {
-                        phase = GAME_PHASE.DUCK_FLY;
-                    }
-                    else
-                    {
-                        phase = GAME_PHASE.OVER;
-                    }
-                    round++;
-                }
+                return;
             }
-            */
+
+            if (bulletsList.Count > 0)
+            {
+                return;
+            }
+
+            // new a bullet
+            foreach (Vector2 clickpos in clickpositionlist)
+            {
+
+                BulletModel bullet = new BulletModel(clickpos);
+                foreach (DuckModel duck in duckList)
+                {
+                    duck.Shoot(bullet);
+                }
+
+                bullet.AdjustForFlyEffect();
+                bulletsList.Add(bullet);
+
+                if (bullet.GetShootDucks() != null)
+                {
+                    //
+                    float score = 100;
+                    for (int i = 0; i < bullet.GetShootDucks().Count; i++)
+                    {
+                        score = 100;
+                        score *= (i + 1);
+                        score /= bullet.GetShootDucks()[i].GetSacle();
+                        scoreBoard.AddScore((int)score);
+
+                    }
+
+                    int ii = 0;
+                    foreach (DuckModel duck2 in duckList)
+                    {
+                        if (duck2.dead)
+                        {
+                            hitBoard.AddHitCount(1);
+                        }
+                        ii++;
+                    }
+
+                }
+
+            }
+        }
+
+
+
+        /////////////////////////////////////////////////////
+
+        void NewDog()
+        {
+            // dog seek duck
+            dog = new DogModel();
+            dog.Initialize(null, dogRunSpace, 0);
+            dog.StartPilot();
+        }
+
+        void NewScoreBoard()
+        {
+            scoreBoard = new ScroeBoardModel();
+            scoreBoard.Initialize(null, scoreBoardSpace, 0);
+
+        }
+
+        void NewAssistBoard()
+        {
+            hitBoard = new HitBoardModel();
+            hitBoard.Initialize(null, hitBoardSpace, 0);
+
+            leftTime = new TimeBoardModel();
+            leftTime.Initialize(null, leftTimeBoardSpace, 0);
+
+            lostDuck = new LostDuckBoardModel();
+            lostDuck.Initialize(null, leftTimeBoardSpace, 0);
+        }
+
+        int flycount = 0;
+
+        GameMode gameMode = GameMode.GAME_TIME_LIMIT;
+        void NewDuck()
+        {
+            if (duckList == null)
+            {
+                duckList = new List<DuckModel>();
+            }
+            else
+            {
+                // set duck state
+                int ii = 0;
+
+                if (gameMode != GameMode.GAME_TIME_LIMIT)
+                {
+                    foreach (DuckModel duck2 in duckList)
+                    {
+                        if (!duck2.dead)
+                        {
+                            //flycount++;
+                            lostDuck.AddDuck(1);
+                        }
+                    }
+                    if (lostDuck.LostDuckCount >= 3)
+                    {
+                        duckList.Clear();
+                        return;
+                    }
+                }
+                else
+                {
+                    if (leftTime.LeftTime <= 0)
+                    {
+                        duckList.Clear();
+                        return;
+                    }
+                }
+                duckList.Clear();
+            }
+
+            List<DuckModel> ducks = null;
+
+            do
+            {
+                if (chapter != null && chapter.GetDuckList(out ducks) && ducks != null && ducks.Count > 0)
+                {
+                    break;
+                }
+                gameChapterMgr.GetNextChapter(out chapter);
+            } while (chapter != null);
+
+            if (ducks == null)
+            {
+                return;
+            }
+
+            int i = 0;
+            DateTime now = System.DateTime.Now;
+            foreach (DuckModel duck in ducks)
+            {
+                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                duck.StartPilot();
+                duckList.Add(duck);
+
+            }
+        }
+
+        public void NewGame(GameMode gameMode1)
+        {
+            gameMode = gameMode1;
+            gameChapterMgr.Init(gameMode);
+            leftTime.SetTime(5 * 60);
+            lostDuck.ResetLostCount();
+            phase = GAME_PHASE.SEEK_DUCK;
+        }
+    }
+
+    class GameMainMenuPage : GamePage
+    {
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
+        MenuItemModel menuTimeModelItem;
+        MenuItemModel menuFreeModelItem;
+
+        MenuItemModel menuGameOverItem;
+        MenuItemModel menuRestartItem;
+
+        MenuItemModel menuScoreListItem;
+        MenuItemModel menuReturnItem;
+
+        Rectangle timeModelMenuSpace;
+        Rectangle freeModelModelMenuSpace;
+
+        Rectangle scoreListMenuSpace;
+        Rectangle returnMenuSpace;
+
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
+        public void InitGamePage(DuckHuntGame game)
+        {
+            duckHuntGame = game;
+            backgroundPage = game.GetBackgroundPage();
+
+            Rectangle rectBackground = game.GetGlobalViewRect();
+
+
+            MenuItemModel menuItem = new MenuItemModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                timeModelMenuSpace.X = rectBackground.Height - 150;
+                timeModelMenuSpace.Y = rectBackground.Width - 150;
+                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
+                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
+
+                freeModelModelMenuSpace = timeModelMenuSpace;
+                freeModelModelMenuSpace.Y += 100;
+
+                scoreListMenuSpace = freeModelModelMenuSpace;
+                scoreListMenuSpace.Y += 100;
+
+                returnMenuSpace = timeModelMenuSpace;
+                returnMenuSpace.Y -= 100;
+
+            }
+            else
+            {
+                timeModelMenuSpace.X = rectBackground.Width / 2 - 150;
+                timeModelMenuSpace.Y = rectBackground.Height / 2 - 150;
+                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
+                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
+
+                freeModelModelMenuSpace = timeModelMenuSpace;
+                freeModelModelMenuSpace.Y += 100;
+
+                scoreListMenuSpace = freeModelModelMenuSpace;
+                scoreListMenuSpace.Y += 100;
+
+                returnMenuSpace = timeModelMenuSpace;
+                returnMenuSpace.Y -= 100;
+
+            }
+
+            NewMenu();
+        }
+
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+
+            objlst.Add(menuTimeModelItem);
+            objlst.Add(menuFreeModelItem);
+            objlst.Add(menuGameOverItem);
+
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+
+        }
+        public void Update(GameTime gametime)
+        {
+            backgroundPage.Update(gametime);
+            menuTimeModelItem.Update(gametime);
+            menuFreeModelItem.Update(gametime);
+            menuGameOverItem.Update(gametime);
+
+        }
+
+
+        public void Click(List<Vector2> clickpositionlist)
+        {
+            foreach (Vector2 clickpos in clickpositionlist)
+            {
+
+                if (menuTimeModelItem.Hit(clickpos))
+                {
+
+                    //duckHuntGame.StartGame
+                    duckHuntGame.gameMode = GameMode.GAME_TIME_LIMIT;
+
+                    duckHuntGame.NewGame();
+
+                    return;
+                }
+
+                if (menuFreeModelItem.Hit(clickpos))
+                {
+                    // free model
+
+                    duckHuntGame.gameMode = GameMode.GAME_FREE_MODE;
+
+                    duckHuntGame.NewGame();
+
+                    return;
+                }
+
+
+                if (menuGameOverItem.Hit(clickpos))
+                {
+                    // free model
+#if WINDOWS_PHONE
+                    /*
+                    if (!Guide.IsVisible)
+                        //弹出软键盘输入框
+                        Guide.BeginShowKeyboardInput(PlayerIndex.One, "test", "test description",
+                            sipResult, keyboardCallback, new object());
+                    */
+#else
+                    //Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.System) + Path.DirectorySeparatorChar + "osk.exe");
+
+                    DuckHunt.App app = (DuckHunt.App)DuckHunt.App.Current;
+
+                    if (app.playerPage == null)
+                    {
+                        app.playerPage = new DuckHunt.PlayerInputPage();
+                    }
+                    app.playerPage.PreviousPage = Window.Current.Content;
+                    app.playerPage.Focus(FocusState.Keyboard);
+                    Window.Current.Content = app.playerPage;
+                    Window.Current.Activate();
+                    app.playerPage.Focus(FocusState.Keyboard);
+#endif
+
+                    return;
+                }
+
+            }
+            return;
+        }
+
+        /////////
+
+        void NewMenu()
+        {
+            menuTimeModelItem = new MenuItemModel();
+            menuTimeModelItem.Initialize(null, timeModelMenuSpace, 0);
+            menuTimeModelItem.Conent = "Time Model";
+            menuFreeModelItem = new MenuItemModel();
+            menuFreeModelItem.Initialize(null, freeModelModelMenuSpace, 0);
+            menuFreeModelItem.Conent = "Free Model";
+
+            menuGameOverItem = new MenuItemModel();
+            menuGameOverItem.Initialize(null, returnMenuSpace, 0);
+            menuGameOverItem.Conent = "Quit";
+
+            menuRestartItem = new MenuItemModel();
+            menuRestartItem.Initialize(null, freeModelModelMenuSpace, 0);
+            menuRestartItem.Conent = "Retry";
+
+            menuScoreListItem = new MenuItemModel();
+            menuScoreListItem.Initialize(null, scoreListMenuSpace, 0);
+            menuScoreListItem.Conent = "Score List";
+
+            menuReturnItem = new MenuItemModel();
+            menuReturnItem.Initialize(null, returnMenuSpace, 0);
+            menuReturnItem.Conent = "Return";
+        }
+    }
+
+    class GameScoreListPage : GamePage
+    {
+        ScroeListBoardModel scoreListBoard;
+        Rectangle scoreListBoardSpace;
+
+
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
+
+        public void InitGamePage(DuckHuntGame game)
+        {
+            duckHuntGame = game;
+            backgroundPage = duckHuntGame.GetBackgroundPage();
+
+
+            Rectangle rectBackground = duckHuntGame.GetGlobalViewRect();
+            ScroeListBoardModel scoreListBoard1 = new ScroeListBoardModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                scoreListBoardSpace.X = rectBackground.Top +
+                    (rectBackground.Height - scoreListBoard1.GetSpace().Width) / 2 - 100;
+                scoreListBoardSpace.Y = rectBackground.Left + 30;
+                scoreListBoardSpace.Width = scoreListBoard1.GetSpace().Width;
+                scoreListBoardSpace.Height = scoreListBoard1.GetSpace().Height;
+            }
+            else
+            {
+                scoreListBoardSpace.X = rectBackground.Left +
+                    (rectBackground.Width - scoreListBoard1.GetSpace().Width) / 2 - 100;
+                scoreListBoardSpace.Y = rectBackground.Top + 30;
+                scoreListBoardSpace.Width = scoreListBoard1.GetSpace().Width;
+                scoreListBoardSpace.Height = scoreListBoard1.GetSpace().Height;
+            }
+
+        }
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+
+            objlst.Add(scoreListBoard);
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+        }
+        public void Update(GameTime gametime)
+        {
+            backgroundPage.Update(gametime);
+            scoreListBoard.Update(gametime);
+
+            // 
+        }
+        public void Click(List<Vector2> clickpositionlist)
+        {
+            // check return button
+        }
+
+
+        /////
+        void NewScoreListBoard()
+        {
+            scoreListBoard = new ScroeListBoardModel();
+            scoreListBoard.Initialize(null, scoreListBoardSpace, 0);
+        }
+    }
+
+    class GameOverPage : GamePage
+    {
+        public void InitGamePage(DuckHuntGame game)
+        {
+        }
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = null;
+        }
+        public void Update(GameTime gametime)
+        {
+        }
+        public void Click(List<Vector2> clickpositionlist)
+        {
+        }
+    }
+
+    class GameHelpPage : GamePage
+    {
+        public void InitGamePage(DuckHuntGame game)
+        {
+        }
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = null;
+        }
+        public void Update(GameTime gametime)
+        {
+        }
+        public void Click(List<Vector2> clickpositionlist)
+        {
+        }
+    }
+
+    class GameConfigPage : GamePage
+    {
+        public void InitGamePage(DuckHuntGame game)
+        {
+        }
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = null;
+        }
+        public void Update(GameTime gametime)
+        {
+        }
+        public void Click(List<Vector2> clickpositionlist)
+        {
+        }
+    }
+
+    class GameBackGroundPage : GamePage
+    {
+        Rectangle rectBackground;
+        SkyModel blueSky;
+        CloudModel cloud;
+        GrassModel grass;
+        ForegroundGrassModel forground;
+
+        public void InitGamePage(DuckHuntGame game)
+        {
+            rectBackground = game.GetGlobalViewRect();
+
+
+            // calculate background settings
+            NewBackground();
+        }
+
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+            objlst.Add(blueSky);
+            objlst.Add(cloud);
+            objlst.Add(grass);
+            objlst.Add(forground);
+
+        }
+        public void Update(GameTime gametime)
+        {
+            cloud.Update(gametime);
+        }
+        public void Click(List<Vector2> clickpositionlist)
+        {
+        }
+
+
+        //////
+        void NewBackground()
+        {
+            // dog seek duck
+            blueSky = new SkyModel();
+            blueSky.Initialize(null, rectBackground, 0);
+
+            cloud = new CloudModel();
+            cloud.Initialize(null, rectBackground, 0);
+
+            grass = new GrassModel();
+            grass.Initialize(null, rectBackground, 0);
+
+            forground = new ForegroundGrassModel();
+            forground.Initialize(null, rectBackground, 0);
+        }
+    }
+
+    class DuckHuntGame
+    {
+
+        GAME_PHASE phase = GAME_PHASE.GAME_SELECT;
+
+        GameChapterManager gameChapterMgr;
+
+        // org point
+        public Vector2 orgpoint;
+        // default scale
+        public float defscale;
+
+        Rectangle localViewRect = new Rectangle();
+        Rectangle globalViewRect = new Rectangle(0,0, 1600,900);
+
+
+        public Rectangle GetGlobalViewRect()
+        {
+            return globalViewRect;
+        }
+
+        public Rectangle GetLocalViewRect()
+        {
+            return localViewRect;
+        }
+
+
+
+        public float GetLogicDefScale()
+        {
+            return defscale;
+        }
+
+        public Vector2 GetOrgPointInLocalView()
+        {
+            return orgpoint;
+        }
+
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+       
+
+        // we need to extend the backgound so that local screen has black screen
+        Vector2 bgorgpoint;
+        float bgdefscale;
+        Rectangle localViewRect4Background = new Rectangle();
+
+        public Rectangle GetLocalBgViewRect()
+        {
+            return localViewRect4Background;
+        }
+
+        public float GetLogicBgDefScale()
+        {
+            return bgdefscale;
+        }
+
+        public Vector2 GetBgOrgPointInLocalView()
+        {
+            return bgorgpoint;
+        }
+
+        //
+        GameBackGroundPage backgroundPage;
+        GameMainMenuPage mainMenuPage;
+        GamePlayPage playPage = null;
+
+        GamePage currentPage = null;
+        public DuckHuntGame()
+        {
+            backgroundPage = new GameBackGroundPage();
+            mainMenuPage = new GameMainMenuPage();
+            playpage = new GamePlayPage();
+            currentPage = mainMenuPage;
+        }
+
+        public List<GameSound> GetSoundList()
+        {
+            List<GameSound> soundList = new List<GameSound>();
+            GameSound sound = new GameSound();
+            sound.phase = GAME_PHASE.SEEK_DUCK;
+            sound.soundpath = "Sound\\gameMusic";
+            soundList.Add(sound);
+            return soundList;
+        }
+
+
+        public void GetResources(out List<ObjectResourceItem> resourceList)
+        {
+            resourceList = new List<ObjectResourceItem>();
+
+            List<ModelObject> objlst = new List<ModelObject>();
+            // sky
+            objlst.Add(new SkyModel());
+            objlst.Add(new CloudModel());
+            objlst.Add(new GrassModel());
+            objlst.Add(new ForegroundGrassModel());
+            objlst.Add(new DuckModel());
+            objlst.Add(new DogModel());
+            objlst.Add(new BulletModel());
+            objlst.Add(new HitBoardModel());
+            objlst.Add(new DuckIconModel());
+            objlst.Add(new BulletBoardModel());
+            objlst.Add(new BulletIconModel());
+            objlst.Add(new ScroeBoardModel());
+            objlst.Add(new MenuItemModel());
+            objlst.Add(new ScroeListBoardModel());
+            objlst.Add(new TimeBoardModel());
+            objlst.Add(new LostDuckBoardModel());
+
+            foreach (ModelObject obj in objlst)
+            {
+                ObjectResourceItem objResItem = new ObjectResourceItem();
+                objResItem.objType = obj.Type();
+                objResItem.resourceList = obj.GetResourceList();
+                resourceList.Add(objResItem);
+            }
+
+        }
+
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            currentPage.GetObjects(out objlst);
+            return;
+        }
+
+        public GameBackGroundPage GetBackgroundPage()
+        {
+            return backgroundPage;
+        }
+
+        public GamePlayPage GetPlayPage()
+        {
+            return playpage;
+        }
+
+        public GameMainMenuPage GetMainMenuPage()
+        {
+            return mainMenuPage;
+        }
+
+        public void GotoMainMenuPage()
+        {
+            currentPage = mainMenuPage;
+        }
+
+        public void GotoPlayPage()
+        {
+            currentPage = playpage;
+        }
+
+        public void GotoGameOverPage()
+        {
+
+        }
+
+
+
+
+        public GameMode gameMode = GameMode.GAME_TIME_LIMIT;
+
+
+
+        GamePlayPage playpage = new GamePlayPage();
+
+        public void NewGame()
+        {
+
+            playpage = new GamePlayPage();
+            playpage.InitGamePage(this);
+
+            playpage.NewGame(gameMode);
+            GotoPlayPage();
+        }
+        Rectangle screenRect = new Rectangle();
+
+        public void StartGame(Rectangle screenRect1)
+        {
+            screenRect = screenRect1;
+
+            NewBackgroundPage();
+            NewMainMenuPage();
+            NewPlayPage();
+
+            // logic rect 1600x900
+            // calculate our background rect
+
+            float logicWtoH = globalViewRect.Width * 1.0f / globalViewRect.Height;
+            // calculate background view
+            if ((float)screenRect.Width / screenRect.Height > logicWtoH)
+            {
+                // too wide, we need fullfill width, so that height should exceed the screen height
+                float occupiedh = screenRect.Width * 1.0f/logicWtoH;
+                this.bgorgpoint.X = 0;
+                this.bgorgpoint.Y = -(occupiedh - screenRect.Height);
+
+                localViewRect4Background.X = (int)bgorgpoint.X;
+                localViewRect4Background.Y = (int)bgorgpoint.Y;
+                localViewRect4Background.Width = (int)screenRect.Width;
+                localViewRect4Background.Height = (int)occupiedh;
+
+                bgdefscale = screenRect.Width * 1.0f / globalViewRect.Width;
+
+            }
+            else
+            {
+                // too high, need to fullfill height, so width will exceed the screen width
+                // too wide, we need fullfill width, so that height should exceed the screen height
+                float occupiedw = screenRect.Height * logicWtoH;
+                this.bgorgpoint.X = -(occupiedw - screenRect.Width) / 2;
+                this.bgorgpoint.Y = 0;
+
+                localViewRect4Background.X = (int)bgorgpoint.X;
+                localViewRect4Background.Y = (int)bgorgpoint.Y;
+                localViewRect4Background.Width = (int)occupiedw;
+                localViewRect4Background.Height = (int)screenRect.Height;
+
+                bgdefscale = screenRect.Height * 1.0f / globalViewRect.Height;
+            }
+
+
+            // calcualte the logic view 
+
+            if ((float)screenRect.Width / screenRect.Height > logicWtoH)
+            {
+                // to wide, will full filll height
+                float occupiedw = screenRect.Height * logicWtoH;
+                this.orgpoint.X = (screenRect.Width-occupiedw)/2;
+                this.orgpoint.Y = 0;
+
+                localViewRect.X = (int)orgpoint.X;
+                localViewRect.Y = (int)orgpoint.Y;
+                localViewRect.Width = (int)occupiedw;
+                localViewRect.Height = screenRect.Height;
+
+                this.defscale = localViewRect.Height * 1.0f / globalViewRect.Height;
+            }
+            else
+            {
+                // to high, will full fill width
+                float occupiedh = screenRect.Width * 1.0f / logicWtoH;
+                this.orgpoint.X = 0;
+
+                // align to bottom
+                this.orgpoint.Y = screenRect.Height - occupiedh;
+
+                localViewRect.X = (int)orgpoint.X;
+                localViewRect.Y = (int)orgpoint.Y;
+                localViewRect.Width = screenRect.Width;
+                localViewRect.Height = (int)occupiedh;
+
+                this.defscale = localViewRect.Width * 1.0f / globalViewRect.Width;
+            }
+
+            ViewObjectFactory.SetLocalViewInfo(screenRect, orgpoint, defscale, bgorgpoint, bgdefscale);
+        }
+
+        void NewBackgroundPage()
+        {
+            backgroundPage.InitGamePage(this);
+        }
+        void NewPlayPage()
+        {
+            playpage.InitGamePage(this);
+        }
+
+        void NewMainMenuPage()
+        {
+            mainMenuPage.InitGamePage(this);
+        }
+
+        public void Update(GameTime gametime)
+        {
+            currentPage.Update(gametime);
+            return;
         }
         string sipResult = "You type stuff here.";
 
@@ -1189,7 +1576,9 @@ namespace DuckHuntCommon
         Vector2 oldshootposition = Vector2.Zero;
         public void Click(List<Vector2> clickpositionlist)
         {
-
+            currentPage.Click(clickpositionlist);
+            return;
+            /*
             if (phase == GAME_PHASE.GAME_SELECT)
             {
                 foreach (Vector2 clickpos in clickpositionlist)
@@ -1221,13 +1610,13 @@ namespace DuckHuntCommon
                     {
                         // free model
 #if WINDOWS_PHONE
-                        /*
                         if (!Guide.IsVisible)
                             //弹出软键盘输入框
                             Guide.BeginShowKeyboardInput(PlayerIndex.One, "test", "test description",
                                 sipResult, keyboardCallback, new object());
-                        */
 #else
+                        //Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.System) + Path.DirectorySeparatorChar + "osk.exe");
+
                         DuckHunt.App app = (DuckHunt.App)DuckHunt.App.Current;
 
                         if (app.playerPage == null)
@@ -1245,36 +1634,12 @@ namespace DuckHuntCommon
                     }
 
                 }
-                return;
-            }
-
-            if (phase == GAME_PHASE.OVER)
-            {
-                foreach (Vector2 clickpos in clickpositionlist)
-                {
-
-
-                    if (menuRestartItem.Hit(clickpos))
-                    {
-                        // free model
-
-                        phase = GAME_PHASE.GAME_SELECT;
-                        gameMode = GameMode.GAME_FREE_MODE;
-                        NewGame();
-                        return;
-                    }
-                    if (menuScoreListItem.Hit(clickpos))
-                    {
-                        phase = GAME_PHASE.SCORELIST_SHOW;
-                        return;
-                    }
-                }
-
-
+             */
                 return;
             }
 
 
+            /*
             if (phase == GAME_PHASE.SCORELIST_SHOW)
             {
 
@@ -1344,10 +1709,8 @@ namespace DuckHuntCommon
                 }
 
             }
-
-            //bulletcount--;
-            //bulletBoard.RemoveFirstBullet();
         }
+        */
     }
 
 }
