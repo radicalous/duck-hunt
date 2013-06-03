@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics; 
@@ -9,8 +10,8 @@ namespace GameCommon
     public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
     public enum PilotType { DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD,DUCKFLYAWAY, 
 							DUCKEIGHT, DUCKCIRCLE, DUCKELLIPSE, DUCKSIN,
-        DOGSEEK, DOGJUMP, DOGSHOW, 
-        CLOUD,
+                            DOGSEEK, DOGJUMP, DOGSHOW, 
+                            CLOUD,
     };
 
     interface AiPilot
@@ -24,14 +25,9 @@ namespace GameCommon
         PilotType GetType();
     }
 
-    class PilotGroup
-    {
-        string name;
-
-    }
-
     class PilotManager
     {
+        Dictionary<string, int> pilotGroup = new Dictionary<string, int>();
         static PilotManager instance;
         public PilotManager()
         {
@@ -57,8 +53,9 @@ namespace GameCommon
             string name = "";
             return CreatePilot(type, pos, name);
         }
+
         public AiPilot CreatePilot(PilotType type, Vector2 pos, string clustername)
-        {
+        {    
             AiPilot pilot = null;
 
             switch (type)
@@ -81,7 +78,17 @@ namespace GameCommon
                     break;
 				case PilotType.DUCKEIGHT:
 					{
-						pilot = new DuckEightPilot(pos);	
+                        if (pilotGroup.ContainsKey(clustername))
+                        {
+                            int idx = pilotGroup[clustername];
+                            pilotGroup[clustername] = idx + 1;
+                            pilot = new DuckEightPilot(pos, idx);
+                        }
+                        else
+                        {
+                            pilotGroup.Add(clustername, 1);
+                            pilot = new DuckEightPilot(pos, 0);
+                        }
 					}
 					break;
                 case PilotType.DUCKCIRCLE:
@@ -450,34 +457,40 @@ namespace GameCommon
     {
         public const double Pi = 3.14159;
         public const int Ratio = 2;
+        public const int MaxLineSteps = 20;
+        public const int MaxCurveSteps = 50;
     }
 
-	class DuckEightPilot : AiPilot
+	class DuckPilot : AiPilot
     {
-        // The boundary
-        Rectangle boundaryRect = new Rectangle();
+        protected Rectangle boundaryRect = new Rectangle();
 
-		// origin
-		Vector2 Ori;
+        protected Vector2 start_pos; //random start position
+        protected Vector2 end_pos; //different end position
+        protected int lineStep;
 
         // current position
-        Vector2 Position;
-		float depthpos = 0;
+        protected Vector2 Position;
+		protected float depthpos = 0;
 
-		double cur_angle = 0;
-        double delta_angle =  Constants.Pi * 0.005; //20 loops repeat
-
-        int stopcnt = 0;
-
-        public DuckEightPilot(Vector2 pos)
+        public DuckPilot(Vector2 pos, int idx)
         {
-        	Ori = pos;
             Position = pos;
+
+            lineStep = -idx;
         }
 
         public void Initialize(Rectangle space, int seed)
         {
             boundaryRect = space;
+            end_pos.X = boundaryRect.Center.X;
+            end_pos.Y = boundaryRect.Center.Y;
+
+            Random rdm = new Random(seed);
+            start_pos.X = rdm.Next(boundaryRect.Left, boundaryRect.Right);
+            start_pos.Y = boundaryRect.Bottom;
+
+            Position = start_pos;
         }
 
         public Vector2 GetPosition()
@@ -490,57 +503,102 @@ namespace GameCommon
             return depthpos;
         }
 
-        public PilotType GetType()
+        public virtual PilotType GetType()
         {
             return PilotType.DUCKEIGHT;
         }
 
-        public void Initialize(Rectangle boundary)
+        public virtual Direction GetHorizationDirection()
         {
-            boundaryRect = boundary;
+            return start_pos.X < end_pos.X ? Direction.RIGHT : Direction.LEFT;
         }
 
-        public Direction GetHorizationDirection()
-        {
-            if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
-            {
-                return Direction.RIGHT;
-            }
-            else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
-            {
-                return Direction.LEFT;
-            }
-            else
-            {
-                return Direction.RIGHT;
-            }
-        }
-        public Direction GetZDirection()
+        public virtual Direction GetZDirection()
         {
             return Direction.IN;
         }
 
-
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
-            // Update the elapsed time
-            if (stopcnt < 10)
+            if (lineStep <= 0)
             {
-                stopcnt++;
-                return;
+                lineStep++;
             }
+            else if (lineStep <= Constants.MaxLineSteps)
+            {
+                double k = (end_pos.Y - start_pos.Y) / (end_pos.X - start_pos.X);
+                int dx = (int)((end_pos.X - start_pos.X) / Constants.MaxLineSteps);
+                Position.X = start_pos.X + dx * lineStep;
+                Position.Y = (int)(start_pos.Y + k * dx * lineStep);
+                lineStep++;
+            }
+        }
 
-			cur_angle += delta_angle;
-            if (cur_angle > 2 * Constants.Pi)
-				cur_angle = 0;
-
-            float a = Math.Min(boundaryRect.Width, boundaryRect.Height);
-            a /= Constants.Ratio;
-
-			Position.X = Ori.X + (float)(a * Math.Sin(cur_angle));
-            Position.Y = Ori.Y + (float)(a * Math.Cos(cur_angle) * Math.Sin(cur_angle));
+        public bool InCurve()
+        {
+            return lineStep > Constants.MaxLineSteps ? true : false;
         }
     }
+
+    class DuckEightPilot : DuckPilot
+    {
+        double cur_angle = 0.0;
+        double delta_angle = Constants.Pi / Constants.MaxCurveSteps;
+
+        public DuckEightPilot(Vector2 pos, int idx)
+            :base(pos, idx)
+        {
+        }
+
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKEIGHT;
+        }
+
+        public override Direction GetHorizationDirection()
+        {
+            if (InCurve())
+            {
+                if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+                {
+                    return Direction.RIGHT;
+                }
+                else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+                {
+                    return Direction.LEFT;
+                }
+                else
+                {
+                    return Direction.RIGHT;
+                }
+            }
+            else
+            {
+                return base.GetHorizationDirection();
+            }
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (InCurve())
+            {
+                cur_angle += delta_angle;
+                if (cur_angle > 2 * Constants.Pi)
+                    cur_angle = 0;
+
+                float a = Math.Min(boundaryRect.Width, boundaryRect.Height);
+                a /= Constants.Ratio;
+
+                Position.X = end_pos.X + (float)(a * Math.Sin(cur_angle));
+                Position.Y = end_pos.Y + (float)(a * Math.Cos(cur_angle) * Math.Sin(cur_angle));
+            }
+            else
+            {
+                base.Update(gameTime);
+            }
+        }
+    }
+
 
     class DuckCirclePilot : AiPilot
     {
