@@ -96,7 +96,8 @@ namespace DuckHuntCommon
                 childViewObjectList = new List<ViewObject>();
                 foreach (ModelObject obj in childobjlst)
                 {
-                    ViewObject viewobj = ViewObjectFactory.CreateViewObject(screenRc, obj, _orgpointinscreen, _defscaleinscreen);
+                    ViewObject viewobj = ViewObjectFactory.CreateViewObject(obj);
+
                     childViewObjectList.Add(viewobj);
                 }
             }
