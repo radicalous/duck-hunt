@@ -851,6 +851,11 @@ namespace DuckHuntCommon
                 }
                 viewItmList.Add(viewItm);
             }
+
+            menuContentPos = model.GetAbsolutePosition() * _defscale + _orgpoint;
+
+            menuContentPos.X += (120 - model.Conent.Length * 10) * _defscale;
+            menuContentPos.Y += 60 * _defscale;
         }
 
         public void Update(GameTime gameTime)
@@ -869,10 +874,6 @@ namespace DuckHuntCommon
             {
                 viewItm.staticBackground.Update(gameTime);
             }
-
-            menuContentPos = model.GetAbsolutePosition() * _defscale + _orgpoint;
-            menuContentPos.X += 20 * _defscale;
-            menuContentPos.Y += 25 * _defscale;
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -889,8 +890,8 @@ namespace DuckHuntCommon
             // draw score
             Vector2 pos1 = menuContentPos;
             Rectangle space = model.GetSpace();
-            pos1.Y += (space.Height/2 - 60) * _defscale;
-            pos1.X += 150 * _defscale;
+            //.Y += (space.Height/2 - 60) * _defscale;
+            //pos1.X += 0 * _defscale;
             string value = this.model.Conent.ToString();
             spriteBatch.DrawString(fontList[0], value, pos1, Color.Blue, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
@@ -956,10 +957,15 @@ namespace DuckHuntCommon
                 }
                 viewItmList.Add(viewItm);
             }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 0 * _defscale;
+            scoreposition.Y += 0 * _defscale;
         }
 
         public void Update(GameTime gameTime)
         {
+            /*
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             if (animationList[model.GetCurrentAnimationIndex()].animation)
             {
@@ -974,16 +980,13 @@ namespace DuckHuntCommon
             {
                 viewItm.staticBackground.Update(gameTime);
             }
-
-            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
-            scoreposition.X += 210 * _defscale;
-            scoreposition.Y += 210 * _defscale;
+            */
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
-
+            
+            //ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             //viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
             // draw score
             Vector2 pos1 = scoreposition;
@@ -1612,7 +1615,7 @@ namespace DuckHuntCommon
         List<Vector2> boundingTrigle1;
         List<Vector2> boundingTrigle2;
 
-        Rectangle _itemspace = new Rectangle(0, 0, 482, 114);
+        Rectangle _itemspace = new Rectangle(0, 0, 240, 137);
 
         float scale = 1.0f;
         float depth = 0.6f;
@@ -1645,18 +1648,18 @@ namespace DuckHuntCommon
 
             // 0. unselected duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 467;
-            animationInfo.frameHeight = 91;
+            animationInfo.frameWidth = 240;
+            animationInfo.frameHeight = 137;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 600;
             anationInfoList.Add(animationInfo);
 
             //1. hover duck
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 482;
-            animationInfo.frameHeight = 114;
-            animationInfo.frameCount = 4;
-            animationInfo.frameTime = 3000;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = 240;
+            animationInfo.frameHeight = 137;
+            animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             boundingTrigle1 = new List<Vector2>();
@@ -1685,24 +1688,24 @@ namespace DuckHuntCommon
             //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
 
             Vector2 pos1 = new Vector2();
-            pos1.X = GetAbsolutePosition().X + 12;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            pos1.X = GetAbsolutePosition().X + 13;
+            pos1.Y = GetAbsolutePosition().Y + 84;
             boundingTrigle1.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + 160;
-            pos1.Y = GetAbsolutePosition().Y + 12;
+            pos1.X = GetAbsolutePosition().X + 120;
+            pos1.Y = GetAbsolutePosition().Y + 121;
             boundingTrigle1.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            pos1.X = GetAbsolutePosition().X + 230;
+            pos1.Y = GetAbsolutePosition().Y + 70;
             boundingTrigle1.Add(pos1);
 
-            pos1.X = GetAbsolutePosition().X + 160;
-            pos1.Y = GetAbsolutePosition().Y + 12;
+            pos1.X = GetAbsolutePosition().X + 13;
+            pos1.Y = GetAbsolutePosition().Y + 84;
             boundingTrigle2.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            pos1.X = GetAbsolutePosition().X + 230;
+            pos1.Y = GetAbsolutePosition().Y + 70;
             boundingTrigle2.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 10;
-            pos1.Y = GetAbsolutePosition().Y + 55;
+            pos1.X = GetAbsolutePosition().X + 91;
+            pos1.Y = GetAbsolutePosition().Y + 8;
             boundingTrigle2.Add(pos1);
         }
 
@@ -1711,17 +1714,15 @@ namespace DuckHuntCommon
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
-            /*
+
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\MenuItemBg_selected";
+            resourceItm.path = "Graphics\\MenuItem";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
-             */
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\MenuItemBg_unselected";
+            resourceItm.path = "Graphics\\Cloud";
             resourceList.Add(resourceItm);
-
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
@@ -1744,8 +1745,8 @@ namespace DuckHuntCommon
                 absPos += parent.GetAbsolutePosition();
             }
             // pilot return center postion, adjust it to left top conner
-            absPos.X -= 105 / 2;
-            absPos.Y -= 102 / 2;
+            //absPos.X -= _itemspace.Width / 2;
+            //absPos.Y -= _itemspace.Height / 2;
 
             return absPos;
         }
@@ -1755,7 +1756,14 @@ namespace DuckHuntCommon
         }
         public float GetSacle()
         {
-            return 1.0f;
+            if (onHover)
+            {
+                return 0.5f;
+            }
+            else
+            {
+                return 1.0f;
+            }
         }
 
 
@@ -1824,22 +1832,7 @@ namespace DuckHuntCommon
                 return true;
             }
             return false;
-            /*
-            Vector2 menumItemCenter = GetAbsolutePosition();
-            //
-            menumItemCenter.X += anationInfoList[AnimationIndex].frameWidth / 2;
-            menumItemCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2;
-
-            Vector2 subpos = menumItemCenter - absposition;
-            if (subpos.Length() < 30 * scale)
-            {
-                return true;
-            }
-
-            return false;
-             */
         }
-
 
 
     }
@@ -3883,7 +3876,7 @@ namespace DuckHuntCommon
 
             // get least of duck icon
 
-            space.Width = 652;
+            space.Width = 300;
             space.Height = 644;
 
             scorelist = new List<KeyValuePair<string, int>>();
@@ -3957,7 +3950,7 @@ namespace DuckHuntCommon
 
         public List<AnimationInfo> GetAnimationInfoList()
         {
-            return anationInfoList;
+            return null;
         }
         public int GetCurrentAnimationIndex()
         {

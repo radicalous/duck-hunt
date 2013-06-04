@@ -72,7 +72,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Content\Graphics\baby_pluto.xnb" />
     <None Include="Content\Graphics\bg_grass.xnb" />
-    <None Include="Content\Graphics\bg_grass_a.xnb" />
     <None Include="Content\Graphics\bg_tree.xnb" />
     <None Include="Content\Graphics\carton_font.xnb" />
     <None Include="Content\Graphics\Cloud.xnb" />
@@ -98,6 +97,7 @@
     <None Include="Content\Sound\laserFire.xnb" />
     <None Include="Content\Sound\menuMusic.xnb" />
     <None Include="Content\Sound\shoot.xnb" />
+    <None Include="MenuItem.xnb" />
     <None Include="Properties\AppManifest.xml">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </None>
