@@ -54,7 +54,8 @@ namespace GameCommon
             return CreatePilot(type, pos, name);
         }
 
-        public AiPilot CreatePilot(PilotType type, Vector2 pos, string clustername)
+        public AiPilot CreatePilot(PilotType type, Vector2 pos, string clustername) 
+        /*different type can't have same clustername*/
         {    
             AiPilot pilot = null;
 
@@ -76,34 +77,92 @@ namespace GameCommon
                         pilot = new DuckDeadPilot(pos);
                     }
                     break;
-				case PilotType.DUCKEIGHT:
-					{
-                        if (pilotGroup.ContainsKey(clustername))
+                case PilotType.DUCKEIGHT:
+                    {
+                        if (clustername == "")
                         {
-                            int idx = pilotGroup[clustername];
-                            pilotGroup[clustername] = idx + 1;
-                            pilot = new DuckEightPilot(pos, idx);
+                            pilot = new DuckEightPilot(pos, 0);
                         }
                         else
                         {
-                            pilotGroup.Add(clustername, 1);
-                            pilot = new DuckEightPilot(pos, 0);
+                            if (pilotGroup.ContainsKey(clustername))
+                            {
+                                int idx = pilotGroup[clustername];
+                                pilotGroup[clustername] = idx + 1;
+                                pilot = new DuckEightPilot(pos, idx);
+                            }
+                            else
+                            {
+                                pilotGroup.Add(clustername, 1);
+                                pilot = new DuckEightPilot(pos, 0);
+                            }
                         }
-					}
-					break;
+                    }
+                    break;
                 case PilotType.DUCKCIRCLE:
                     {
-                        pilot = new DuckCirclePilot(pos);
+                        if (clustername == "")
+                        {
+                            pilot = new DuckCirclePilot(pos, 0);
+                        }
+                        else
+                        {
+                            if (clustername != "" && pilotGroup.ContainsKey(clustername))
+                            {
+                                int idx = pilotGroup[clustername];
+                                pilotGroup[clustername] = idx + 1;
+                                pilot = new DuckCirclePilot(pos, idx);
+                            }
+                            else
+                            {
+                                pilotGroup.Add(clustername, 1);
+                                pilot = new DuckCirclePilot(pos, 0);
+                            }
+                        }
                     }
                     break;
                 case PilotType.DUCKELLIPSE:
                     {
-                        pilot = new DuckEllipsePilot(pos);
+                        if (clustername == "")
+                        {
+                            pilot = new DuckEllipsePilot(pos, 0);
+                        }
+                        else
+                        {
+                            if (clustername != "" && pilotGroup.ContainsKey(clustername))
+                            {
+                                int idx = pilotGroup[clustername];
+                                pilotGroup[clustername] = idx + 1;
+                                pilot = new DuckEllipsePilot(pos, idx);
+                            }
+                            else
+                            {
+                                pilotGroup.Add(clustername, 1);
+                                pilot = new DuckEllipsePilot(pos, 0);
+                            }
+                        }
                     }
                     break;
                 case PilotType.DUCKSIN:
                     {
-                        pilot = new DuckSinPilot(pos);
+                        if (clustername == "")
+                        {
+                            pilot = new DuckSinPilot(pos, 0);
+                        }
+                        else
+                        {
+                            if (clustername != "" && pilotGroup.ContainsKey(clustername))
+                            {
+                                int idx = pilotGroup[clustername];
+                                pilotGroup[clustername] = idx + 1;
+                                pilot = new DuckSinPilot(pos, idx);
+                            }
+                            else
+                            {
+                                pilotGroup.Add(clustername, 1);
+                                pilot = new DuckSinPilot(pos, 0);
+                            }
+                        }
                     }
                     break;
                 case PilotType.DOGSEEK:
@@ -129,7 +188,6 @@ namespace GameCommon
                 default:
                     break;
             }
-
 
             return pilot;
         }
@@ -457,8 +515,8 @@ namespace GameCommon
     {
         public const double Pi = 3.14159;
         public const int Ratio = 2;
-        public const int MaxLineSteps = 20;
-        public const int MaxCurveSteps = 50;
+        public const int MaxLineSteps = 80;
+        public const int MaxCurveSteps = 200;
     }
 
 	class DuckPilot : AiPilot
@@ -543,7 +601,7 @@ namespace GameCommon
     class DuckEightPilot : DuckPilot
     {
         double cur_angle = 0.0;
-        double delta_angle = Constants.Pi / Constants.MaxCurveSteps;
+        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
         public DuckEightPilot(Vector2 pos, int idx)
             :base(pos, idx)
@@ -578,13 +636,18 @@ namespace GameCommon
             }
         }
 
+        public override Direction GetZDirection()
+        {
+            return base.GetZDirection();
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (InCurve())
             {
                 cur_angle += delta_angle;
                 if (cur_angle > 2 * Constants.Pi)
-                    cur_angle = 0;
+                    cur_angle = 0.0;
 
                 float a = Math.Min(boundaryRect.Width, boundaryRect.Height);
                 a /= Constants.Ratio;
@@ -600,259 +663,189 @@ namespace GameCommon
     }
 
 
-    class DuckCirclePilot : AiPilot
+    class DuckCirclePilot : DuckPilot
     {
-        // The boundary
-        Rectangle boundaryRect = new Rectangle();
+        double cur_angle = 0.0;
+        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        // origin
-        Vector2 Ori;
-
-        // current position
-        Vector2 Position;
-        float depthpos = 0;
-
-        double cur_angle = 0;
-        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
-
-        int stopcnt = 0;
-
-        public DuckCirclePilot(Vector2 pos)
+        public DuckCirclePilot(Vector2 pos, int idx)
+            :base(pos, idx)
         {
-            Ori = pos;
-            Position = pos;
+
         }
 
-        public void Initialize(Rectangle space, int seed)
+        public override PilotType GetType()
         {
-            boundaryRect = space;
+            return PilotType.DUCKCIRCLE;
         }
 
-        public Vector2 GetPosition()
+        public override Direction GetHorizationDirection()
         {
-            return Position;
-        }
-
-        public float GetDepth()
-        {
-            return depthpos;
-        }
-
-        public PilotType GetType()
-        {
-            return PilotType.DUCKEIGHT;
-        }
-
-        public void Initialize(Rectangle boundary)
-        {
-            boundaryRect = boundary;
-        }
-
-        public Direction GetHorizationDirection()
-        {
-            if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+            if (InCurve())
             {
-                return Direction.RIGHT;
-            }
-            else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
-            {
-                return Direction.LEFT;
+                if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+                {
+                    return Direction.RIGHT;
+                }
+                else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+                {
+                    return Direction.LEFT;
+                }
+                else
+                {
+                    return Direction.RIGHT;
+                }
             }
             else
             {
-                return Direction.RIGHT;
+                return base.GetHorizationDirection();
             }
         }
-        public Direction GetZDirection()
+
+        public override Direction GetZDirection()
         {
-            return Direction.IN;
+            return base.GetZDirection();
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
-            // Update the elapsed time
-            if (stopcnt < 10)
+            if (InCurve())
             {
-                stopcnt++;
-                return;
+                cur_angle += delta_angle;
+                if (cur_angle > 2 * Constants.Pi)
+                    cur_angle = 0.0;
+
+                float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
+                r /= Constants.Ratio;
+
+                Position.X = end_pos.X + (float)(r * Math.Cos(cur_angle));
+                Position.Y = end_pos.Y + (float)(r * Math.Sin(cur_angle));
             }
-
-            cur_angle += delta_angle;
-            if (cur_angle > 2 * Constants.Pi)
-                cur_angle = 0;
-
-            float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
-            r /= Constants.Ratio;
-
-            Position.X = Ori.X + (float)(r * Math.Cos(cur_angle));
-            Position.Y = Ori.Y + (float)(r * Math.Sin(cur_angle));
+            else
+                base.Update(gameTime);
         }
     }
 
-    class DuckEllipsePilot : AiPilot
+
+    class DuckEllipsePilot : DuckPilot
     {
-        // The boundary
-        Rectangle boundaryRect = new Rectangle();
-
-        // origin
-        Vector2 Ori;
-
-        // current position
-        Vector2 Position;
-        float depthpos = 0;
-
         double cur_angle = 0;
-        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
+        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        int stopcnt = 0;
-
-        public DuckEllipsePilot(Vector2 pos)
+        public DuckEllipsePilot(Vector2 pos, int idx)
+            :base(pos, idx)
         {
-            Ori = pos;
-            Position = pos;
+
         }
 
-        public void Initialize(Rectangle space, int seed)
+        public override PilotType GetType()
         {
-            boundaryRect = space;
+            return PilotType.DUCKELLIPSE;
         }
 
-        public Vector2 GetPosition()
+        public override Direction GetHorizationDirection()
         {
-            return Position;
-        }
-
-        public float GetDepth()
-        {
-            return depthpos;
-        }
-
-        public PilotType GetType()
-        {
-            return PilotType.DUCKEIGHT;
-        }
-
-        public void Initialize(Rectangle boundary)
-        {
-            boundaryRect = boundary;
-        }
-
-        public Direction GetHorizationDirection()
-        {
-            if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+            if (InCurve())
             {
-                return Direction.RIGHT;
-            }
-            else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
-            {
-                return Direction.LEFT;
+                if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
+                {
+                    return Direction.RIGHT;
+                }
+                else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+                {
+                    return Direction.LEFT;
+                }
+                else
+                {
+                    return Direction.RIGHT;
+                }
             }
             else
             {
-                return Direction.RIGHT;
+               return base.GetHorizationDirection();
             }
         }
-        public Direction GetZDirection()
+
+        public override Direction GetZDirection()
         {
-            return Direction.IN;
+            return base.GetZDirection();
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
-            // Update the elapsed time
-            if (stopcnt < 10)
+            if (InCurve())
             {
-                stopcnt++;
-                return;
+                cur_angle += delta_angle;
+                if (cur_angle > 2 * Constants.Pi)
+                    cur_angle = 0;
+
+                float a = boundaryRect.Width / Constants.Ratio;
+                float b = boundaryRect.Height / Constants.Ratio;
+
+                Position.X = end_pos.X + (float)(a * Math.Cos(cur_angle));
+                Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
             }
-
-            cur_angle += delta_angle;
-            if (cur_angle > 2 * Constants.Pi)
-                cur_angle = 0;
-
-            float a = boundaryRect.Width / Constants.Ratio;
-            float b = boundaryRect.Height / Constants.Ratio;
-
-            Position.X = Ori.X + (float)(a * Math.Cos(cur_angle));
-            Position.Y = Ori.Y + (float)(b * Math.Sin(cur_angle));
+            else
+            {
+                base.Update(gameTime);
+            }
         }
     }
 
-    class DuckSinPilot : AiPilot
+    class DuckSinPilot : DuckPilot
     {
-        // The boundary
-        Rectangle boundaryRect = new Rectangle();
-
-        // origin
-        Vector2 Ori;
-
-        // current position
-        Vector2 Position;
-        float depthpos = 0;
-
         double cur_angle = 0;
-        double delta_angle = 2 * Constants.Pi * 0.05; //20 loops repeat
+        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        int stopcnt = 0;
-
-        public DuckSinPilot(Vector2 pos)
+        public DuckSinPilot(Vector2 pos, int idx)
+            :base(pos, idx)
         {
-            Ori = pos;
-            Position = pos;
+
         }
 
-        public void Initialize(Rectangle space, int seed)
+        public override PilotType GetType()
         {
-            boundaryRect = space;
+            return PilotType.DUCKSIN;
         }
 
-        public Vector2 GetPosition()
+        public override Direction GetHorizationDirection()
         {
-            return Position;
+            if (InCurve())
+                return Direction.RIGHT;
+            else
+                return base.GetHorizationDirection();
+        }
+        public override Direction GetZDirection()
+        {
+            return base.GetZDirection();
         }
 
-        public float GetDepth()
+        public override void Update(GameTime gameTime)
         {
-            return depthpos;
-        }
-
-        public PilotType GetType()
-        {
-            return PilotType.DUCKEIGHT;
-        }
-
-        public void Initialize(Rectangle boundary)
-        {
-            boundaryRect = boundary;
-        }
-
-        public Direction GetHorizationDirection()
-        {
-            return Direction.RIGHT;
-        }
-        public Direction GetZDirection()
-        {
-            return Direction.IN;
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            // Update the elapsed time
-            if (stopcnt < 10)
+            if (InCurve())
             {
-                stopcnt++;
-                return;
+                cur_angle += delta_angle;
+
+                //float a = boundaryRect.Width / Constants.Ratio;
+                float b = boundaryRect.Height / Constants.Ratio;
+
+                Position.X = end_pos.X + (float)cur_angle;
+                if (Position.X >= boundaryRect.Right)
+                {
+                    Position.X = boundaryRect.Right;
+                    delta_angle = -delta_angle;
+                }
+                else if (Position.X <= boundaryRect.Left)
+                {
+                    Position.X = boundaryRect.Left;
+                    delta_angle = -delta_angle;
+                }
+                Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
             }
-
-            cur_angle += delta_angle;
-
-            //float a = boundaryRect.Width / Constants.Ratio;
-            float b = boundaryRect.Height / Constants.Ratio;
-
-            Position.X = Ori.X + (float)cur_angle;
-            if (Position.X >= boundaryRect.Right)
-                Position.X = 0;
-            Position.Y = Ori.Y + (float)(b * Math.Sin(cur_angle));
+            else
+            {
+                base.Update(gameTime);
+            }
         }
     }
 
