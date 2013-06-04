@@ -928,18 +928,13 @@ namespace DuckHuntCommon
 
         MenuItemModel menuTimeModelItem;
         MenuItemModel menuFreeModelItem;
-
-        MenuItemModel menuGameOverItem;
-        MenuItemModel menuRestartItem;
-
+        MenuItemModel menuOptionItem;
         MenuItemModel menuScoreListItem;
-        MenuItemModel menuReturnItem;
 
         Rectangle timeModelMenuSpace;
         Rectangle freeModelModelMenuSpace;
-
+        Rectangle optionMenuSpace;
         Rectangle scoreListMenuSpace;
-        Rectangle returnMenuSpace;
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
@@ -955,35 +950,37 @@ namespace DuckHuntCommon
             if (rectBackground.Width < rectBackground.Height)
             {
                 timeModelMenuSpace.X = rectBackground.Height - 150;
-                timeModelMenuSpace.Y = rectBackground.Width - 150;
+                timeModelMenuSpace.Y = rectBackground.Width - 250;
                 timeModelMenuSpace.Width = menuItem.GetSpace().Width;
                 timeModelMenuSpace.Height = menuItem.GetSpace().Height;
 
                 freeModelModelMenuSpace = timeModelMenuSpace;
                 freeModelModelMenuSpace.Y += 100;
 
-                scoreListMenuSpace = freeModelModelMenuSpace;
+                optionMenuSpace = freeModelModelMenuSpace;
+                optionMenuSpace.Y += 100;
+
+                scoreListMenuSpace = optionMenuSpace;
                 scoreListMenuSpace.Y += 100;
-
-                returnMenuSpace = timeModelMenuSpace;
-                returnMenuSpace.Y -= 100;
-
             }
             else
             {
-                timeModelMenuSpace.X = rectBackground.Width / 2 - 150;
-                timeModelMenuSpace.Y = rectBackground.Height / 2 - 150;
+                timeModelMenuSpace.X = 250;
+                timeModelMenuSpace.Y = 100;
                 timeModelMenuSpace.Width = menuItem.GetSpace().Width;
                 timeModelMenuSpace.Height = menuItem.GetSpace().Height;
 
                 freeModelModelMenuSpace = timeModelMenuSpace;
-                freeModelModelMenuSpace.Y += 100;
+                freeModelModelMenuSpace.X = 400;
+                freeModelModelMenuSpace.Y = 280;
 
-                scoreListMenuSpace = freeModelModelMenuSpace;
-                scoreListMenuSpace.Y += 100;
+                optionMenuSpace = freeModelModelMenuSpace;
+                optionMenuSpace.X = 1000;
+                optionMenuSpace.Y = 200;
 
-                returnMenuSpace = timeModelMenuSpace;
-                returnMenuSpace.Y -= 100;
+                scoreListMenuSpace = optionMenuSpace;
+                scoreListMenuSpace.X = rectBackground.Width/2;
+                scoreListMenuSpace.Y = rectBackground.Top + 300;
 
             }
 
@@ -996,7 +993,8 @@ namespace DuckHuntCommon
 
             objlst.Add(menuTimeModelItem);
             objlst.Add(menuFreeModelItem);
-            objlst.Add(menuGameOverItem);
+            objlst.Add(menuOptionItem);
+            objlst.Add(menuScoreListItem);
 
             List<ModelObject> backgroundobjlst;
             backgroundPage.GetObjects(out backgroundobjlst);
@@ -1011,7 +1009,8 @@ namespace DuckHuntCommon
             backgroundPage.Update(gametime);
             menuTimeModelItem.Update(gametime);
             menuFreeModelItem.Update(gametime);
-            menuGameOverItem.Update(gametime);
+            menuOptionItem.Update(gametime);
+            menuScoreListItem.Update(gametime);
 
         }
 
@@ -1044,7 +1043,7 @@ namespace DuckHuntCommon
                 }
 
 
-                if (menuGameOverItem.Hit(clickpos))
+                if (menuOptionItem.Hit(clickpos))
                 {
                     // free model
 #if WINDOWS_PHONE
@@ -1073,6 +1072,13 @@ namespace DuckHuntCommon
                     return;
                 }
 
+                if (menuScoreListItem.Hit(clickpos))
+                {
+                    // show score list
+                    duckHuntGame.GotoScoreListPage();
+                }
+
+
             }
             return;
         }
@@ -1084,61 +1090,80 @@ namespace DuckHuntCommon
             menuTimeModelItem = new MenuItemModel();
             menuTimeModelItem.Initialize(null, timeModelMenuSpace, 0);
             menuTimeModelItem.Conent = "Time Model";
+
             menuFreeModelItem = new MenuItemModel();
             menuFreeModelItem.Initialize(null, freeModelModelMenuSpace, 0);
             menuFreeModelItem.Conent = "Free Model";
 
-            menuGameOverItem = new MenuItemModel();
-            menuGameOverItem.Initialize(null, returnMenuSpace, 0);
-            menuGameOverItem.Conent = "Quit";
-
-            menuRestartItem = new MenuItemModel();
-            menuRestartItem.Initialize(null, freeModelModelMenuSpace, 0);
-            menuRestartItem.Conent = "Retry";
+            menuOptionItem = new MenuItemModel();
+            menuOptionItem.Initialize(null, optionMenuSpace, 0);
+            menuOptionItem.Conent = "Option";
 
             menuScoreListItem = new MenuItemModel();
             menuScoreListItem.Initialize(null, scoreListMenuSpace, 0);
             menuScoreListItem.Conent = "Score List";
-
-            menuReturnItem = new MenuItemModel();
-            menuReturnItem.Initialize(null, returnMenuSpace, 0);
-            menuReturnItem.Conent = "Return";
         }
     }
 
     class GameScoreListPage : GamePage
     {
+
         ScroeListBoardModel scoreListBoard;
         Rectangle scoreListBoardSpace;
+
+        MenuItemModel returnMenuItem;
+        Rectangle returnMenuSpace;
 
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
+
+        public GameScoreListPage()
+        {
+            scoreListBoard = new ScroeListBoardModel();
+            returnMenuItem = new MenuItemModel();
+        }
 
         public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             backgroundPage = duckHuntGame.GetBackgroundPage();
 
-
             Rectangle rectBackground = duckHuntGame.GetGlobalViewRect();
             ScroeListBoardModel scoreListBoard1 = new ScroeListBoardModel();
+            MenuItemModel menuItm1 = new MenuItemModel();
+
             if (rectBackground.Width < rectBackground.Height)
             {
                 scoreListBoardSpace.X = rectBackground.Top +
-                    (rectBackground.Height - scoreListBoard1.GetSpace().Width) / 2 - 100;
-                scoreListBoardSpace.Y = rectBackground.Left + 30;
+                    (rectBackground.Height - scoreListBoard1.GetSpace().Width) / 2;
+                scoreListBoardSpace.Y = rectBackground.Left + 100;
                 scoreListBoardSpace.Width = scoreListBoard1.GetSpace().Width;
                 scoreListBoardSpace.Height = scoreListBoard1.GetSpace().Height;
+
+                returnMenuSpace.X = 150;
+                returnMenuSpace.Y = 50;
+                returnMenuSpace.Width = menuItm1.GetSpace().Width;
+                returnMenuSpace.Height = menuItm1.GetSpace().Height;
             }
             else
             {
                 scoreListBoardSpace.X = rectBackground.Left +
-                    (rectBackground.Width - scoreListBoard1.GetSpace().Width) / 2 - 100;
-                scoreListBoardSpace.Y = rectBackground.Top + 30;
+                    (rectBackground.Width - scoreListBoard1.GetSpace().Width) / 2;
+                scoreListBoardSpace.Y = rectBackground.Top + 100;
                 scoreListBoardSpace.Width = scoreListBoard1.GetSpace().Width;
                 scoreListBoardSpace.Height = scoreListBoard1.GetSpace().Height;
+
+                returnMenuSpace.X = 150;
+                returnMenuSpace.Y = 150;
+                returnMenuSpace.Width = menuItm1.GetSpace().Width;
+                returnMenuSpace.Height = menuItm1.GetSpace().Height;
+
             }
+
+
+            scoreListBoard.Initialize(null, scoreListBoardSpace, 0);
+            returnMenuItem.Initialize(null, returnMenuSpace, 0);
 
         }
         public void GetObjects(out List<ModelObject> objlst)
@@ -1146,6 +1171,8 @@ namespace DuckHuntCommon
             objlst = new List<ModelObject>();
 
             objlst.Add(scoreListBoard);
+            objlst.Add(returnMenuItem);
+
             List<ModelObject> backgroundobjlst;
             backgroundPage.GetObjects(out backgroundobjlst);
             foreach (ModelObject obj in backgroundobjlst)
@@ -1171,6 +1198,11 @@ namespace DuckHuntCommon
         {
             scoreListBoard = new ScroeListBoardModel();
             scoreListBoard.Initialize(null, scoreListBoardSpace, 0);
+        }
+
+        public ScroeListBoardModel GetScoreListModel()
+        {
+            return scoreListBoard;
         }
     }
 
@@ -1280,11 +1312,6 @@ namespace DuckHuntCommon
 
     class DuckHuntGame
     {
-
-        GAME_PHASE phase = GAME_PHASE.GAME_SELECT;
-
-        GameChapterManager gameChapterMgr;
-
         // org point
         public Vector2 orgpoint;
         // default scale
@@ -1345,14 +1372,17 @@ namespace DuckHuntCommon
         //
         GameBackGroundPage backgroundPage;
         GameMainMenuPage mainMenuPage;
-        GamePlayPage playPage = null;
+        GamePlayPage playPage;
+        GameScoreListPage scoreListPage;
 
         GamePage currentPage = null;
         public DuckHuntGame()
         {
             backgroundPage = new GameBackGroundPage();
             mainMenuPage = new GameMainMenuPage();
-            playpage = new GamePlayPage();
+            playPage = new GamePlayPage();
+            scoreListPage = new GameScoreListPage();
+
             currentPage = mainMenuPage;
         }
 
@@ -1413,7 +1443,7 @@ namespace DuckHuntCommon
 
         public GamePlayPage GetPlayPage()
         {
-            return playpage;
+            return playPage;
         }
 
         public GameMainMenuPage GetMainMenuPage()
@@ -1428,7 +1458,7 @@ namespace DuckHuntCommon
 
         public void GotoPlayPage()
         {
-            currentPage = playpage;
+            currentPage = playPage;
         }
 
         public void GotoGameOverPage()
@@ -1436,22 +1466,22 @@ namespace DuckHuntCommon
 
         }
 
+        public void GotoScoreListPage()
+        {
+            currentPage = scoreListPage;
+        }
+
 
 
 
         public GameMode gameMode = GameMode.GAME_TIME_LIMIT;
 
-
-
-        GamePlayPage playpage = new GamePlayPage();
-
         public void NewGame()
         {
+            playPage = new GamePlayPage();
+            playPage.InitGamePage(this);
 
-            playpage = new GamePlayPage();
-            playpage.InitGamePage(this);
-
-            playpage.NewGame(gameMode);
+            playPage.NewGame(gameMode);
             GotoPlayPage();
         }
         Rectangle screenRect = new Rectangle();
@@ -1460,9 +1490,12 @@ namespace DuckHuntCommon
         {
             screenRect = screenRect1;
 
-            NewBackgroundPage();
-            NewMainMenuPage();
-            NewPlayPage();
+
+            backgroundPage.InitGamePage(this);
+            playPage.InitGamePage(this);
+            mainMenuPage.InitGamePage(this);
+            scoreListPage.InitGamePage(this);
+
 
             // logic rect 1600x900
             // calculate our background rect
@@ -1537,19 +1570,6 @@ namespace DuckHuntCommon
             ViewObjectFactory.SetLocalViewInfo(screenRect, orgpoint, defscale, bgorgpoint, bgdefscale);
         }
 
-        void NewBackgroundPage()
-        {
-            backgroundPage.InitGamePage(this);
-        }
-        void NewPlayPage()
-        {
-            playpage.InitGamePage(this);
-        }
-
-        void NewMainMenuPage()
-        {
-            mainMenuPage.InitGamePage(this);
-        }
 
         public void Update(GameTime gametime)
         {

@@ -201,6 +201,16 @@
     <Content Include="Content\Graphics\sky_2.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Graphics\MenuItem.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\Keyboardbg.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\KeyItem.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Content\MenuItem.xnb" />
     <None Include="DuckHunt_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

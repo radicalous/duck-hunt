@@ -14,7 +14,7 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM
+        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -499,6 +499,162 @@ namespace DuckHuntCommon
 
 
     // draw the score myself
+    class KeyItemViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+        KeyItemModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 scoreposition;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public KeyItemViewObject(ModelObject model1)
+        {
+            model = (KeyItemModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+           // model = (KeyItemModel)model1;
+
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        orgpoint,
+                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
+                }
+                viewItmList.Add(viewItm);
+            }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 0 * _defscale;
+            scoreposition.Y += 0 * _defscale;
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() * _defscale;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth / 2) * _defscale;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight / 2) * _defscale;
+                viewItm.animation.scale = model.GetSacle() * _defscale;
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+        }
+
+        private void DrawRectangle(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+            Rectangle rcline = new Rectangle();
+            rcline.X = coords.Left;
+            rcline.Y = coords.Top;
+            rcline.Width = 1;
+            rcline.Height = coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X += coords.Width;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X = coords.Left;
+            rcline.Width = coords.Width;
+            rcline.Height = 1;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.Y += coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+        }
+
+
+        private void DrawRectangle2(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+
+            spriteBatch.Draw(rect, coords, color);
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+
+            viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+
+            // this rc is logic rc
+            Rectangle rc = model.GetSpace();
+            rc.Height = 63; // same height with hitboard
+            rc.Width = 200;
+            rc.Width = (int)(rc.Width * _defscale);
+            rc.Height = (int)(rc.Height * _defscale);
+            rc.X += (int)scoreposition.X; // scoreposition is position in local view
+            rc.Y += (int)scoreposition.Y;
+
+            Color color = new Color(167, 167, 167);
+            color.A = 10;
+
+            color = new Color(253, 253, 253);
+
+            Color color1 = Color.Yellow;
+            color1.A = 80;
+            //DrawRectangle2(spriteBatch, rc, color1);
+            //DrawRectangle(spriteBatch, rc, Color.Blue);
+
+
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y += 10 * _defscale;
+            pos1.X += 10 * _defscale;
+            string value = this.model.Conent.ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
+
+    // draw the score myself
     class TimeBoardViewObject : ViewObject
     {
         TimeBoardModel model;
@@ -851,6 +1007,11 @@ namespace DuckHuntCommon
                 }
                 viewItmList.Add(viewItm);
             }
+
+            menuContentPos = model.GetAbsolutePosition() * _defscale + _orgpoint;
+
+            menuContentPos.X += (120 - model.Conent.Length * 10) * _defscale;
+            menuContentPos.Y += 60 * _defscale;
         }
 
         public void Update(GameTime gameTime)
@@ -869,10 +1030,6 @@ namespace DuckHuntCommon
             {
                 viewItm.staticBackground.Update(gameTime);
             }
-
-            menuContentPos = model.GetAbsolutePosition() * _defscale + _orgpoint;
-            menuContentPos.X += 20 * _defscale;
-            menuContentPos.Y += 25 * _defscale;
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -889,8 +1046,8 @@ namespace DuckHuntCommon
             // draw score
             Vector2 pos1 = menuContentPos;
             Rectangle space = model.GetSpace();
-            pos1.Y += (space.Height/2 - 60) * _defscale;
-            pos1.X += 150 * _defscale;
+            //.Y += (space.Height/2 - 60) * _defscale;
+            //pos1.X += 0 * _defscale;
             string value = this.model.Conent.ToString();
             spriteBatch.DrawString(fontList[0], value, pos1, Color.Blue, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
@@ -956,10 +1113,15 @@ namespace DuckHuntCommon
                 }
                 viewItmList.Add(viewItm);
             }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 0 * _defscale;
+            scoreposition.Y += 0 * _defscale;
         }
 
         public void Update(GameTime gameTime)
         {
+            /*
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             if (animationList[model.GetCurrentAnimationIndex()].animation)
             {
@@ -974,16 +1136,13 @@ namespace DuckHuntCommon
             {
                 viewItm.staticBackground.Update(gameTime);
             }
-
-            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
-            scoreposition.X += 210 * _defscale;
-            scoreposition.Y += 210 * _defscale;
+            */
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
-
+            
+            //ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             //viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
             // draw score
             Vector2 pos1 = scoreposition;
@@ -1601,6 +1760,7 @@ namespace DuckHuntCommon
     }
 
 
+
     class MenuItemModel : ModelObject
     {
         ModelObject parent = null;
@@ -1612,7 +1772,7 @@ namespace DuckHuntCommon
         List<Vector2> boundingTrigle1;
         List<Vector2> boundingTrigle2;
 
-        Rectangle _itemspace = new Rectangle(0, 0, 482, 114);
+        Rectangle _itemspace = new Rectangle(0, 0, 240, 137);
 
         float scale = 1.0f;
         float depth = 0.6f;
@@ -1645,18 +1805,18 @@ namespace DuckHuntCommon
 
             // 0. unselected duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 467;
-            animationInfo.frameHeight = 91;
+            animationInfo.frameWidth = 240;
+            animationInfo.frameHeight = 137;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 600;
             anationInfoList.Add(animationInfo);
 
             //1. hover duck
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 482;
-            animationInfo.frameHeight = 114;
-            animationInfo.frameCount = 4;
-            animationInfo.frameTime = 3000;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = 240;
+            animationInfo.frameHeight = 137;
+            animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             boundingTrigle1 = new List<Vector2>();
@@ -1685,24 +1845,24 @@ namespace DuckHuntCommon
             //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
 
             Vector2 pos1 = new Vector2();
-            pos1.X = GetAbsolutePosition().X + 12;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            pos1.X = GetAbsolutePosition().X + 13;
+            pos1.Y = GetAbsolutePosition().Y + 84;
             boundingTrigle1.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + 160;
-            pos1.Y = GetAbsolutePosition().Y + 12;
+            pos1.X = GetAbsolutePosition().X + 120;
+            pos1.Y = GetAbsolutePosition().Y + 121;
             boundingTrigle1.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            pos1.X = GetAbsolutePosition().X + 230;
+            pos1.Y = GetAbsolutePosition().Y + 70;
             boundingTrigle1.Add(pos1);
 
-            pos1.X = GetAbsolutePosition().X + 160;
-            pos1.Y = GetAbsolutePosition().Y + 12;
+            pos1.X = GetAbsolutePosition().X + 13;
+            pos1.Y = GetAbsolutePosition().Y + 84;
             boundingTrigle2.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 80;
-            pos1.Y = GetAbsolutePosition().Y + itemSpace.Height - 30;
+            pos1.X = GetAbsolutePosition().X + 230;
+            pos1.Y = GetAbsolutePosition().Y + 70;
             boundingTrigle2.Add(pos1);
-            pos1.X = GetAbsolutePosition().X + itemSpace.Width - 10;
-            pos1.Y = GetAbsolutePosition().Y + 55;
+            pos1.X = GetAbsolutePosition().X + 91;
+            pos1.Y = GetAbsolutePosition().Y + 8;
             boundingTrigle2.Add(pos1);
         }
 
@@ -1711,17 +1871,15 @@ namespace DuckHuntCommon
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
-            /*
+
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\MenuItemBg_selected";
+            resourceItm.path = "Graphics\\MenuItem";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
-             */
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\MenuItemBg_unselected";
+            resourceItm.path = "Graphics\\Cloud";
             resourceList.Add(resourceItm);
-
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
@@ -1744,8 +1902,8 @@ namespace DuckHuntCommon
                 absPos += parent.GetAbsolutePosition();
             }
             // pilot return center postion, adjust it to left top conner
-            absPos.X -= 105 / 2;
-            absPos.Y -= 102 / 2;
+            //absPos.X -= _itemspace.Width / 2;
+            //absPos.Y -= _itemspace.Height / 2;
 
             return absPos;
         }
@@ -1755,7 +1913,14 @@ namespace DuckHuntCommon
         }
         public float GetSacle()
         {
-            return 1.0f;
+            if (onHover)
+            {
+                return 0.5f;
+            }
+            else
+            {
+                return 1.0f;
+            }
         }
 
 
@@ -1824,26 +1989,676 @@ namespace DuckHuntCommon
                 return true;
             }
             return false;
-            /*
-            Vector2 menumItemCenter = GetAbsolutePosition();
-            //
-            menumItemCenter.X += anationInfoList[AnimationIndex].frameWidth / 2;
-            menumItemCenter.Y += anationInfoList[AnimationIndex].frameHeight / 2;
+        }
+    }
 
-            Vector2 subpos = menumItemCenter - absposition;
-            if (subpos.Length() < 30 * scale)
+
+
+    class KeyItemModel : ModelObject
+    {
+        ModelObject parent = null;
+
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        int elapsedTime = 0;
+
+        Rectangle _itemspace = new Rectangle(0, 0, 240, 137);
+
+        float scale = 1.0f;
+        float depth = 0.1f;
+
+        bool onHover = false;
+
+
+        string content = "test";
+        public string Conent
+        {
+            get
             {
-                return true;
+                return content;
             }
-
-            return false;
-             */
+            set
+            {
+                content = value;
+            }
         }
 
 
 
+        Vector2 relativePostionInParent;
+
+
+        public KeyItemModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // 0. unselected duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 64;
+            animationInfo.frameHeight = 45;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 600;
+            anationInfoList.Add(animationInfo);
+
+            //1. hover duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = 64;
+            animationInfo.frameHeight = 45;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+        }
+
+
+
+
+        // interfaces implementation
+        public ModelType Type()
+        {
+            return ModelType.KEYITEM;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        {
+            parent = parent1;
+            relativePostionInParent.X = itemSpace.Left;
+            relativePostionInParent.Y = itemSpace.Top;
+
+            _itemspace = itemSpace;
+            _itemspace.X -= (int)relativePostionInParent.X;
+            itemSpace.Y -= (int)relativePostionInParent.Y;
+            //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\KeyItem";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePostionInParent;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            return _itemspace;
+        }
+        public float GetSacle()
+        {
+                return 1.0f;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+
+
+        }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        public int GetCurrentAnimationIndex()
+        {
+
+            if (onHover)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return parent;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+        public bool Hit(Vector2 absposition)
+        {
+            return false;
+        }
     }
 
+
+
+    class KeyboardModel : ModelObject
+    {
+        ModelObject parent = null;
+
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        int elapsedTime = 0;
+
+        Rectangle _itemspace = new Rectangle(0, 0, 797, 268);
+
+        float scale = 1.0f;
+        float depth = 0.2f;
+
+        bool onHover = false;
+
+        Vector2 relativePostionInParent;
+
+        List<KeyItemModel> keyList;
+
+
+        public KeyboardModel()
+        {
+            //
+            keyList = new List<KeyItemModel>();
+
+            anationInfoList = new List<AnimationInfo>();
+
+            // 0. unselected duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 797;
+            animationInfo.frameHeight = 268;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 600;
+            anationInfoList.Add(animationInfo);
+
+        }
+
+
+
+
+        // interfaces implementation
+        public ModelType Type()
+        {
+            return ModelType.KEYBORD;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        {
+            parent = null;
+            relativePostionInParent.X = itemSpace.Left;
+            relativePostionInParent.Y = itemSpace.Top;
+
+            _itemspace = itemSpace;
+            _itemspace.X -= (int)relativePostionInParent.X;
+            itemSpace.Y -= (int)relativePostionInParent.Y;
+
+            // add the key item
+            // y = 11, x(15) (84), (154), (225), (294), (364), (433), (504), (574), (644), (714), 
+            // y = 62, 
+            // y = 113, x(51),(121), (191), (262), (331), (401), (470), (541), (611), (681)
+            // y = 166, x(86), (155), (226), (296), (367), (436), (506), (577), (647)
+            // y = 220, x(53), (124), (194), (265), (334), (404), (475), (546), (621)
+            KeyItemModel keyItem = null;
+
+            Rectangle keyspace = new Rectangle();
+
+            keyItem = new KeyItemModel();
+            keyspace.Y = 11;
+            keyspace.X = 15;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "GAMIL";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 84;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "OUTLOOK";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 154;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Yahoo";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 225;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Live";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 294;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "MAIL";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 364;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "@";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 433;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".com";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 504;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".co.uk";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 574;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".eu";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 644;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "-";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 714;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "_";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.Y = 62;
+            keyspace.X = 15;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "1";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 84;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "2";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 154;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "3";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 225;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "4";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 294;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "5";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 364;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "6";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 433;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "7";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 504;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "8";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 574;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "9";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 644;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "0";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 714;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "X";
+            keyList.Add(keyItem);
+
+            // y = 113, x(51),(121), (191), (262), (331), (401), (470), (541), (611), (681)
+            keyItem = new KeyItemModel();
+            keyspace.Y = 113;
+            keyspace.X = 51;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Q";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 121;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "W";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 191;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "E";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 262;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "R";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 331;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "T";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 401;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Y";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 470;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "U";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 541;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "I";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 611;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "O";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 682;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "P";
+            keyList.Add(keyItem);
+
+            // y = 166, x(86), (155), (226), (296), (367), (436), (506), (577), (647)
+            keyItem = new KeyItemModel();
+            keyspace.Y = 166;
+            keyspace.X = 86;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "A";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 155;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "S";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 226;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "D";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 296;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "F";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 367;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "G";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 436;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "H";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 506;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "J";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 577;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "K";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 647;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "L";
+            keyList.Add(keyItem);
+
+            // y = 220, x(53), (124), (194), (265), (334), (404), (475), (546), (621)
+            keyItem = new KeyItemModel();
+            keyspace.Y = 220;
+            keyspace.X = 53;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Z";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 124;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "X";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 194;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "C";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 265;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "V";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 334;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "B";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 404;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "N";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 475;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "M";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 546;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = 621;
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "SPACE";
+            keyList.Add(keyItem);
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\Keyboardbg";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePostionInParent;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            return _itemspace;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+
+
+        }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        public int GetCurrentAnimationIndex()
+        {
+
+            if (onHover)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            List<ModelObject> objlst = new List<ModelObject>();
+            foreach (KeyItemModel keyitm in this.keyList)
+            {
+                objlst.Add(keyitm);
+            }
+            return objlst;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+        public bool Hit(Vector2 absposition)
+        {
+            return false;
+        }
+    }
 
     class DuckModel : ModelObject
     {
@@ -3883,7 +4698,7 @@ namespace DuckHuntCommon
 
             // get least of duck icon
 
-            space.Width = 652;
+            space.Width = 300;
             space.Height = 644;
 
             scorelist = new List<KeyValuePair<string, int>>();
@@ -3957,7 +4772,7 @@ namespace DuckHuntCommon
 
         public List<AnimationInfo> GetAnimationInfoList()
         {
-            return anationInfoList;
+            return null;
         }
         public int GetCurrentAnimationIndex()
         {
