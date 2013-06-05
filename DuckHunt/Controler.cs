@@ -93,10 +93,15 @@ namespace DuckHuntCommon
                     break;
                 case ModelType.KEYITEM:
                     {
-                        viewObject = new KeyItemViewObject(model);
+                        //Vector2 ogpoint = Vector2.Zero;
+                        viewObject = new KeyItemViewObject(model/*, Vector2.Zero, 1.0f*/);
                     }
                     break;
                 case ModelType.KEYBORD:
+                    {
+                        viewObject = new KeyboardViewObject(model, Vector2.Zero, 1.0f);
+                    }
+                    break;
                 case ModelType.BULLETICON:
                     {
                         commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
@@ -1234,8 +1239,8 @@ namespace DuckHuntCommon
         {
             duckHuntGame = game;
             Vector2 pos;
-            pos.X = (game.GetGlobalViewRect().Width - keyboard.GetSpace().Width)/2;
-            pos.Y = game.GetGlobalViewRect().Height - keyboard.GetSpace().Height;
+            pos.X = (game.GetGlobalViewRect().Width - keyboard.GetSpace().Width) / 2;
+            pos.Y = game.GetGlobalViewRect().Height - keyboard.GetSpace().Height  ;
             Rectangle keyboardspace = new Rectangle();
             keyboardspace = keyboard.GetSpace();
             keyboardspace.Offset((int)pos.X, (int)pos.Y);
