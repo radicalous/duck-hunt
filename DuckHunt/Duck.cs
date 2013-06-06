@@ -14,7 +14,7 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM
+        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -599,6 +599,108 @@ namespace DuckHuntCommon
             }
         }
     }
+
+    class CheckBoxViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+        CheckBoxModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 contentoff;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public CheckBoxViewObject(ModelObject model1)
+        {
+            model = (CheckBoxModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        orgpoint,
+                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
+                }
+                viewItmList.Add(viewItm);
+            }
+
+            // check box string offset
+
+            contentoff = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            contentoff.X += 80 * _defscale;
+            contentoff.Y += 50 * _defscale;
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() ;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth *model.GetSacle() / 2) ;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight * model.GetSacle() / 2);
+                viewItm.animation.scale = model.GetSacle() ;
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+
+            viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+
+            // this rc is logic rc
+
+            // draw score
+            Vector2 pos1 = contentoff;
+            string value = this.model.Content;
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
 
     // draw the score myself
     class ScoreBoardViewObject : ViewObject
@@ -3005,10 +3107,13 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 105;
-            animationInfo.frameHeight = 102;
-            animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+            //animationInfo.frameWidth = 105;
+            //animationInfo.frameHeight = 102;
+            //animationInfo.frameCount = 3;
+            animationInfo.frameWidth = 180;
+            animationInfo.frameHeight = 202;
+            animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             //1. dying duck
@@ -3021,18 +3126,23 @@ namespace DuckHuntCommon
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 105;
-            animationInfo.frameHeight = 102;
+            //animationInfo.frameWidth = 105;
+            //animationInfo.frameHeight = 102;
+            animationInfo.frameWidth = 180;
+            animationInfo.frameHeight = 202;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 105;
-            animationInfo.frameHeight = 102;
-            animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+            //animationInfo.frameWidth = 105;
+            //animationInfo.frameHeight = 102;
+            //animationInfo.frameCount = 3;
+            animationInfo.frameWidth = 180;
+            animationInfo.frameHeight = 202;
+            animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             boundingTrigle1 = new List<Vector2>();
@@ -3040,10 +3150,10 @@ namespace DuckHuntCommon
         }
 
 
-        public DuckModel(PilotType type)
+        public DuckModel(PilotType type, string groupname)
         {
             //
-            flyduckPilot = PilotManager.GetInstance().CreatePilot(type);
+            flyduckPilot = PilotManager.GetInstance().CreatePilot(type, groupname);
             anationInfoList = new List<AnimationInfo>();
 
             // 0. flying duck
@@ -3051,7 +3161,10 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+            //animationInfo.frameWidth = 180;
+           // animationInfo.frameHeight = 202;
+            //animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             //1. dying duck
@@ -3066,8 +3179,10 @@ namespace DuckHuntCommon
             animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
+            //animationInfo.frameWidth = 180;
+            //animationInfo.frameHeight = 202;
             animationInfo.frameCount = 2;
-            animationInfo.frameTime = 300;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             // 3. reverse fly duck
@@ -3075,7 +3190,10 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+           // animationInfo.frameWidth = 180;
+           // animationInfo.frameHeight = 202;
+           // animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             boundingTrigle1 = new List<Vector2>();
@@ -3135,6 +3253,7 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_flying";
+            //resourceItm.path = "Graphics\\duckrflying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
@@ -3145,11 +3264,14 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_dead";
+            //resourceItm.path = "Graphics\\duckdying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_flying_r";
+            //resourceItm.path = "Graphics\\duckflying";
+
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -3371,11 +3493,13 @@ namespace DuckHuntCommon
 
 
             //
+            float r = anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2; // 
+            r = 40;
             duckCenter.X += anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
             duckCenter.Y += anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
 
             Vector2 subpos = bulletCenter - duckCenter;
-            if (subpos.Length() < 40 * scale)
+            if (subpos.Length() < r * scale)
             {
                 Active = false;
                 dead = true;
@@ -5111,6 +5235,10 @@ namespace DuckHuntCommon
             {
                 return scorelist;
             }
+            set
+            {
+                scorelist = value;
+            }
         }
     }
 
@@ -5254,6 +5382,193 @@ namespace DuckHuntCommon
             get
             {
                 return (int)lefttime;
+            }
+        }
+    }
+
+
+
+    class CheckBoxModel : ModelObject
+    {
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        bool _checked = false;
+
+        List<AnimationInfo> anationInfoList;
+
+        public CheckBoxModel()
+        {
+            space.Width = 300;
+            space.Height = 63;
+
+            anationInfoList = new List<AnimationInfo>();
+
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 86;
+            animationInfo.frameHeight = 107;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo.frameWidth = 86;
+            animationInfo.frameHeight = 107;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+
+        }
+
+        public ModelType Type()
+        {
+            return ModelType.CHECKBOX;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\checkbox_checked";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\checkbox_unchecked";
+            resourceList.Add(resourceItm);
+            
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+
+            // update child object
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            if (_checked)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+        string content;
+        public string Content
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                content = value;
+            }
+        }
+
+        public bool Checked
+        {
+            get
+            {
+                return _checked;
+            }
+            set
+            {
+                _checked = value;
+            }
+        }
+
+        public void Click(Vector2 logicpos)
+        {
+             // check if it clicked
+            Vector2 lefttop = this.GetAbsolutePosition();
+            lefttop.Y += 35;
+            int boxsize = 60;
+            if (logicpos.X > lefttop.X && logicpos.X - lefttop.X <= boxsize &&
+                logicpos.Y > lefttop.Y && logicpos.Y - lefttop.Y <= boxsize)
+            {
+                // clicked
+                _checked = !_checked;
             }
         }
     }

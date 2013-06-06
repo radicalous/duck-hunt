@@ -48,6 +48,12 @@ namespace GameCommon
             return CreatePilot(type, pos);
         }
 
+        public AiPilot CreatePilot(PilotType type, string groupname)
+        {
+            Vector2 pos = Vector2.Zero;
+            return CreatePilot(type, pos, groupname);
+        }
+
         public AiPilot CreatePilot(PilotType type, Vector2 pos)
         {
             string name = "";

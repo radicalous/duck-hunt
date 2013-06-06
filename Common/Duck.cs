@@ -14,7 +14,7 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM
+        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -86,8 +86,11 @@ namespace DuckHuntCommon
 
         public CommonViewObject(ModelObject model1, Vector2 orgpointinscreen, float defscaleinscreen)
         {
-            _orgpointinscreen = orgpointinscreen;
-            _defscaleinscreen = defscaleinscreen;
+            if ( model == null || (model.Type() != ModelType.KEYBORD && model.Type() != ModelType.KEYITEM) )
+            {
+                _orgpointinscreen = orgpointinscreen;
+                _defscaleinscreen = defscaleinscreen;
+            }
 
             model = model1;
             List<ModelObject> childobjlst = model.GetChildrenObjects();
@@ -342,6 +345,363 @@ namespace DuckHuntCommon
         }
     }
 
+
+
+    class KeyboardViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+
+        ModelObject model;
+        List<ViewObject> childViewObjectList;
+
+        Vector2 _orgpointinscreen;
+        float _defscaleinscreen;
+
+        // screen rect
+        public Rectangle screenRc = new Rectangle();
+
+        public KeyboardViewObject(ModelObject model1, Vector2 orgpointinscreen, float defscaleinscreen)
+        {
+            model = model1;
+            List<ModelObject> childobjlst = model.GetChildrenObjects();
+            if (childobjlst != null)
+            {
+                childViewObjectList = new List<ViewObject>();
+                foreach (ModelObject obj in childobjlst)
+                {
+                    ViewObject viewobj = ViewObjectFactory.CreateViewObject(obj);
+
+                    childViewObjectList.Add(viewobj);
+                }
+            }
+        }
+
+        Dictionary<ModelType, ObjectTexturesItem> _resLst;
+        public void Init(Vector2 orgpointinscreen, float defscaleinscreen, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle spaceInLogic)
+        {
+            _orgpointinscreen = orgpointinscreen;
+            _defscaleinscreen = defscaleinscreen;
+
+            _resLst = objTextureLst;
+            // try to calculate how may textures are needed by children
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, (int)(animationInfo.frameWidth),
+                        (int)(animationInfo.frameHeight),
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.backGroundAnimation = true;
+                    viewItm.bganimation = new Animation();
+                    if (animationInfo.frameHeight == 0)
+                    {
+                        viewItm.bganimation.Initialize(
+                            texturesList[i],
+                            Vector2.Zero, (int)(texturesList[i].Width/*animationInfo.frameWidth*/),
+                            (int)(texturesList[i].Height/*animationInfo.frameHeight*/),
+                            1/*animationInfo.frameCount*/, 1/*animationInfo.frameTime*/, animationInfo.backColor,
+                            model.GetSacle(), true);
+
+
+                        float scale = 1.0f;
+                        if (texturesList[i].Width * 1.0f / texturesList[i].Height > screenRc.Width * 1.0 / screenRc.Height)
+                        {
+                            // the text wider, should extend according height
+                            scale = screenRc.Height * 1.0f / texturesList[i].Height;
+
+                            int offx = (int)((texturesList[i].Width * scale - screenRc.Width) / 2 / scale);
+                            offx = (int)(offx * scale);
+                            offx = -offx;
+                            int centerx = (int)(offx + texturesList[i].Width * scale / 2);
+                            int centery = screenRc.Height / 2;
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+                        else
+                        {
+                            // the texture is higher, should extend according width
+                            scale = screenRc.Width * 1.0f / texturesList[i].Width;
+
+                            int offy = (int)((texturesList[i].Height * scale - screenRc.Height) / scale);
+                            offy = (int)(offy * scale);
+                            offy = -offy;
+                            int centerx = screenRc.Width / 2;
+                            int centery = (int)(offy + texturesList[i].Height * scale / 2);
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+                    }
+                    else
+                    {
+                        viewItm.bganimation.Initialize(
+                            texturesList[i],
+                            Vector2.Zero, animationInfo.frameWidth,
+                            animationInfo.frameHeight,
+                            animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                            model.GetSacle(), true);
+
+
+                        float scale = 1.0f;
+                        if (animationInfo.frameWidth * 1.0f / animationInfo.frameHeight > screenRc.Width * 1.0 / screenRc.Height)
+                        {
+                            // the text wider, should extend according height
+                            scale = screenRc.Height * 1.0f / animationInfo.frameHeight;
+
+                            int offx = (int)((animationInfo.frameWidth * scale - screenRc.Width) / 2 / scale);
+                            offx = (int)(offx * scale);
+                            offx = -offx;
+                            int centerx = (int)(offx + animationInfo.frameWidth * scale / 2);
+                            int centery = screenRc.Height / 2;
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+                        else
+                        {
+                            // the texture is higher, should extend according width
+                            scale = screenRc.Width * 1.0f / animationInfo.frameWidth;
+
+                            int offy = (int)((animationInfo.frameHeight * scale - screenRc.Height) / scale);
+                            offy = (int)(offy * scale);
+                            offy = -offy;
+                            int centerx = screenRc.Width / 2;
+                            int centery = (int)(offy + animationInfo.frameHeight * scale / 2);
+                            viewItm.bganimation.Position.X = centerx;
+                            viewItm.bganimation.Position.Y = centery;
+                            viewItm.bganimation.scale = scale;
+
+                        }
+
+                    }
+
+
+                }
+                viewItmList.Add(viewItm);
+            }
+            //play init sound
+
+            // left textures are for children
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject childviewobj in childViewObjectList)
+                {
+                    Rectangle rc = new Rectangle();
+                    childviewobj.Init(_orgpointinscreen, _defscaleinscreen, null, objTextureLst, rc);
+                }
+
+            }
+        }
+
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpointinscreen +
+                    model.GetAbsolutePosition() ;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth  / 2) ;
+
+                // calculate the center y
+                viewItm.animation.Position.Y = 
+                    model.GetAbsolutePosition().Y + model.GetSpace().Height - (int)(model.GetSpace().Height * model.GetSacle());
+                viewItm.animation.Position.Y += viewItm.animation.FrameHeight * 1.0f / 2 * model.GetSacle();
+                //viewItm.animation.Position.Y += (viewItm.animation.FrameHeight / 2) ;
+                viewItm.animation.scale = model.GetSacle();
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                if (viewItm.backGroundAnimation)
+                {
+                    viewItm.bganimation.Update(gameTime);
+                }
+                else
+                {
+                    viewItm.staticBackground.Update(gameTime);
+                }
+            }
+
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject viewObj in childViewObjectList)
+                {
+                    viewObj.Update(gameTime);
+                }
+            }
+
+            // check need to play audio
+            //play init sound
+            if (_resLst[model.Type()].soundList.Count > 0)
+            {//SoundEffect.MasterVolume
+                //SoundEffect.
+                //SoundEf
+                int soundindex = model.GetSoundIndex();
+                if (soundindex >= 0 && soundindex < _resLst[model.Type()].soundList.Count)
+                {
+                    float mastvol = SoundEffect.MasterVolume;
+                    _resLst[model.Type()].soundList[0].Play(1, 0, 0);
+                }
+
+            }
+
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+            }
+            else
+            {
+                if (viewItm.backGroundAnimation)
+                {
+                    viewItm.bganimation.Draw(spriteBatch, model.GetAnimationDepth());
+                }
+                else
+                {
+                    viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
+                }
+            }
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject viewObj in childViewObjectList)
+                {
+                    viewObj.Draw(spriteBatch);
+                }
+            }
+        }
+    }
+
+    class CheckBoxViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+        CheckBoxModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 contentoff;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public CheckBoxViewObject(ModelObject model1)
+        {
+            model = (CheckBoxModel)model1;
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        orgpoint,
+                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
+                }
+                viewItmList.Add(viewItm);
+            }
+
+            // check box string offset
+
+            contentoff = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            contentoff.X += 80 * _defscale;
+            contentoff.Y += 50 * _defscale;
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() ;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth *model.GetSacle() / 2) ;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight * model.GetSacle() / 2);
+                viewItm.animation.scale = model.GetSacle() ;
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+
+            viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+
+            // this rc is logic rc
+
+            // draw score
+            Vector2 pos1 = contentoff;
+            string value = this.model.Content;
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
+
     // draw the score myself
     class ScoreBoardViewObject : ViewObject
     {
@@ -493,6 +853,166 @@ namespace DuckHuntCommon
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
             spriteBatch.DrawString(fontList[0], "SCORE: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1, 
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
+
+    // draw the score myself
+    class KeyItemViewObject : ViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+        KeyItemModel model;
+        List<SpriteFont> fontList;
+
+        Vector2 scoreposition;
+
+        Vector2 _orgpoint;
+        float _defscale;
+
+        public KeyItemViewObject(ModelObject model1/*, Vector2 orgpoint, float defscale*/)
+        {
+            model = (KeyItemModel)model1;
+            /*
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+             */
+        }
+
+        public void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+           // model = (KeyItemModel)model1;
+
+            _orgpoint = orgpoint;
+            _defscale = defscale;
+
+            fontList = objTextureLst[model.Type()].fontList;
+
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+
+            // background
+            viewItmList = new List<ViewItem>();
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                if (animationInfo.animation)
+                {
+                    viewItm.animation = new Animation();
+                    viewItm.animation.Initialize(
+                        texturesList[i],
+                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+                }
+                else
+                {
+                    viewItm.staticBackground = new StaticBackground2();
+                    viewItm.staticBackground.Initialize(
+                        texturesList[i],
+                        orgpoint,
+                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
+                }
+                viewItmList.Add(viewItm);
+            }
+
+            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
+            scoreposition.X += 0 * _defscale;
+            scoreposition.Y += 0 * _defscale;
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+            if (animationList[model.GetCurrentAnimationIndex()].animation)
+            {
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() ;
+
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth *model.GetSacle() / 2) ;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight * model.GetSacle() / 2);
+                viewItm.animation.scale = model.GetSacle() ;
+                viewItm.animation.Update(gameTime);
+            }
+            else
+            {
+                viewItm.staticBackground.Update(gameTime);
+            }
+
+        }
+
+        private void DrawRectangle(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+            Rectangle rcline = new Rectangle();
+            rcline.X = coords.Left;
+            rcline.Y = coords.Top;
+            rcline.Width = 1;
+            rcline.Height = coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X += coords.Width;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.X = coords.Left;
+            rcline.Width = coords.Width;
+            rcline.Height = 1;
+            spriteBatch.Draw(rect, rcline, color);
+            rcline.Y += coords.Height;
+            spriteBatch.Draw(rect, rcline, color);
+        }
+
+
+        private void DrawRectangle2(SpriteBatch spriteBatch, Rectangle coords, Color color)
+        {
+            var rect = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rect.SetData(new[] { color });
+
+            // draw left
+
+            spriteBatch.Draw(rect, coords, color);
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
+
+            viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
+
+            // this rc is logic rc
+            Rectangle rc = model.GetSpace();
+            rc.Height = 63; // same height with hitboard
+            rc.Width = 200;
+            rc.Width = (int)(rc.Width * _defscale);
+            rc.Height = (int)(rc.Height * _defscale);
+            rc.X += (int)scoreposition.X; // scoreposition is position in local view
+            rc.Y += (int)scoreposition.Y;
+
+            Color color = new Color(167, 167, 167);
+            color.A = 10;
+
+            color = new Color(253, 253, 253);
+
+            Color color1 = Color.Yellow;
+            color1.A = 80;
+            //DrawRectangle2(spriteBatch, rc, color1);
+            //DrawRectangle(spriteBatch, rc, Color.Blue);
+
+
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y += 10 * _defscale;
+            pos1.X += 10 * _defscale;
+            string value = this.model.Conent.ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -1604,6 +2124,7 @@ namespace DuckHuntCommon
     }
 
 
+
     class MenuItemModel : ModelObject
     {
         ModelObject parent = null;
@@ -1833,10 +2354,703 @@ namespace DuckHuntCommon
             }
             return false;
         }
-
-
     }
 
+
+
+    class KeyItemModel : ModelObject
+    {
+        ModelObject parent = null;
+
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        int elapsedTime = 0;
+
+        Rectangle _itemspace = new Rectangle(0, 0, 240, 137);
+
+        float scale = 2.0f;
+        float depth = 0.1f;
+
+        bool onHover = false;
+
+
+        string content = "test";
+        public string Conent
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                content = value;
+            }
+        }
+
+
+
+        Vector2 relativePostionInParent;
+
+
+        public KeyItemModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // 0. unselected duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 64;
+            animationInfo.frameHeight = 45;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 600;
+            anationInfoList.Add(animationInfo);
+
+            //1. hover duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = 64;
+            animationInfo.frameHeight = 45;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+        }
+
+
+
+
+        // interfaces implementation
+        public ModelType Type()
+        {
+            return ModelType.KEYITEM;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        {
+            parent = parent1;
+            relativePostionInParent.X = itemSpace.Left;
+            relativePostionInParent.Y = itemSpace.Top;
+
+            _itemspace = itemSpace;
+            _itemspace.X -= (int)relativePostionInParent.X;
+            itemSpace.Y -= (int)relativePostionInParent.Y;
+            //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\KeyItem";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePostionInParent;
+            absPos.X = (int)(absPos.X * scale);
+            absPos.Y = (int)(absPos.Y * scale);
+            if (parent != null)
+            {
+                // calculate parent center
+                Vector2 parentcenter = Vector2.Zero;
+                parentcenter.X = parent.GetAbsolutePosition().X;
+
+
+                parentcenter.Y = parent.GetAbsolutePosition().Y + parent.GetSpace().Height - (int)(parent.GetSpace().Height * parent.GetSacle())
+                    + parent.GetSpace().Height*parent.GetSacle()/2;
+                parentcenter.X += parent.GetSpace().Width * 1.0f / 2;
+                //parentcenter.Y += parent.GetSpace().Height * 1.0f / 2;
+
+                // calcuate lefttop conner;
+                Vector2 lefttopconner = parentcenter;
+                lefttopconner.X -= parent.GetSpace().Width * 1.0f / 2 * parent.GetSacle();
+                lefttopconner.Y -= parent.GetSpace().Height * 1.0f / 2 * parent.GetSacle();
+
+                absPos += lefttopconner;
+            }
+
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            Rectangle rc = new Rectangle();
+            rc = _itemspace;
+            rc.Width = (int)(rc.Width);
+            rc.Height = (int)(rc.Height);
+            return rc;
+        }
+        public float GetSacle()
+        {
+                return scale;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+
+
+        }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        public int GetCurrentAnimationIndex()
+        {
+
+            if (onHover)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return parent;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+        public bool Hit(Vector2 absposition)
+        {
+            return false;
+        }
+    }
+
+
+
+    class KeyboardModel : ModelObject
+    {
+        ModelObject parent = null;
+
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        int elapsedTime = 0;
+
+        Rectangle _itemspace = new Rectangle(0, 0, 797, 268);
+
+        float scale = 2.0f;
+        float depth = 0.11f;
+
+        bool onHover = false;
+
+        Vector2 relativePostionInParent;
+
+        List<KeyItemModel> keyList;
+
+
+        public KeyboardModel()
+        {
+            //
+            keyList = new List<KeyItemModel>();
+
+            anationInfoList = new List<AnimationInfo>();
+
+            // 0. unselected duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 797;
+            animationInfo.frameHeight = 268;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 600;
+            anationInfoList.Add(animationInfo);
+
+        }
+
+
+
+
+        // interfaces implementation
+        public ModelType Type()
+        {
+            return ModelType.KEYBORD;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        {
+            parent = null;
+            relativePostionInParent.X = itemSpace.Left;
+            relativePostionInParent.Y = itemSpace.Top;
+
+            //scale = itemSpace.Width * 1.0f / _itemspace.Width;
+
+            _itemspace = itemSpace;
+            _itemspace.X -= (int)relativePostionInParent.X;
+            itemSpace.Y -= (int)relativePostionInParent.Y;
+
+
+            // add the key item
+            // y = 11, x(15) (84), (154), (225), (294), (364), (433), (504), (574), (644), (714), 
+            // y = 62, 
+            // y = 113, x(51),(121), (191), (262), (331), (401), (470), (541), (611), (681)
+            // y = 166, x(86), (155), (226), (296), (367), (436), (506), (577), (647)
+            // y = 220, x(53), (124), (194), (265), (334), (404), (475), (546), (621)
+            KeyItemModel keyItem = null;
+
+            Rectangle keyspace = new Rectangle();
+
+            keyItem = new KeyItemModel();
+            keyspace.Y = (int)(11 );
+            keyspace.X = (int)(15 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "GAMIL";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(84 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "OUTLOOK";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(154 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Yahoo";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(225 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Live";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(294 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "MAIL";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(364 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "@";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(433 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".com";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(504 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".co.uk";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(574 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".eu";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(644 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "-";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(714 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "_";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.Y = (int)(62 );
+            keyspace.X = (int)(15 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "1";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(84 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "2";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(154 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "3";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(225 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "4";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(294 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "5";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(364 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "6";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(433 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "7";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(504 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "8";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(574 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "9";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(644 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "0";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(714 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "X";
+            keyList.Add(keyItem);
+
+            // y = 113, x(51),(121), (191), (262), (331), (401), (470), (541), (611), (681)
+            keyItem = new KeyItemModel();
+            keyspace.Y = (int)(113 );
+            keyspace.X = (int)(51 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Q";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(121 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "W";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(191 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "E";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(262 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "R";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(331 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "T";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(401 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Y";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(470 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "U";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(541 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "I";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(611 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "O";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(682 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "P";
+            keyList.Add(keyItem);
+
+            // y = 166, x(86), (155), (226), (296), (367), (436), (506), (577), (647)
+            keyItem = new KeyItemModel();
+            keyspace.Y = (int)(166 );
+            keyspace.X = (int)(86 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "A";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(155 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "S";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(226 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "D";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(296 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "F";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(367 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "G";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(436 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "H";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(506 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "J";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(577 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "K";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(647 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "L";
+            keyList.Add(keyItem);
+
+            // y = 220, x(53), (124), (194), (265), (334), (404), (475), (546), (621)
+            keyItem = new KeyItemModel();
+            keyspace.Y = (int)(220 );
+            keyspace.X = (int)(53 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "Z";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(124 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "X";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(194 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "C";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(265 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "V";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(334 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "B";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(404 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "N";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(475 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "M";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(546 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = ".";
+            keyList.Add(keyItem);
+
+            keyItem = new KeyItemModel();
+            keyspace.X = (int)(621 );
+            keyItem.Initialize(this, keyspace, 0);
+            keyItem.Conent = "SPACE";
+            keyList.Add(keyItem);
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\Keyboardbg";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePostionInParent;
+            if (parent != null)
+            {
+                absPos += parent.GetAbsolutePosition();
+            }
+
+            return absPos;
+        }
+        public Rectangle GetSpace()
+        {
+            Rectangle rc = new Rectangle();
+            rc = _itemspace;
+            rc.Width = (int)(rc.Width);
+            rc.Height = (int)( rc.Height);
+            return rc;
+        }
+        public float GetSacle()
+        {
+            return scale;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+
+
+        }
+
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        public int GetCurrentAnimationIndex()
+        {
+
+            if (onHover)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            List<ModelObject> objlst = new List<ModelObject>();
+            foreach (KeyItemModel keyitm in this.keyList)
+            {
+                objlst.Add(keyitm);
+            }
+            return objlst;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+        public bool Hit(Vector2 absposition)
+        {
+            return false;
+        }
+    }
 
     class DuckModel : ModelObject
     {
@@ -1893,10 +3107,13 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 105;
-            animationInfo.frameHeight = 102;
-            animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+            //animationInfo.frameWidth = 105;
+            //animationInfo.frameHeight = 102;
+            //animationInfo.frameCount = 3;
+            animationInfo.frameWidth = 180;
+            animationInfo.frameHeight = 202;
+            animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             //1. dying duck
@@ -1909,18 +3126,23 @@ namespace DuckHuntCommon
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 105;
-            animationInfo.frameHeight = 102;
+            //animationInfo.frameWidth = 105;
+            //animationInfo.frameHeight = 102;
+            animationInfo.frameWidth = 180;
+            animationInfo.frameHeight = 202;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 105;
-            animationInfo.frameHeight = 102;
-            animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+            //animationInfo.frameWidth = 105;
+            //animationInfo.frameHeight = 102;
+            //animationInfo.frameCount = 3;
+            animationInfo.frameWidth = 180;
+            animationInfo.frameHeight = 202;
+            animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             boundingTrigle1 = new List<Vector2>();
@@ -1928,10 +3150,10 @@ namespace DuckHuntCommon
         }
 
 
-        public DuckModel(PilotType type)
+        public DuckModel(PilotType type, string groupname)
         {
             //
-            flyduckPilot = PilotManager.GetInstance().CreatePilot(type);
+            flyduckPilot = PilotManager.GetInstance().CreatePilot(type, groupname);
             anationInfoList = new List<AnimationInfo>();
 
             // 0. flying duck
@@ -1939,7 +3161,10 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+            //animationInfo.frameWidth = 180;
+           // animationInfo.frameHeight = 202;
+            //animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             //1. dying duck
@@ -1954,8 +3179,10 @@ namespace DuckHuntCommon
             animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
+            //animationInfo.frameWidth = 180;
+            //animationInfo.frameHeight = 202;
             animationInfo.frameCount = 2;
-            animationInfo.frameTime = 300;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             // 3. reverse fly duck
@@ -1963,7 +3190,10 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            animationInfo.frameTime = 100;
+           // animationInfo.frameWidth = 180;
+           // animationInfo.frameHeight = 202;
+           // animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             boundingTrigle1 = new List<Vector2>();
@@ -2023,6 +3253,7 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_flying";
+            //resourceItm.path = "Graphics\\duckrflying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
@@ -2033,11 +3264,14 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_dead";
+            //resourceItm.path = "Graphics\\duckdying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_flying_r";
+            //resourceItm.path = "Graphics\\duckflying";
+
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -2259,11 +3493,13 @@ namespace DuckHuntCommon
 
 
             //
+            float r = anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2; // 
+            r = 40;
             duckCenter.X += anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
             duckCenter.Y += anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
 
             Vector2 subpos = bulletCenter - duckCenter;
-            if (subpos.Length() < 40 * scale)
+            if (subpos.Length() < r * scale)
             {
                 Active = false;
                 dead = true;
@@ -3999,6 +5235,10 @@ namespace DuckHuntCommon
             {
                 return scorelist;
             }
+            set
+            {
+                scorelist = value;
+            }
         }
     }
 
@@ -4142,6 +5382,193 @@ namespace DuckHuntCommon
             get
             {
                 return (int)lefttime;
+            }
+        }
+    }
+
+
+
+    class CheckBoxModel : ModelObject
+    {
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        bool _checked = false;
+
+        List<AnimationInfo> anationInfoList;
+
+        public CheckBoxModel()
+        {
+            space.Width = 300;
+            space.Height = 63;
+
+            anationInfoList = new List<AnimationInfo>();
+
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 86;
+            animationInfo.frameHeight = 107;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo.frameWidth = 86;
+            animationInfo.frameHeight = 107;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+
+        }
+
+        public ModelType Type()
+        {
+            return ModelType.CHECKBOX;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\checkbox_checked";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\checkbox_unchecked";
+            resourceList.Add(resourceItm);
+            
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+
+            // update child object
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            if (_checked)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+        string content;
+        public string Content
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                content = value;
+            }
+        }
+
+        public bool Checked
+        {
+            get
+            {
+                return _checked;
+            }
+            set
+            {
+                _checked = value;
+            }
+        }
+
+        public void Click(Vector2 logicpos)
+        {
+             // check if it clicked
+            Vector2 lefttop = this.GetAbsolutePosition();
+            lefttop.Y += 35;
+            int boxsize = 60;
+            if (logicpos.X > lefttop.X && logicpos.X - lefttop.X <= boxsize &&
+                logicpos.Y > lefttop.Y && logicpos.Y - lefttop.Y <= boxsize)
+            {
+                // clicked
+                _checked = !_checked;
             }
         }
     }
