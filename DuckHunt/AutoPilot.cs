@@ -8,8 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GameCommon
 {
     public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
-    public enum PilotType { DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD,DUCKFLYAWAY, 
-							DUCKEIGHT, DUCKCIRCLE, DUCKELLIPSE, DUCKSIN,
+    public enum PilotType { DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD,DUCKFLYAWAY,
+                            DUCKEIGHT, DUCKEIGHTDEPTH, DUCKCIRCLE, DUCKELLIPSE, DUCKSIN,
                             DOGSEEK, DOGJUMP, DOGSHOW, 
                             CLOUD,
     };
@@ -88,6 +88,7 @@ namespace GameCommon
                         if (clustername == "")
                         {
                             pilot = new DuckEightPilot(pos, 0);
+                         
                         }
                         else
                         {
@@ -96,11 +97,38 @@ namespace GameCommon
                                 int idx = pilotGroup[clustername];
                                 pilotGroup[clustername] = idx + 1;
                                 pilot = new DuckEightPilot(pos, idx);
+                               
                             }
                             else
                             {
                                 pilotGroup.Add(clustername, 1);
                                 pilot = new DuckEightPilot(pos, 0);
+                               
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKEIGHTDEPTH:
+                    {
+                        if (clustername == "")
+                        {
+                            //pilot = new DuckEightPilot(pos, 0);
+                            pilot = new DuckEightPilotWithDepth(pos, 0);
+                        }
+                        else
+                        {
+                            if (pilotGroup.ContainsKey(clustername))
+                            {
+                                int idx = pilotGroup[clustername];
+                                pilotGroup[clustername] = idx + 1;
+                               // pilot = new DuckEightPilot(pos, idx);
+                                pilot = new DuckEightPilotWithDepth(pos, idx);
+                            }
+                            else
+                            {
+                                pilotGroup.Add(clustername, 1);
+                               // pilot = new DuckEightPilot(pos, 0);
+                                pilot = new DuckEightPilotWithDepth(pos, 0);
                             }
                         }
                     }
@@ -668,6 +696,31 @@ namespace GameCommon
         }
     }
 
+
+    class DuckEightPilotWithDepth : DuckEightPilot
+    {
+        double z = 0.0;
+        double z_delta = 2 * Constants.Pi / Constants.MaxCurveSteps;
+        public DuckEightPilotWithDepth(Vector2 pos, int idx)
+            :base(pos, idx)
+        {
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            z += z_delta;
+            if (z > 2 * Constants.Pi)
+                z = 0.0;
+
+            depthpos = (float)(Math.Cos(z) * 100.0 + 100.0) / 2;
+            if (depthpos < 20)
+                depthpos = 20;
+            else if (depthpos > 80)
+                depthpos = 80;
+
+            base.Update(gameTime);
+        }
+    }
 
     class DuckCirclePilot : DuckPilot
     {
