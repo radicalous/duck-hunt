@@ -14,7 +14,7 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX
+        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, PANDA
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -1515,9 +1515,11 @@ namespace DuckHuntCommon
             //string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            for (int i = 0; i < model.ScoreList.Count; i++)
+
+            var result = model.ScoreList.OrderByDescending(c => c.Key);
+            foreach (KeyValuePair<int, string> pair in result)
             {
-                spriteBatch.DrawString(fontList[0], model.ScoreList[i].Key + ":     " + model.ScoreList[i].Value.ToString(),
+                spriteBatch.DrawString(fontList[0], pair.Value + ":     " + pair.Key,
                     pos1, Color.Yellow, 0, Vector2.Zero, 1,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos1.Y += 30 * _defscale;
@@ -5071,7 +5073,7 @@ namespace DuckHuntCommon
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
 
-        List<KeyValuePair<string, int>> scorelist;
+        Dictionary<int, string> scorelist;
 
         // score list
         public ScroeListBoardModel()
@@ -5092,7 +5094,7 @@ namespace DuckHuntCommon
             space.Width = 652;
             space.Height = 644;
 
-            scorelist = new List<KeyValuePair<string, int>>();
+            scorelist = new Dictionary<int, string>();
 
             this.AddScore("Penner", 3565);
             this.AddScore("Fallson", 5000);
@@ -5115,7 +5117,7 @@ namespace DuckHuntCommon
             space.Width = 300;
             space.Height = 644;
 
-            scorelist = new List<KeyValuePair<string, int>>();
+            scorelist = new Dictionary<int, string>();
         }
 
 
@@ -5226,10 +5228,10 @@ namespace DuckHuntCommon
 
         public void AddScore(string name, int score)
         {
-            scorelist.Add(new KeyValuePair<string, int>(name, score));
+            scorelist[score] = name;
         }
 
-        public List<KeyValuePair<string, int>> ScoreList
+        public Dictionary<int, string> ScoreList
         {
             get
             {
@@ -5716,6 +5718,174 @@ namespace DuckHuntCommon
                 return lostDuckCount;
             }
         }
+    }
+
+
+
+    class PandaModel : ModelObject
+    {
+        //DogPilot pilot;
+        AiPilot seekPilot;
+
+        int foundmaxstoptime = 50;
+        int midseekmaxstoptime = 100;
+        int midseekstopcount = 0;
+        int foundstopcount = 0;
+
+        //DogJumpPilot jumpPilot;
+        AiPilot jumpPilot;
+        bool jumpup = true;
+
+        AiPilot showPilot;
+        //DogShowPilot showPilot;
+
+        enum PANDASTATE { Running, Dancing, Laughing };
+        PANDASTATE state = PANDASTATE.Running;
+
+
+        // Animation representing the player
+
+        List<AnimationInfo> anationInfoList;
+        Rectangle pandaspace;
+
+        bool gone = false;
+
+
+        public bool Gone
+        {
+            get { return gone; }
+        }
+
+        float depth = 0.4F;
+
+        Vector2 relativePos;
+
+        Vector2 RelativePosition
+        {
+            get
+            {
+                return  relativePos;
+            }
+        }
+
+
+
+        public PandaModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 150;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 5;
+            animationInfo.frameTime = 150;
+            anationInfoList.Add(animationInfo);
+
+        }
+
+
+
+        public ModelType Type()
+        {
+            return ModelType.PANDA;
+        }
+
+
+        public void Initialize(ModelObject parent1, Rectangle dogSpace, int seed)
+        {
+            pandaspace = dogSpace;
+            relativePos.X = dogSpace.Right;
+            relativePos.Y = dogSpace.Bottom;
+        }
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\panda_run";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = RelativePosition;
+            // adjust from lefttop conner to center
+            abspos.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            abspos.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            Rectangle space = new Rectangle(0, 0
+            , anationInfoList[GetCurrentAnimationIndex()].frameWidth
+            , anationInfoList[GetCurrentAnimationIndex()].frameHeight);
+
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            relativePos.X -= 3;
+            if (relativePos.X <= 0)
+            {
+                relativePos.X = pandaspace.Right;
+            }
+
+
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        public float GetAnimationDepth()
+        {
+            return depth;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
     }
 
 
