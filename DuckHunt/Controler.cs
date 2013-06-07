@@ -447,6 +447,7 @@ namespace DuckHuntCommon
                         ducks.Add(duck);
                         duck = new DuckModel();
                         ducks.Add(duck);
+                       
                         duck = new DuckModel();
                         ducks.Add(duck);
                         duck = new DuckModel();
@@ -502,12 +503,12 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
-                chapter = new GameChapter(GameChapterPhase.CHAPTER1);
-                chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER2);
-                chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER3);
-                chapters.Add(chapter);
+                //chapter = new GameChapter(GameChapterPhase.CHAPTER1);
+                //chapters.Add(chapter);
+                //chapter = new GameChapter(GameChapterPhase.CHAPTER2);
+                //chapters.Add(chapter);
+                //chapter = new GameChapter(GameChapterPhase.CHAPTER3);
+                //chapters.Add(chapter);
                 chapter = new GameChapter(GameChapterPhase.CHAPTER4);
                 chapters.Add(chapter);
                 chapter = new GameChapter(GameChapterPhase.CHAPTER5);
