@@ -18,6 +18,9 @@ using System.IO;
 #endif
 using System.Xml;
 using GameCommon;
+//using Windows.Storage;
+//using Microsoft.Xna.Framework.Storage;
+//using System.Threading.Tasks;
 
 namespace DuckHuntCommon 
 {
@@ -1348,8 +1351,9 @@ namespace DuckHuntCommon
 
 
         // Create a composite setting 
-        Windows.Storage.ApplicationDataCompositeValue composite;
-        Windows.Storage.ApplicationDataContainer localSettings;
+       //Windows.Storage.ApplicationDataCompositeValue composite;
+       //Windows.Storage.ApplicationDataContainer
+       //Windows.Storage.ApplicationDataContainer localSettings;
 
 
 
@@ -1364,9 +1368,10 @@ namespace DuckHuntCommon
 
             //
             // load config
-            localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            /*localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 
-            composite = (Windows.Storage.ApplicationDataCompositeValue)localSettings.Values["exampleCompositeSetting"];
+            
+            composite = localSettings.Values["exampleCompositeSetting"];
             if (composite == null)
             {
                 composite = new Windows.Storage.ApplicationDataCompositeValue();
@@ -1378,6 +1383,8 @@ namespace DuckHuntCommon
             backgroundMusic.Checked = !(value == "false");
             value = composite["GameSound"].ToString();
             gameSound.Checked = !(value == "false");
+             */
+            
         }
 
         public void InitGamePage(DuckHuntGame game)
@@ -1464,12 +1471,13 @@ namespace DuckHuntCommon
             {
                 duckHuntGame.ReturnToPrevious();
             }
+            /*
 
             composite["GameBackGroundMusic"] = backgroundMusic.Checked?"true":"false";
             composite["GameSound"] = gameSound.Checked ? "true" : "false";
 
             localSettings.Values["exampleCompositeSetting"] = composite;
-
+            */
         }
 
     }
@@ -1550,14 +1558,23 @@ namespace DuckHuntCommon
         }
 
 
-        public async void SaveAsync(string filename)
+        public void  SaveAsync(string filename)
         {
+            /*
+            StorageContainer container = storageDevice.OpenContainer("AlexGame");  
+            string fileName = Path.Combine(container.Path, "save0001.sav");  
+            FileStream saveFile = File.Open(fileName, FileMode.Create);  
+6     XmlSerializer xmlSerializer = new XmlSerializer(typeof(GameData));  
+7     XmlSerializer.Serialize(saveFile, gameData);  
+8     saveFile.Close();  
+            */
             // Get a reference to the Local Folder
+            /*
             Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
             // Create the file in the local folder, or if it already exists, just open it
             Windows.Storage.StorageFile storageFile =
-                await localFolder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                 localFolder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.OpenIfExists);
 
             Stream writeStream = await storageFile.OpenStreamForWriteAsync();
             using (StreamWriter writer = new StreamWriter(writeStream))
@@ -1566,7 +1583,9 @@ namespace DuckHuntCommon
                 SaveGameData(ref content);
                 await writer.WriteAsync(content);
             }
+             */
         }
+        /*
 
         public async void LoadAsync(string filename)
         {
@@ -1587,6 +1606,7 @@ namespace DuckHuntCommon
 
             LoadGameData(content);
         }
+        */
 
         private void SaveGameData(ref string content)
         {
@@ -1770,7 +1790,7 @@ namespace DuckHuntCommon
         private void LoadGameData(string content)
         {
             StringBuilder output = new StringBuilder();
-
+            /*
             using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(new StringReader(content)))
             {
                 try
@@ -1822,6 +1842,7 @@ namespace DuckHuntCommon
                     e.ToString();
                 }
             }
+             */
         }
 
     }
@@ -1922,11 +1943,13 @@ namespace DuckHuntCommon
 
             //
             // load config
+            /*
             Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             // Create a composite setting 
             Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
             composite["GameBackGroundMusic"] = true;
             composite["GameSound"] = false;
+             */
 
         }
 
@@ -2058,7 +2081,7 @@ namespace DuckHuntCommon
         public  void StartGame(Rectangle screenRect1)
         {
             screenRect = screenRect1;
-
+            /*
             gameData.LoadAsync("duckhunt.xml");
             if (gameData.ScoreList.Count == 0)
             {
@@ -2067,7 +2090,7 @@ namespace DuckHuntCommon
                 gameData.AddScore("2013/06/05", 3000);
                 gameData.SaveAsync("duckhunt.xml");
             }
-
+            */
             backgroundPage.InitGamePage(this);
             playPage.InitGamePage(this);
             mainMenuPage.InitGamePage(this);
