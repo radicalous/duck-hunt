@@ -669,11 +669,11 @@ namespace DuckHuntCommon
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             if (animationList[model.GetCurrentAnimationIndex()].animation)
             {
-                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() ;
+                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() *_defscale;
 
-                viewItm.animation.Position.X += (viewItm.animation.FrameWidth *model.GetSacle() / 2) ;
-                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight * model.GetSacle() / 2);
-                viewItm.animation.scale = model.GetSacle() ;
+                viewItm.animation.Position.X += (viewItm.animation.FrameWidth *model.GetSacle()*_defscale / 2) ;
+                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight * model.GetSacle()*_defscale / 2);
+                viewItm.animation.scale = model.GetSacle()*_defscale ;
                 viewItm.animation.Update(gameTime);
             }
             else
