@@ -541,7 +541,7 @@ namespace GameCommon
         {
             Position = pos;
 
-            lineStep = -idx;
+            lineStep = -idx*10;
         }
 
         public void Initialize(Rectangle space, int seed)
@@ -671,6 +671,8 @@ namespace GameCommon
 
     class DuckCirclePilot : DuckPilot
     {
+        static int max_hor_steps = 20;
+        int hor_steps = 0;
         double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
@@ -689,13 +691,13 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
-                {
-                    return Direction.RIGHT;
-                }
-                else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+                if (cur_angle >= 0 && cur_angle < Constants.Pi)
                 {
                     return Direction.LEFT;
+                }
+                else if (cur_angle >= Constants.Pi && cur_angle < Constants.Pi * 2)
+                {
+                    return Direction.RIGHT;
                 }
                 else
                 {
@@ -715,17 +717,26 @@ namespace GameCommon
 
         public override void Update(GameTime gameTime)
         {
+            float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
+            r /= (3 * Constants.Ratio/2);
+
             if (InCurve())
             {
-                cur_angle += delta_angle;
-                if (cur_angle > 2 * Constants.Pi)
-                    cur_angle = 0.0;
+                if (hor_steps <= max_hor_steps)
+                {
+                    Position.X = end_pos.X + hor_steps * r / max_hor_steps;
 
-                float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
-                r /= Constants.Ratio;
+                    hor_steps++;
+                }
+                else
+                {
+                    cur_angle += delta_angle;
+                    if (cur_angle > 2 * Constants.Pi)
+                        cur_angle = 0.0;
 
-                Position.X = end_pos.X + (float)(r * Math.Cos(cur_angle));
-                Position.Y = end_pos.Y + (float)(r * Math.Sin(cur_angle));
+                    Position.X = end_pos.X + (float)(r * Math.Cos(cur_angle));
+                    Position.Y = end_pos.Y + (float)(r * Math.Sin(cur_angle));
+                }
             }
             else
                 base.Update(gameTime);
@@ -735,6 +746,8 @@ namespace GameCommon
 
     class DuckEllipsePilot : DuckPilot
     {
+        static int max_hor_steps = 20;
+        int hor_steps = 0;
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
@@ -753,13 +766,13 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
-                {
-                    return Direction.RIGHT;
-                }
-                else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+                if (cur_angle >= 0 && cur_angle < Constants.Pi)
                 {
                     return Direction.LEFT;
+                }
+                else if (cur_angle >= Constants.Pi && cur_angle < Constants.Pi * 2)
+                {
+                    return Direction.RIGHT;
                 }
                 else
                 {
@@ -781,15 +794,23 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                cur_angle += delta_angle;
-                if (cur_angle > 2 * Constants.Pi)
-                    cur_angle = 0;
+                float a = boundaryRect.Width / (2 * Constants.Ratio);
+                float b = boundaryRect.Height / (2 * Constants.Ratio);
 
-                float a = boundaryRect.Width / Constants.Ratio;
-                float b = boundaryRect.Height / Constants.Ratio;
+                if (hor_steps <= max_hor_steps)
+                {
+                    Position.X = end_pos.X + hor_steps * a / max_hor_steps;
+                    hor_steps++;
+                }
+                else
+                {
+                    cur_angle += delta_angle;
+                    if (cur_angle > 2 * Constants.Pi)
+                        cur_angle = 0;
 
-                Position.X = end_pos.X + (float)(a * Math.Cos(cur_angle));
-                Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
+                    Position.X = end_pos.X + (float)(a * Math.Cos(cur_angle));
+                    Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
+                }
             }
             else
             {
@@ -800,6 +821,8 @@ namespace GameCommon
 
     class DuckSinPilot : DuckPilot
     {
+        int left2right = 1;
+        int hor_steps = 0;
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
@@ -817,10 +840,16 @@ namespace GameCommon
         public override Direction GetHorizationDirection()
         {
             if (InCurve())
-                return Direction.RIGHT;
+            {
+                if (left2right == 1)
+                    return Direction.RIGHT;
+                else
+                    return Direction.LEFT;
+            }
             else
                 return base.GetHorizationDirection();
         }
+
         public override Direction GetZDirection()
         {
             return base.GetZDirection();
@@ -831,20 +860,24 @@ namespace GameCommon
             if (InCurve())
             {
                 cur_angle += delta_angle;
+                if (left2right == 1)
+                    hor_steps++;
+                else
+                    hor_steps--;
 
-                //float a = boundaryRect.Width / Constants.Ratio;
-                float b = boundaryRect.Height / Constants.Ratio;
+                float a = boundaryRect.Width / Constants.Ratio;
+                float b = boundaryRect.Height / (3*Constants.Ratio/2);
 
-                Position.X = end_pos.X + (float)cur_angle;
+                Position.X = end_pos.X + (float)hor_steps*a/Constants.MaxCurveSteps;
                 if (Position.X >= boundaryRect.Right)
                 {
                     Position.X = boundaryRect.Right;
-                    delta_angle = -delta_angle;
+                    left2right = 0;
                 }
                 else if (Position.X <= boundaryRect.Left)
                 {
                     Position.X = boundaryRect.Left;
-                    delta_angle = -delta_angle;
+                    left2right = 1;
                 }
                 Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
             }
