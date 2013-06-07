@@ -20,6 +20,8 @@ using System.Xml;
 using GameCommon;
 #if !WINDOWS_PHONE
 using System.Threading.Tasks;
+#else
+using System.IO.IsolatedStorage;
 #endif
 
 
@@ -1491,14 +1493,22 @@ namespace DuckHuntCommon
             {
                 duckHuntGame.ReturnToPrevious();
             }
-            /*
-            composite["GameBackGroundMusic"] = backgroundMusic.Checked?"true":"false";
-            composite["GameSound"] = gameSound.Checked ? "true" : "false";
-            localSettings.Values["exampleCompositeSetting"] = composite;
-            */
-            duckHuntGame.DuckHuntGameData.EnableGameSound = gameSound.Checked;
-            duckHuntGame.DuckHuntGameData.EnableBgMusic = backgroundMusic.Checked ;
-            duckHuntGame.SaveGameData();
+
+            bool saveData = false;
+            if (duckHuntGame.DuckHuntGameData.EnableGameSound != gameSound.Checked)
+            {
+                duckHuntGame.DuckHuntGameData.EnableGameSound = gameSound.Checked;
+                saveData = true;
+            }
+            if (duckHuntGame.DuckHuntGameData.EnableBgMusic != backgroundMusic.Checked)
+            {
+                duckHuntGame.DuckHuntGameData.EnableBgMusic = backgroundMusic.Checked;
+                saveData = true;
+            }
+            if (saveData)
+            {
+                duckHuntGame.SaveGameData();
+            }
         }
 
     }
@@ -1623,6 +1633,44 @@ namespace DuckHuntCommon
         }
 #endif
 
+        public static byte[] StringToByte(string InString)
+        {
+
+            char[] ByteStrings = InString.ToCharArray();
+
+            byte[] ByteOut;
+
+            ByteOut = new byte[ByteStrings.Length ];
+
+            for (int i = 0; i < ByteStrings.Length; i++)
+            {
+
+                ByteOut[i] = (byte)ByteStrings[i];
+            }
+
+            return ByteOut;
+
+        }
+
+
+        public static string  ByteToString(byte[] bytein)
+        {
+
+            string content = "";
+
+
+            for (int i = 0; i < bytein.Length; i++)
+            {
+
+                content += (char)bytein[i];
+            }
+
+            return content;
+
+        }
+
+
+
         public void Save(string filename)
         {
             //Task task = Task.Run(async () => await _SaveAsync(filename));
@@ -1631,17 +1679,22 @@ namespace DuckHuntCommon
             string content = "";
             SaveGameData(ref content);
 #if WINDOWS_PHONE
-            try
+
+            IsolatedStorageFile savegameStorage = IsolatedStorageFile.GetUserStoreForApplication();
+
+            // open isolated storage, and write the savefile.
+            IsolatedStorageFileStream fs = null;
+            using (fs = savegameStorage.CreateFile(filename))
             {
-                System.IO.Stream stream = TitleContainer.OpenStream(filename);
-                using (System.IO.StreamWriter writer = new System.IO.StreamWriter(stream))
+                if (fs != null)
                 {
-                    writer.Write(content);
+                    // just overwrite the existing info for this example.
+                    byte[] bytes = StringToByte(content);
+                    fs.Write(bytes, 0, bytes.Length);
                 }
             }
-            catch (Exception)
-            {
-            }
+
+
 #else
             Task task = Task.Run(async () => await _SaveAsync(filename, content));
             task.Wait();
@@ -1685,12 +1738,31 @@ namespace DuckHuntCommon
                 content = reader.ReadToEnd();
             }
              */
+
+            IsolatedStorageFile savegameStorage = IsolatedStorageFile.GetUserStoreForApplication();
+            // open isolated storage, and write the savefile.
+
+            if (savegameStorage.FileExists(filename))
+            {
+                using (IsolatedStorageFileStream fs = savegameStorage.OpenFile(filename, System.IO.FileMode.Open))
+                {
+                    if (fs != null)
+                    {
+                        // Reload the saved high-score data.
+                        byte[] saveBytes = new byte[fs.Length];
+                        int count = fs.Read(saveBytes, 0, (int)fs.Length);
+                        if (count > 0)
+                        {
+                            content = ByteToString(saveBytes);
+                        }
+                    }
+                }
+            }
+
+
             try
             {
-                using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(filename))
-                {
-                    LoadGameData(reader);
-                }
+                LoadGameData(content);
             }
             catch (Exception)
             {
@@ -1700,11 +1772,7 @@ namespace DuckHuntCommon
             Task<string> task = Task.Run(async () => await _LoadAsync(filename));
             task.Wait();
             content = task.Result;
-            StringReader stream = new StringReader(content);
-            using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(stream))
-            {
-                LoadGameData(reader);
-            }
+            LoadGameData(content);
 #endif
         }
 
@@ -1935,7 +2003,7 @@ namespace DuckHuntCommon
                     }
                     if (reader.Name == "GameSound")
                     {
-                        LoadBackGroundMusic(reader, ref this.EnableGameSound);
+                        LoadGameSound(reader, ref this.EnableGameSound);
                     }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
@@ -1987,11 +2055,16 @@ namespace DuckHuntCommon
             }
         }
 
-        private void LoadGameData(System.Xml.XmlReader reader)
+        private void LoadGameData(string content)
         {
             //
-            //StringReader stream = new StringReader(content);
-            //using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(stream))
+#if WINDOWS_PHONE
+            byte[] contentinbyte = StringToByte(content);
+            System.IO.MemoryStream stream = new System.IO.MemoryStream(contentinbyte);
+#else
+            StringReader stream = new StringReader(content);
+#endif
+            using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(stream))
             {
                 try
                 {

@@ -173,15 +173,6 @@ namespace DuckHunt4Wp
 
                 if (gesture.GestureType == GestureType.Tap)
                 {
-                    /*
-                    Vector2 off = gesture.Position-lastpos;
-                    if(gameTime.ElapsedGameTime.Milliseconds - lastinputtime.ElapsedGameTime.Milliseconds < 20 || (off.Length() < 1))
-                    {
-                        return ;
-                    }
-                    lastinputtime = gameTime;
-                    lastpos = gesture.Position;
-                     */
                     pointpositions.Add(gesture.Position);
                 }
                     /*
@@ -205,22 +196,17 @@ namespace DuckHunt4Wp
                     }
                 }
                      */
-            }
-            /*
-            pointpositions.Clear();
-            foreach (Vector2 pos in pointslist)
-            {
-                pointpositions.Add(pos);
-            }
-             */
-            if (pointpositions.Count > 0)
-            {
-                controler.Click(pointpositions);
-                pointpositions.Clear();
+                if (pointpositions.Count > 0)
+                {
+                    controler.Click(pointpositions);
+                    pointpositions.Clear();
 
-                return;
+                    return;
+                }
             }
 
+
+#if WINDOW_PHONE
             //Get Mouse State then Capture the Button type and Respond Button Press
 
             currentMouseState = Mouse.GetState();
@@ -234,6 +220,7 @@ namespace DuckHunt4Wp
                 pointpositions.Clear();
             }
             lastButtonState = currentMouseState.LeftButton;
+#endif
         } 
     }
 }
