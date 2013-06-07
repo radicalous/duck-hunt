@@ -3109,12 +3109,12 @@ namespace DuckHuntCommon
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            //animationInfo.frameWidth = 105;
-            //animationInfo.frameHeight = 102;
-            //animationInfo.frameCount = 3;
-            animationInfo.frameWidth = 180;
-            animationInfo.frameHeight = 202;
-            animationInfo.frameCount = 4;
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            //animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            //animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -3128,22 +3128,22 @@ namespace DuckHuntCommon
 
             // 2. dead duck
             animationInfo = new AnimationInfo();
-            //animationInfo.frameWidth = 105;
-            //animationInfo.frameHeight = 102;
-            animationInfo.frameWidth = 180;
-            animationInfo.frameHeight = 202;
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            //animationInfo.frameWidth = 180;
+            //animationInfo.frameHeight = 202;
             animationInfo.frameCount = 2;
-            animationInfo.frameTime = 300;
+            animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
             // 3. reverse fly duck
             animationInfo = new AnimationInfo();
-            //animationInfo.frameWidth = 105;
-            //animationInfo.frameHeight = 102;
-            //animationInfo.frameCount = 3;
-            animationInfo.frameWidth = 180;
-            animationInfo.frameHeight = 202;
-            animationInfo.frameCount = 4;
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            // animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            // animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
