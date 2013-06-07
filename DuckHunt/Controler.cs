@@ -18,6 +18,8 @@ using System.IO;
 #endif
 using System.Xml;
 using GameCommon;
+using System.Threading.Tasks;
+
 
 namespace DuckHuntCommon 
 {
@@ -64,6 +66,7 @@ namespace DuckHuntCommon
                         commViewObj = new CommonViewObject(model, s_backgroundOrgPoint, s_backgroundDefScale);
                     }
                     break;
+                case ModelType.PANDA:
                 case ModelType.DOG:
                 case ModelType.DUCK:
                 case ModelType.BULLET:
@@ -557,6 +560,8 @@ namespace DuckHuntCommon
         DogModel dog;
         Rectangle dogRunSpace;
 
+        PandaModel panda;
+
 
         HitBoardModel hitBoard;
         Rectangle hitBoardSpace;
@@ -667,9 +672,12 @@ namespace DuckHuntCommon
             if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 objlst.Add(dog);
+                objlst.Add(panda);
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
+                objlst.Add(panda);
+
                 foreach (DuckModel duck in duckList)
                 {
                     objlst.Add(duck);
@@ -703,6 +711,7 @@ namespace DuckHuntCommon
         {
             //
             backgroundPage.Update(gametime);
+            panda.Update(gametime);
             if (phase == GAME_PHASE.GAME_SELECT)
             {
             }
@@ -767,6 +776,11 @@ namespace DuckHuntCommon
                     else
                     {
                         phase = GAME_PHASE.OVER;
+                        // save new score
+
+                        int score = scoreBoard.TotalScore;
+                        duckHuntGame.SaveNewScore(score);
+
                         duckHuntGame.GotoMainMenuPage();
                     }
                 }
@@ -836,6 +850,9 @@ namespace DuckHuntCommon
             dog = new DogModel();
             dog.Initialize(null, dogRunSpace, 0);
             dog.StartPilot();
+
+            panda = new PandaModel();
+            panda.Initialize(null, dogRunSpace, 0);
         }
 
         void NewScoreBoard()
@@ -1529,9 +1546,9 @@ namespace DuckHuntCommon
 
     class GameData
     {
-        List<KeyValuePair<string, int>> scorelist;
-
-        public List<KeyValuePair<string, int>> ScoreList
+        //SortedSet<KeyValuePair<string, int>> scorelist;
+        SortedDictionary<int, string> scorelist;
+        public SortedDictionary<int, string> ScoreList
         {
             get
             {
@@ -1541,16 +1558,34 @@ namespace DuckHuntCommon
 
         public void AddScore(string name, int score)
         {
-            scorelist.Add(new KeyValuePair<string, int>(name, score));
+            scorelist[score] = name;
+
+            var result = scorelist.OrderByDescending(c => c.Key);
+            SortedDictionary<int, string> tmp = new SortedDictionary<int, string>();
+            int i = 0; 
+            foreach (var item in result)
+            {
+                i++;
+                if (i > 10)
+                {
+                    break;
+                }
+                tmp[item.Key] = item.Value;
+            }
+            scorelist.Clear();
+            foreach (var item in tmp)
+            {
+                scorelist[item.Key] = item.Value;
+            }
         }
 
         public GameData()
         {
-            scorelist = new List<KeyValuePair<string, int>>();
+            scorelist = new SortedDictionary<int, string>();
+            var key = scorelist.OrderByDescending(c => c.Key);
         }
 
-
-        public async void SaveAsync(string filename)
+        private async Task _SaveAsync(string filename)
         {
             // Get a reference to the Local Folder
             Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
@@ -1566,26 +1601,43 @@ namespace DuckHuntCommon
                 SaveGameData(ref content);
                 await writer.WriteAsync(content);
             }
+
+            return;
         }
 
-        public async void LoadAsync(string filename)
+        public void Save(string filename)
         {
+            Task task = Task.Run(async () => await _SaveAsync(filename));
+            task.Wait();
+        }
+
+        private async Task _LoadAsync(string filename)
+        {
+
             string content = "";
 
             // Get a reference to the Local Folder
             Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            // Create the file in the local folder, or if it already exists, just open it
-            Windows.Storage.StorageFile storageFile =
-                        await localFolder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                // Create the file in the local folder, or if it already exists, just open it
+                Windows.Storage.StorageFile storageFile =
+                            await localFolder.CreateFileAsync(
+                            filename,
+                            Windows.Storage.CreationCollisionOption.OpenIfExists);
 
-            Stream readStream = await storageFile.OpenStreamForReadAsync();
-            using (StreamReader reader = new StreamReader(readStream))
-            {
-                content = reader.ReadToEnd();
-            }
+                Stream readStream = await storageFile.OpenStreamForReadAsync();
+                using (StreamReader reader = new StreamReader(readStream))
+                {
+                    content = reader.ReadToEnd();
+                }
 
-            LoadGameData(content);
+                LoadGameData(content);
+        }
+
+        public void Load(string filename)
+        {
+            Task task = Task.Run(async () => await _LoadAsync(filename));
+            task.Wait();
         }
 
         private void SaveGameData(ref string content)
@@ -1629,18 +1681,18 @@ namespace DuckHuntCommon
         {
             content += "<scorelist>";
             SaveCount(ref content, scorelist.Count);
-            foreach (KeyValuePair<string, int> record in this.scorelist)
+            foreach (KeyValuePair<int, string> pair in scorelist)
             {
-                SaveRecord(ref content, record.Key, record.Value);
+                SaveRecord(ref content, pair.Value, pair.Key);
 
             }
             content += "</scorelist>";
         }
 
 
-        private void LoadPlayerScore(XmlReader reader, string score)
+        private void LoadPlayerScore(XmlReader reader, ref int score)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "score")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "score")
             {
                 // error
                 return;
@@ -1649,7 +1701,7 @@ namespace DuckHuntCommon
             {
                 if (reader.NodeType == XmlNodeType.Text)
                 {
-                    score = reader.Value;
+                    score = Convert.ToInt32(reader.Value);
                 }
                 if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "score")
                 {
@@ -1658,9 +1710,9 @@ namespace DuckHuntCommon
             }
         }
 
-        private void LoadPlayerName(XmlReader reader, string name)
+        private void LoadPlayerName(XmlReader reader, ref string name)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "name")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "name")
             {
                 // error
                 return;
@@ -1678,9 +1730,9 @@ namespace DuckHuntCommon
             }
         }
 
-        private void LoadOneRecord(XmlReader reader, string name, string score)
+        private void LoadOneRecord(XmlReader reader, ref string name, ref int score)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "record")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "record")
             {
                 // error
                 return;
@@ -1691,11 +1743,11 @@ namespace DuckHuntCommon
                 {
                     if (reader.Name == "name")
                     {
-                        LoadPlayerName(reader, name);
+                        LoadPlayerName(reader, ref name);
                     }
                     if (reader.Name == "score")
                     {
-                        LoadPlayerScore(reader, score);
+                        LoadPlayerScore(reader, ref score);
                     }
                 }
                 if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "record")
@@ -1705,9 +1757,9 @@ namespace DuckHuntCommon
             }
 
         }
-        private void LoadCount(XmlReader reader, string count)
+        private void LoadCount(XmlReader reader, ref int count)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "count")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "count")
             {
                 // error
                 return;
@@ -1716,7 +1768,7 @@ namespace DuckHuntCommon
             {
                 if (reader.NodeType == XmlNodeType.Text)
                 {
-                    count = reader.Value;
+                    count = Convert.ToInt32(reader.Value);
                 }
                 if (reader.NodeType == XmlNodeType.EndElement)
                 {
@@ -1730,7 +1782,7 @@ namespace DuckHuntCommon
 
         private void LoadScoreList(XmlReader reader)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "scorelist")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "scorelist")
             {
                 // error
                 return;
@@ -1744,16 +1796,15 @@ namespace DuckHuntCommon
                     if (reader.Name == "count")
                     {
                         // find score list element
-                        string count = "";
-                        LoadCount(reader, count);
+                        int count = 0;
+                        LoadCount(reader, ref count);
                     }
                     if (reader.Name == "record")
                     {
                         string name = "";
-                        string score = "";
-                        LoadOneRecord(reader, name, score);
-                        KeyValuePair<string, int> record = new KeyValuePair<string, int>(name, 100);
-                        scorelist.Add(record);
+                        int score = 0;
+                        LoadOneRecord(reader, ref name, ref score);
+                        scorelist[score] = name;
                     }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
@@ -1966,6 +2017,7 @@ namespace DuckHuntCommon
             objlst.Add(new KeyboardModel());
             objlst.Add(new KeyItemModel());
             objlst.Add(new CheckBoxModel());
+            objlst.Add(new PandaModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -2059,13 +2111,15 @@ namespace DuckHuntCommon
         {
             screenRect = screenRect1;
 
-            gameData.LoadAsync("duckhunt.xml");
+            gameData.Load("duckhunt.xml");
             if (gameData.ScoreList.Count == 0)
             {
+                /*
                 gameData.AddScore("Penner", 1000);
                 gameData.AddScore("Fallson", 2000);
                 gameData.AddScore("2013/06/05", 3000);
-                gameData.SaveAsync("duckhunt.xml");
+                gameData.Save("duckhunt.xml");
+                 */
             }
 
             backgroundPage.InitGamePage(this);
@@ -2148,6 +2202,13 @@ namespace DuckHuntCommon
             ViewObjectFactory.SetLocalViewInfo(screenRect, orgpoint, defscale, bgorgpoint, bgdefscale);
         }
 
+        public void SaveNewScore(int score)
+        {
+            // 
+            DateTime now = DateTime.Now;
+            gameData.AddScore(now.ToString(), score);
+            gameData.Save("duckhunt.xml");
+        }
 
         public void Update(GameTime gametime)
         {

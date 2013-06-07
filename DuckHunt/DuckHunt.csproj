@@ -225,6 +225,9 @@
     <Content Include="Content\Graphics\checkbox_unchecked.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Graphics\panda_run.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\MenuItem.xnb" />
     <None Include="DuckHunt_TemporaryKey.pfx" />
   </ItemGroup>
