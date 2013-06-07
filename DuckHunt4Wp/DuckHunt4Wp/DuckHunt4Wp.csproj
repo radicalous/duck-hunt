@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
-    <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
-  </PropertyGroup>
-  <PropertyGroup>
     <ProjectGuid>{D79C1E01-CC4F-4463-A484-6ED933D9EE3B}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,12 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DuckHunt4Wp</RootNamespace>
     <AssemblyName>DuckHunt4Wp</AssemblyName>
-
     <XnaRefreshLevel>1</XnaRefreshLevel>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
-    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <XnaPlatform>Windows Phone</XnaPlatform>
-
     <XnaProfile>Reach</XnaProfile>
     <XnaCrossPlatformGroupID>d2797fed-6f20-4fba-abd6-7c941b0f325c</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
@@ -32,6 +26,7 @@
     </SupportedCultures>
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>PhoneGameThumb.png</Thumbnail>
+    <GameStartupType>DuckHunt4Wp.Game1</GameStartupType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Windows Phone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,9 +63,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Net" />
-    <Reference Include="Windows">
-      <HintPath>C:\Program Files (x86)\Windows Phone Kits\8.0\Windows MetaData\Windows.winmd</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
@@ -81,6 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Content\Graphics\baby_pluto.xnb" />
     <None Include="Content\Graphics\bg_grass.xnb" />
+    <None Include="Content\Graphics\bg_grass_a.xnb" />
     <None Include="Content\Graphics\bg_tree.xnb" />
     <None Include="Content\Graphics\carton_font.xnb" />
     <None Include="Content\Graphics\Cloud.xnb" />
@@ -106,7 +99,6 @@
     <None Include="Content\Sound\laserFire.xnb" />
     <None Include="Content\Sound\menuMusic.xnb" />
     <None Include="Content\Sound\shoot.xnb" />
-    <None Include="MenuItem.xnb" />
     <None Include="Properties\AppManifest.xml">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </None>
@@ -117,6 +109,9 @@
     <Compile Include="Game1.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\DuckHunt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Sound\dog_found.wma" />
     <Content Include="Content\Sound\gameMusic.mp3" />
     <Content Include="Content\Sound\menuMusic.mp3" />
@@ -138,7 +133,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
-
   <!--
       To modify your build process, add your task inside one of the targets below and uncomment it. 
       Other similar extension points exist, see Microsoft.Common.targets.

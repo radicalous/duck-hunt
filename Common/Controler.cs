@@ -18,6 +18,10 @@ using System.IO;
 #endif
 using System.Xml;
 using GameCommon;
+#if !WINDOWS_PHONE
+using System.Threading.Tasks;
+#endif
+
 
 namespace DuckHuntCommon 
 {
@@ -64,6 +68,7 @@ namespace DuckHuntCommon
                         commViewObj = new CommonViewObject(model, s_backgroundOrgPoint, s_backgroundDefScale);
                     }
                     break;
+                case ModelType.PANDA:
                 case ModelType.DOG:
                 case ModelType.DUCK:
                 case ModelType.BULLET:
@@ -557,6 +562,8 @@ namespace DuckHuntCommon
         DogModel dog;
         Rectangle dogRunSpace;
 
+        PandaModel panda;
+
 
         HitBoardModel hitBoard;
         Rectangle hitBoardSpace;
@@ -667,9 +674,12 @@ namespace DuckHuntCommon
             if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 objlst.Add(dog);
+                objlst.Add(panda);
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
+                objlst.Add(panda);
+
                 foreach (DuckModel duck in duckList)
                 {
                     objlst.Add(duck);
@@ -703,6 +713,7 @@ namespace DuckHuntCommon
         {
             //
             backgroundPage.Update(gametime);
+            panda.Update(gametime);
             if (phase == GAME_PHASE.GAME_SELECT)
             {
             }
@@ -767,6 +778,11 @@ namespace DuckHuntCommon
                     else
                     {
                         phase = GAME_PHASE.OVER;
+                        // save new score
+
+                        int score = scoreBoard.TotalScore;
+                        duckHuntGame.SaveNewScore(score);
+
                         duckHuntGame.GotoMainMenuPage();
                     }
                 }
@@ -836,6 +852,9 @@ namespace DuckHuntCommon
             dog = new DogModel();
             dog.Initialize(null, dogRunSpace, 0);
             dog.StartPilot();
+
+            panda = new PandaModel();
+            panda.Initialize(null, dogRunSpace, 0);
         }
 
         void NewScoreBoard()
@@ -1348,9 +1367,10 @@ namespace DuckHuntCommon
 
 
         // Create a composite setting 
+        /*
         Windows.Storage.ApplicationDataCompositeValue composite;
         Windows.Storage.ApplicationDataContainer localSettings;
-
+        */
 
 
         public GameConfigPage()
@@ -1364,6 +1384,7 @@ namespace DuckHuntCommon
 
             //
             // load config
+            /*
             localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 
             composite = (Windows.Storage.ApplicationDataCompositeValue)localSettings.Values["exampleCompositeSetting"];
@@ -1378,6 +1399,7 @@ namespace DuckHuntCommon
             backgroundMusic.Checked = !(value == "false");
             value = composite["GameSound"].ToString();
             gameSound.Checked = !(value == "false");
+             */
         }
 
         public void InitGamePage(DuckHuntGame game)
@@ -1432,6 +1454,11 @@ namespace DuckHuntCommon
             gameSound.Initialize(null, gameSoundCheckboxSpace, 0);
             returnMenuItem.Initialize(null, returnMenuSpace, 0);
 
+            gameSound.Checked = duckHuntGame.DuckHuntGameData.EnableGameSound;
+            backgroundMusic.Checked = duckHuntGame.DuckHuntGameData.EnableBgMusic;
+
+
+
         }
         public void GetObjects(out List<ModelObject> objlst)
         {
@@ -1464,12 +1491,14 @@ namespace DuckHuntCommon
             {
                 duckHuntGame.ReturnToPrevious();
             }
-
+            /*
             composite["GameBackGroundMusic"] = backgroundMusic.Checked?"true":"false";
             composite["GameSound"] = gameSound.Checked ? "true" : "false";
-
             localSettings.Values["exampleCompositeSetting"] = composite;
-
+            */
+            duckHuntGame.DuckHuntGameData.EnableGameSound = gameSound.Checked;
+            duckHuntGame.DuckHuntGameData.EnableBgMusic = backgroundMusic.Checked ;
+            duckHuntGame.SaveGameData();
         }
 
     }
@@ -1529,9 +1558,15 @@ namespace DuckHuntCommon
 
     class GameData
     {
-        List<KeyValuePair<string, int>> scorelist;
+        //SortedSet<KeyValuePair<string, int>> scorelist;
+       
+        // configuration
+        public bool EnableBgMusic = false;
+        public bool EnableGameSound = false;
 
-        public List<KeyValuePair<string, int>> ScoreList
+        // score list
+        Dictionary<int, string> scorelist;
+        public Dictionary<int, string> ScoreList
         {
             get
             {
@@ -1541,16 +1576,35 @@ namespace DuckHuntCommon
 
         public void AddScore(string name, int score)
         {
-            scorelist.Add(new KeyValuePair<string, int>(name, score));
+            scorelist[score] = name;
+
+            var result = scorelist.OrderByDescending(c => c.Key);
+            Dictionary<int, string> tmp = new Dictionary<int, string>();
+            int i = 0; 
+            foreach (var item in result)
+            {
+                i++;
+                if (i > 10)
+                {
+                    break;
+                }
+                tmp[item.Key] = item.Value;
+            }
+            scorelist.Clear();
+            foreach (var item in tmp)
+            {
+                scorelist[item.Key] = item.Value;
+            }
         }
 
         public GameData()
         {
-            scorelist = new List<KeyValuePair<string, int>>();
+            scorelist = new Dictionary<int, string>();
+            var key = scorelist.OrderByDescending(c => c.Key);
         }
 
-
-        public async void SaveAsync(string filename)
+#if !WINDOWS_PHONE
+        private async Task _SaveAsync(string filename, string content)
         {
             // Get a reference to the Local Folder
             Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
@@ -1562,30 +1616,96 @@ namespace DuckHuntCommon
             Stream writeStream = await storageFile.OpenStreamForWriteAsync();
             using (StreamWriter writer = new StreamWriter(writeStream))
             {
-                string content = "";
-                SaveGameData(ref content);
                 await writer.WriteAsync(content);
             }
+
+            return;
+        }
+#endif
+
+        public void Save(string filename)
+        {
+            //Task task = Task.Run(async () => await _SaveAsync(filename));
+            //task.Wait();
+            // Get a reference to the Local Folder
+            string content = "";
+            SaveGameData(ref content);
+#if WINDOWS_PHONE
+            try
+            {
+                System.IO.Stream stream = TitleContainer.OpenStream(filename);
+                using (System.IO.StreamWriter writer = new System.IO.StreamWriter(stream))
+                {
+                    writer.Write(content);
+                }
+            }
+            catch (Exception)
+            {
+            }
+#else
+            Task task = Task.Run(async () => await _SaveAsync(filename, content));
+            task.Wait();
+#endif
+
+
+            return;
         }
 
-        public async void LoadAsync(string filename)
+#if !WINDOWS_PHONE
+        private async Task<string> _LoadAsync(string filename)
         {
             string content = "";
-
             // Get a reference to the Local Folder
             Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            // Create the file in the local folder, or if it already exists, just open it
-            Windows.Storage.StorageFile storageFile =
-                        await localFolder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                // Create the file in the local folder, or if it already exists, just open it
+                Windows.Storage.StorageFile storageFile =
+                            await localFolder.CreateFileAsync(
+                            filename,
+                            Windows.Storage.CreationCollisionOption.OpenIfExists);
 
-            Stream readStream = await storageFile.OpenStreamForReadAsync();
-            using (StreamReader reader = new StreamReader(readStream))
+                Stream readStream = await storageFile.OpenStreamForReadAsync();
+                using (StreamReader reader = new StreamReader(readStream))
+                {
+                    content = reader.ReadToEnd();
+                }
+
+                return content;
+        }
+#endif
+
+        public void Load(string filename)
+        {
+            string content = "";
+#if WINDOWS_PHONE
+            /*
+            System.IO.Stream stream = TitleContainer.OpenStream(filename);
+            using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
             {
                 content = reader.ReadToEnd();
             }
-
-            LoadGameData(content);
+             */
+            try
+            {
+                using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(filename))
+                {
+                    LoadGameData(reader);
+                }
+            }
+            catch (Exception)
+            {
+            }
+            //LoadGameData(reader);
+#else
+            Task<string> task = Task.Run(async () => await _LoadAsync(filename));
+            task.Wait();
+            content = task.Result;
+            StringReader stream = new StringReader(content);
+            using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(stream))
+            {
+                LoadGameData(reader);
+            }
+#endif
         }
 
         private void SaveGameData(ref string content)
@@ -1606,6 +1726,7 @@ namespace DuckHuntCommon
             SaveScoreList(ref content);
 
             // could save other configuration
+            SaveGameConfig(ref content);
             content += "</DuckHunt>";
         }
 
@@ -1629,18 +1750,32 @@ namespace DuckHuntCommon
         {
             content += "<scorelist>";
             SaveCount(ref content, scorelist.Count);
-            foreach (KeyValuePair<string, int> record in this.scorelist)
+            foreach (KeyValuePair<int, string> pair in scorelist)
             {
-                SaveRecord(ref content, record.Key, record.Value);
+                SaveRecord(ref content, pair.Value, pair.Key);
 
             }
             content += "</scorelist>";
         }
 
 
-        private void LoadPlayerScore(XmlReader reader, string score)
+
+        private void SaveGameConfig(ref string content)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "score")
+            content += "<configuration>";
+            content += "<GameBackgorundSound>";
+            content += this.EnableBgMusic? "1" : "0";
+            content += "</GameBackgorundSound>";
+            content += "<GameSound>";
+            content += this.EnableGameSound ? "1" : "0";
+            content += "</GameSound>";
+            content += "</configuration>";
+        }
+
+
+        private void LoadPlayerScore(XmlReader reader, ref int score)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "score")
             {
                 // error
                 return;
@@ -1649,7 +1784,7 @@ namespace DuckHuntCommon
             {
                 if (reader.NodeType == XmlNodeType.Text)
                 {
-                    score = reader.Value;
+                    score = Convert.ToInt32(reader.Value);
                 }
                 if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "score")
                 {
@@ -1658,9 +1793,9 @@ namespace DuckHuntCommon
             }
         }
 
-        private void LoadPlayerName(XmlReader reader, string name)
+        private void LoadPlayerName(XmlReader reader, ref string name)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "name")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "name")
             {
                 // error
                 return;
@@ -1678,9 +1813,9 @@ namespace DuckHuntCommon
             }
         }
 
-        private void LoadOneRecord(XmlReader reader, string name, string score)
+        private void LoadOneRecord(XmlReader reader, ref string name, ref int score)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "record")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "record")
             {
                 // error
                 return;
@@ -1691,11 +1826,11 @@ namespace DuckHuntCommon
                 {
                     if (reader.Name == "name")
                     {
-                        LoadPlayerName(reader, name);
+                        LoadPlayerName(reader, ref name);
                     }
                     if (reader.Name == "score")
                     {
-                        LoadPlayerScore(reader, score);
+                        LoadPlayerScore(reader, ref score);
                     }
                 }
                 if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "record")
@@ -1705,9 +1840,9 @@ namespace DuckHuntCommon
             }
 
         }
-        private void LoadCount(XmlReader reader, string count)
+        private void LoadCount(XmlReader reader, ref int count)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "count")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "count")
             {
                 // error
                 return;
@@ -1716,7 +1851,7 @@ namespace DuckHuntCommon
             {
                 if (reader.NodeType == XmlNodeType.Text)
                 {
-                    count = reader.Value;
+                    count = Convert.ToInt32(reader.Value);
                 }
                 if (reader.NodeType == XmlNodeType.EndElement)
                 {
@@ -1728,9 +1863,95 @@ namespace DuckHuntCommon
             }
         }
 
+        private void LoadBackGroundMusic(XmlReader reader,ref  bool enablebgmusic)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "GameBackgorundSound")
+            {
+                // error
+                return;
+            }
+
+            // next item should be scorelist
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Text)
+                {
+                    enablebgmusic = Convert.ToInt32(reader.Value) == 1;
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    // end of element
+                    if (reader.Name == "GameBackgorundSound")
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void LoadGameSound(XmlReader reader, ref  bool enablegamesound)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "GameSound")
+            {
+                // error
+                return;
+            }
+
+            // next item should be scorelist
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Text)
+                {
+                    enablegamesound = Convert.ToInt32(reader.Value) == 1;
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    // end of element
+                    if (reader.Name == "GameSound")
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void LoadGameConfiguration(XmlReader reader)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "configuration")
+            {
+                // error
+                return;
+            }
+
+
+            // next item should be scorelist
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "GameBackgorundSound")
+                    {
+                        LoadBackGroundMusic(reader, ref this.EnableBgMusic);
+                    }
+                    if (reader.Name == "GameSound")
+                    {
+                        LoadBackGroundMusic(reader, ref this.EnableGameSound);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    // end of element
+                    if (reader.Name == "configuration")
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
         private void LoadScoreList(XmlReader reader)
         {
-            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "scorelist")
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "scorelist")
             {
                 // error
                 return;
@@ -1744,16 +1965,15 @@ namespace DuckHuntCommon
                     if (reader.Name == "count")
                     {
                         // find score list element
-                        string count = "";
-                        LoadCount(reader, count);
+                        int count = 0;
+                        LoadCount(reader, ref count);
                     }
                     if (reader.Name == "record")
                     {
                         string name = "";
-                        string score = "";
-                        LoadOneRecord(reader, name, score);
-                        KeyValuePair<string, int> record = new KeyValuePair<string, int>(name, 100);
-                        scorelist.Add(record);
+                        int score = 0;
+                        LoadOneRecord(reader, ref name, ref score);
+                        scorelist[score] = name;
                     }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
@@ -1767,11 +1987,11 @@ namespace DuckHuntCommon
             }
         }
 
-        private void LoadGameData(string content)
+        private void LoadGameData(System.Xml.XmlReader reader)
         {
-            StringBuilder output = new StringBuilder();
-
-            using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(new StringReader(content)))
+            //
+            //StringReader stream = new StringReader(content);
+            //using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(stream))
             {
                 try
                 {
@@ -1802,6 +2022,17 @@ namespace DuckHuntCommon
                             {
                                 // find score list element
                                 LoadScoreList(reader);
+                            }
+
+                            // could add other data
+
+                        }
+                        if (reader.NodeType == XmlNodeType.Element)
+                        {
+                            if (reader.Name == "configuration")
+                            {
+                                // find score list element
+                                LoadGameConfiguration(reader);
                             }
 
                             // could add other data
@@ -1922,11 +2153,13 @@ namespace DuckHuntCommon
 
             //
             // load config
+            /*
             Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             // Create a composite setting 
             Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
             composite["GameBackGroundMusic"] = true;
             composite["GameSound"] = false;
+             */
 
         }
 
@@ -1966,6 +2199,7 @@ namespace DuckHuntCommon
             objlst.Add(new KeyboardModel());
             objlst.Add(new KeyItemModel());
             objlst.Add(new CheckBoxModel());
+            objlst.Add(new PandaModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -2059,13 +2293,15 @@ namespace DuckHuntCommon
         {
             screenRect = screenRect1;
 
-            gameData.LoadAsync("duckhunt.xml");
+            gameData.Load("duckhunt.xml");
             if (gameData.ScoreList.Count == 0)
             {
+                /*
                 gameData.AddScore("Penner", 1000);
                 gameData.AddScore("Fallson", 2000);
                 gameData.AddScore("2013/06/05", 3000);
-                gameData.SaveAsync("duckhunt.xml");
+                gameData.Save("duckhunt.xml");
+                 */
             }
 
             backgroundPage.InitGamePage(this);
@@ -2148,6 +2384,18 @@ namespace DuckHuntCommon
             ViewObjectFactory.SetLocalViewInfo(screenRect, orgpoint, defscale, bgorgpoint, bgdefscale);
         }
 
+        public void SaveNewScore(int score)
+        {
+            // 
+            DateTime now = DateTime.Now;
+            gameData.AddScore(now.ToString(), score);
+            gameData.Save("duckhunt.xml");
+        }
+
+        public void SaveGameData()
+        {
+            gameData.Save("duckhunt.xml");
+        }
 
         public void Update(GameTime gametime)
         {

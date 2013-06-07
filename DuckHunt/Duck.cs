@@ -5073,7 +5073,7 @@ namespace DuckHuntCommon
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
 
-        SortedDictionary<int, string> scorelist;
+        Dictionary<int, string> scorelist;
 
         // score list
         public ScroeListBoardModel()
@@ -5094,7 +5094,7 @@ namespace DuckHuntCommon
             space.Width = 652;
             space.Height = 644;
 
-            scorelist = new SortedDictionary<int, string>();
+            scorelist = new Dictionary<int, string>();
 
             this.AddScore("Penner", 3565);
             this.AddScore("Fallson", 5000);
@@ -5117,7 +5117,7 @@ namespace DuckHuntCommon
             space.Width = 300;
             space.Height = 644;
 
-            scorelist = new SortedDictionary<int, string>();
+            scorelist = new Dictionary<int, string>();
         }
 
 
@@ -5231,7 +5231,7 @@ namespace DuckHuntCommon
             scorelist[score] = name;
         }
 
-        public SortedDictionary<int, string> ScoreList
+        public Dictionary<int, string> ScoreList
         {
             get
             {
