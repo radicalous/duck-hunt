@@ -409,11 +409,11 @@ namespace DuckHuntCommon
                             ducks = null;
                             return false;
                         }
-                        duck = new DuckModel(/*PilotType.DUCKEIGHT, "chapter3"*/);
+                        duck = new DuckModel(PilotType.DUCKSIN, "chapter3");
                         ducks.Add(duck);
-                        duck = new DuckModel(/*PilotType.DUCKEIGHT, "chapter3"*/);
+                        duck = new DuckModel(PilotType.DUCKSIN, "chapter3");
                         ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter3");
+                        duck = new DuckModel(PilotType.DUCKSIN, "chapter3");
                         ducks.Add(duck);
                         duckcount += 3;
                     }
@@ -425,11 +425,11 @@ namespace DuckHuntCommon
                             ducks = null;
                             return false;
                         }
-                        duck = new DuckModel(/*PilotType.DUCKEIGHT, "chapter4"*/);
+                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
                         ducks.Add(duck);
-                        duck = new DuckModel(/*PilotType.DUCKEIGHT, "chapter4"*/);
+                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
                         ducks.Add(duck);
-                        duck = new DuckModel(/*PilotType.DUCKEIGHT, "chapter4"*/);
+                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
                         ducks.Add(duck);
                         duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
                         ducks.Add(duck);
@@ -487,10 +487,10 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
-                chapter = new GameChapter(GameChapterPhase.CHAPTER1);
-                chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER2);
-                chapters.Add(chapter);
+               // chapter = new GameChapter(GameChapterPhase.CHAPTER1);
+                //chapters.Add(chapter);
+                //chapter = new GameChapter(GameChapterPhase.CHAPTER2);
+                //chapters.Add(chapter);
                 chapter = new GameChapter(GameChapterPhase.CHAPTER3);
                 chapters.Add(chapter);
                 chapter = new GameChapter(GameChapterPhase.CHAPTER4);
