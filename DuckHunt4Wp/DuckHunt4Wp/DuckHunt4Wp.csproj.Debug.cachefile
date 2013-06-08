@@ -35,6 +35,8 @@ Content\Graphics\duckrflying.xnb
 Content\Graphics\checkbox_checked.xnb
 Content\Graphics\checkbox_unchecked.xnb
 Content\Graphics\panda_run.xnb
+Content\Graphics\continue.xnb
+Content\Graphics\Pause.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
 Content\DuckHunt.xml

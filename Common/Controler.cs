@@ -98,6 +98,11 @@ namespace DuckHuntCommon
                         commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
                     }
                     break;
+                case ModelType.BUTTON:
+                    {
+                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
+                    }
+                    break;
                 case ModelType.KEYITEM:
                     {
                         //Vector2 ogpoint = Vector2.Zero;
@@ -169,6 +174,7 @@ namespace DuckHuntCommon
 
         Dictionary<ModelType, ObjectTexturesItem> objTextureLst;
 
+        bool pause = false;
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -261,6 +267,14 @@ namespace DuckHuntCommon
         public void Update(GameTime gameTime)
         {
             game.Update(gameTime);
+          
+            if (pause)
+            {
+                pause = game.Pause;
+                return;
+            }
+            pause = game.Pause;
+
             List<ModelObject> objlst = null;
             game.GetObjects(out objlst);
             if (objlst == null)
@@ -309,6 +323,7 @@ namespace DuckHuntCommon
                     viewObject = ViewObjectFactory.CreateViewObject(obj);
                     viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
                     obj.SetViewObject(viewObject);
+                    obj.Update(gameTime);
                 }
                 viewObject.Draw(spriteBatch);
             }
@@ -573,6 +588,10 @@ namespace DuckHuntCommon
         ScroeBoardModel scoreBoard;
         Rectangle scoreBoardSpace;
 
+        ButtonModel pause;
+        Rectangle  pauseButtonSpace;
+
+
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
@@ -664,6 +683,25 @@ namespace DuckHuntCommon
                 leftTimeBoardSpace.Height = timeBoard.GetSpace().Height;
             }
 
+
+            ButtonModel button = new ButtonModel();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                pauseButtonSpace.X = rectBackground.Height - button.GetSpace().Width - 20;
+                pauseButtonSpace.Y = rectBackground.Right - 300; ;
+                pauseButtonSpace.Width = button.GetSpace().Width;
+                pauseButtonSpace.Height = button.GetSpace().Height;
+            }
+            else
+            {
+
+                pauseButtonSpace.X = rectBackground.Width - button.GetSpace().Width - 20;
+                pauseButtonSpace.Y = rectBackground.Bottom - 300;
+                pauseButtonSpace.Width = button.GetSpace().Width;
+                pauseButtonSpace.Height = button.GetSpace().Height;
+            }
+
+
             NewDog();
             NewScoreBoard();
             NewAssistBoard();
@@ -681,6 +719,7 @@ namespace DuckHuntCommon
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
                 objlst.Add(panda);
+                objlst.Add(pause);
 
                 foreach (DuckModel duck in duckList)
                 {
@@ -713,6 +752,10 @@ namespace DuckHuntCommon
         GameChapter chapter;
         public void Update(GameTime gametime)
         {
+            if (duckHuntGame.Pause)
+            {
+                return;
+            }
             //
             backgroundPage.Update(gametime);
             panda.Update(gametime);
@@ -793,6 +836,7 @@ namespace DuckHuntCommon
 
         public void Click(List<Vector2> clickpositionlist)
         {
+
             if (phase != GAME_PHASE.DUCK_FLY)
             {
                 return;
@@ -806,6 +850,16 @@ namespace DuckHuntCommon
             // new a bullet
             foreach (Vector2 clickpos in clickpositionlist)
             {
+                if (pause.Click(clickpos))
+                {
+                    duckHuntGame.Pause = !duckHuntGame.Pause;
+                    continue;
+                }
+
+                if (duckHuntGame.Pause)
+                {
+                    continue;
+                }
 
                 BulletModel bullet = new BulletModel(clickpos);
                 foreach (DuckModel duck in duckList)
@@ -863,6 +917,9 @@ namespace DuckHuntCommon
         {
             scoreBoard = new ScroeBoardModel();
             scoreBoard.Initialize(null, scoreBoardSpace, 0);
+
+            pause = new ButtonModel();
+            pause.Initialize(null, pauseButtonSpace, 0);
 
         }
 
@@ -2149,6 +2206,19 @@ namespace DuckHuntCommon
             }
         }
 
+        bool pause = false;
+        public bool Pause
+        {
+            get
+            {
+                return pause;
+            }
+            set
+            {
+                pause = value;
+            }
+        }
+
         public Rectangle GetGlobalViewRect()
         {
             return globalViewRect;
@@ -2273,7 +2343,7 @@ namespace DuckHuntCommon
             objlst.Add(new KeyItemModel());
             objlst.Add(new CheckBoxModel());
             objlst.Add(new PandaModel());
-
+            objlst.Add(new ButtonModel());
             foreach (ModelObject obj in objlst)
             {
                 ObjectResourceItem objResItem = new ObjectResourceItem();
