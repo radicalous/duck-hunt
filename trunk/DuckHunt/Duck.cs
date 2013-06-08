@@ -14,7 +14,7 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, PANDA
+        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -258,8 +258,7 @@ namespace DuckHuntCommon
                 {
                     Rectangle rc = new Rectangle();
                     childviewobj.Init(_orgpointinscreen, _defscaleinscreen, null, objTextureLst, rc);
-                }
-                
+                }       
             }
         }
 
@@ -322,6 +321,8 @@ namespace DuckHuntCommon
             ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
             if (animationList[model.GetCurrentAnimationIndex()].animation)
             {
+                // check if the position is zero,
+                // when button pause, it switch a animation, but update will never be called
                 viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
             }
             else
@@ -5390,6 +5391,199 @@ namespace DuckHuntCommon
 
 
 
+    class ButtonModel : ModelObject
+    {
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        bool _checked = true;
+
+        List<AnimationInfo> anationInfoList;
+
+        public ButtonModel()
+        {
+            space.Width = 256;
+            space.Height = 256;
+
+            anationInfoList = new List<AnimationInfo>();
+
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 256;
+            animationInfo.frameHeight = 256;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo.frameWidth = 256;
+            animationInfo.frameHeight = 256;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+
+        }
+
+        public ModelType Type()
+        {
+            return ModelType.BUTTON;
+        }
+
+        public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\Pause";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\continue";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        public Rectangle GetSpace()
+        {
+            return space;
+        }
+        public float GetSacle()
+        {
+            return 0.5f;
+        }
+
+
+        public void Update(GameTime gameTime)
+        {
+            // no update for itself
+
+            // update child object
+        }
+
+        public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+        public int GetCurrentAnimationIndex()
+        {
+            if (_checked)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
+        public float GetAnimationDepth()
+        {
+            return 0.01f;
+        }
+
+        public int GetSoundIndex()
+        {
+            return -1;
+        }
+
+        public ModelObject GetParentObject()
+        {
+            return null;
+        }
+
+        public List<ModelObject> GetChildrenObjects()
+        {
+            return null;
+        }
+
+        ViewObject viewObject;
+        public ViewObject GetViewObject()
+        {
+            return viewObject;
+        }
+        public void SetViewObject(ViewObject viewObject1)
+        {
+            viewObject = viewObject1;
+        }
+
+        string content;
+        public string Content
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                content = value;
+            }
+        }
+
+        public bool Checked
+        {
+            get
+            {
+                return _checked;
+            }
+            set
+            {
+                _checked = value;
+            }
+        }
+
+        public bool Click(Vector2 logicpos)
+        {
+            // check if it clicked
+            Vector2 lefttop = this.GetAbsolutePosition();
+            lefttop.X += 256 / 2;
+            lefttop.Y += 256 / 2;
+            lefttop.X -= (int)(256 * GetSacle()/2);
+            lefttop.Y -= (int)(256 * GetSacle()/2);
+            int boxsize = (int)(256 * GetSacle());
+            if (logicpos.X > lefttop.X && logicpos.X - lefttop.X <= boxsize &&
+                logicpos.Y > lefttop.Y && logicpos.Y - lefttop.Y <= boxsize)
+            {
+                // clicked
+                _checked = !_checked;
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+
+
     class CheckBoxModel : ModelObject
     {
         Rectangle space; //indicate the object view range
@@ -5560,7 +5754,7 @@ namespace DuckHuntCommon
             }
         }
 
-        public void Click(Vector2 logicpos)
+        public bool Click(Vector2 logicpos)
         {
              // check if it clicked
             Vector2 lefttop = this.GetAbsolutePosition();
@@ -5571,7 +5765,10 @@ namespace DuckHuntCommon
             {
                 // clicked
                 _checked = !_checked;
+                return true;
             }
+
+            return false;
         }
     }
 
