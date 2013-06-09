@@ -8,8 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GameCommon
 {
     public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
-    public enum PilotType { DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD,DUCKFLYAWAY, 
-							DUCKEIGHT, DUCKCIRCLE, DUCKELLIPSE, DUCKSIN,
+    public enum PilotType { DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD,DUCKFLYAWAY,
+                            DUCKEIGHT, DUCKEIGHTDEPTH, DUCKCIRCLE, DUCKELLIPSE, DUCKSIN,
                             DOGSEEK, DOGJUMP, DOGSHOW, 
                             CLOUD,
     };
@@ -88,6 +88,7 @@ namespace GameCommon
                         if (clustername == "")
                         {
                             pilot = new DuckEightPilot(pos, 0);
+                         
                         }
                         else
                         {
@@ -96,11 +97,38 @@ namespace GameCommon
                                 int idx = pilotGroup[clustername];
                                 pilotGroup[clustername] = idx + 1;
                                 pilot = new DuckEightPilot(pos, idx);
+                               
                             }
                             else
                             {
                                 pilotGroup.Add(clustername, 1);
                                 pilot = new DuckEightPilot(pos, 0);
+                               
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKEIGHTDEPTH:
+                    {
+                        if (clustername == "")
+                        {
+                            //pilot = new DuckEightPilot(pos, 0);
+                            pilot = new DuckEightPilotWithDepth(pos, 0);
+                        }
+                        else
+                        {
+                            if (pilotGroup.ContainsKey(clustername))
+                            {
+                                int idx = pilotGroup[clustername];
+                                pilotGroup[clustername] = idx + 1;
+                               // pilot = new DuckEightPilot(pos, idx);
+                                pilot = new DuckEightPilotWithDepth(pos, idx);
+                            }
+                            else
+                            {
+                                pilotGroup.Add(clustername, 1);
+                               // pilot = new DuckEightPilot(pos, 0);
+                                pilot = new DuckEightPilotWithDepth(pos, 0);
                             }
                         }
                     }
@@ -541,7 +569,7 @@ namespace GameCommon
         {
             Position = pos;
 
-            lineStep = -idx;
+            lineStep = -idx*10;
         }
 
         public void Initialize(Rectangle space, int seed)
@@ -669,8 +697,35 @@ namespace GameCommon
     }
 
 
+    class DuckEightPilotWithDepth : DuckEightPilot
+    {
+        double z = 0.0;
+        double z_delta = 2 * Constants.Pi / Constants.MaxCurveSteps;
+        public DuckEightPilotWithDepth(Vector2 pos, int idx)
+            :base(pos, idx)
+        {
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            z += z_delta;
+            if (z > 2 * Constants.Pi)
+                z = 0.0;
+
+            depthpos = (float)(Math.Cos(z) * 100.0 + 100.0) / 2;
+            if (depthpos < 20)
+                depthpos = 20;
+            else if (depthpos > 80)
+                depthpos = 80;
+
+            base.Update(gameTime);
+        }
+    }
+
     class DuckCirclePilot : DuckPilot
     {
+        static int max_hor_steps = 20;
+        int hor_steps = 0;
         double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
@@ -689,13 +744,13 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
-                {
-                    return Direction.RIGHT;
-                }
-                else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+                if (cur_angle >= 0 && cur_angle < Constants.Pi)
                 {
                     return Direction.LEFT;
+                }
+                else if (cur_angle >= Constants.Pi && cur_angle < Constants.Pi * 2)
+                {
+                    return Direction.RIGHT;
                 }
                 else
                 {
@@ -715,17 +770,26 @@ namespace GameCommon
 
         public override void Update(GameTime gameTime)
         {
+            float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
+            r /= (3 * Constants.Ratio/2);
+
             if (InCurve())
             {
-                cur_angle += delta_angle;
-                if (cur_angle > 2 * Constants.Pi)
-                    cur_angle = 0.0;
+                if (hor_steps <= max_hor_steps)
+                {
+                    Position.X = end_pos.X + hor_steps * r / max_hor_steps;
 
-                float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
-                r /= Constants.Ratio;
+                    hor_steps++;
+                }
+                else
+                {
+                    cur_angle += delta_angle;
+                    if (cur_angle > 2 * Constants.Pi)
+                        cur_angle = 0.0;
 
-                Position.X = end_pos.X + (float)(r * Math.Cos(cur_angle));
-                Position.Y = end_pos.Y + (float)(r * Math.Sin(cur_angle));
+                    Position.X = end_pos.X + (float)(r * Math.Cos(cur_angle));
+                    Position.Y = end_pos.Y + (float)(r * Math.Sin(cur_angle));
+                }
             }
             else
                 base.Update(gameTime);
@@ -735,6 +799,8 @@ namespace GameCommon
 
     class DuckEllipsePilot : DuckPilot
     {
+        static int max_hor_steps = 20;
+        int hor_steps = 0;
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
@@ -753,13 +819,13 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                if (cur_angle >= 0 && cur_angle < Constants.Pi * 0.5)
-                {
-                    return Direction.RIGHT;
-                }
-                else if (cur_angle >= Constants.Pi * 0.5 && cur_angle < Constants.Pi * 1.5)
+                if (cur_angle >= 0 && cur_angle < Constants.Pi)
                 {
                     return Direction.LEFT;
+                }
+                else if (cur_angle >= Constants.Pi && cur_angle < Constants.Pi * 2)
+                {
+                    return Direction.RIGHT;
                 }
                 else
                 {
@@ -781,15 +847,23 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                cur_angle += delta_angle;
-                if (cur_angle > 2 * Constants.Pi)
-                    cur_angle = 0;
+                float a = boundaryRect.Width / (2 * Constants.Ratio);
+                float b = boundaryRect.Height / (2 * Constants.Ratio);
 
-                float a = boundaryRect.Width / Constants.Ratio;
-                float b = boundaryRect.Height / Constants.Ratio;
+                if (hor_steps <= max_hor_steps)
+                {
+                    Position.X = end_pos.X + hor_steps * a / max_hor_steps;
+                    hor_steps++;
+                }
+                else
+                {
+                    cur_angle += delta_angle;
+                    if (cur_angle > 2 * Constants.Pi)
+                        cur_angle = 0;
 
-                Position.X = end_pos.X + (float)(a * Math.Cos(cur_angle));
-                Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
+                    Position.X = end_pos.X + (float)(a * Math.Cos(cur_angle));
+                    Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
+                }
             }
             else
             {
@@ -800,6 +874,8 @@ namespace GameCommon
 
     class DuckSinPilot : DuckPilot
     {
+        int left2right = 1;
+        int hor_steps = 0;
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
@@ -817,10 +893,16 @@ namespace GameCommon
         public override Direction GetHorizationDirection()
         {
             if (InCurve())
-                return Direction.RIGHT;
+            {
+                if (left2right == 1)
+                    return Direction.RIGHT;
+                else
+                    return Direction.LEFT;
+            }
             else
                 return base.GetHorizationDirection();
         }
+
         public override Direction GetZDirection()
         {
             return base.GetZDirection();
@@ -831,20 +913,24 @@ namespace GameCommon
             if (InCurve())
             {
                 cur_angle += delta_angle;
+                if (left2right == 1)
+                    hor_steps++;
+                else
+                    hor_steps--;
 
-                //float a = boundaryRect.Width / Constants.Ratio;
-                float b = boundaryRect.Height / Constants.Ratio;
+                float a = boundaryRect.Width / Constants.Ratio;
+                float b = boundaryRect.Height / (3*Constants.Ratio/2);
 
-                Position.X = end_pos.X + (float)cur_angle;
+                Position.X = end_pos.X + (float)hor_steps*a/Constants.MaxCurveSteps;
                 if (Position.X >= boundaryRect.Right)
                 {
                     Position.X = boundaryRect.Right;
-                    delta_angle = -delta_angle;
+                    left2right = 0;
                 }
                 else if (Position.X <= boundaryRect.Left)
                 {
                     Position.X = boundaryRect.Left;
-                    delta_angle = -delta_angle;
+                    left2right = 1;
                 }
                 Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
             }

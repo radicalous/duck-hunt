@@ -273,7 +273,7 @@
                                 Width="88"
                                 MaxHeight="32"
                                 TextTrimming="WordEllipsis"
-                                Style="{StaticResource BasicTextStyle}"/>
+                                Style="{StaticResource BasicTextStyle}"/>      
                         </StackPanel>
                         <Rectangle
                                 x:Name="FocusVisualWhite"
@@ -405,6 +405,7 @@
         An AppBarButton Style is provided for each of the glyphs in the Segoe UI Symbol font.  
         Uncomment any style you reference (as not all may be required).
     -->
+    
 
     <!--
     

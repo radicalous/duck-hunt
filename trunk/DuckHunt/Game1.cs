@@ -69,7 +69,72 @@ namespace DuckHunt
             IsMouseVisible = true;
             //IsMouseVisible = false;
 
+            /*
+            Window.Current.SizeChanged += OnWindowSizeChanged;
+
+            SettingsPane.GetForCurrentView().CommandsRequested += SettingCharmManager_CommandsRequested;
+            */
+            _windowBounds = Windows.UI.Xaml.Window.Current.Bounds;
+
+            Windows.UI.Xaml.Window.Current.SizeChanged += OnWindowSizeChanged;
+            Windows.UI.ApplicationSettings.SettingsPane.GetForCurrentView().CommandsRequested += SettingCharmManager_CommandsRequested;
         }
+
+        Windows.Foundation.Rect _windowBounds;
+
+        double _settingsWidth = 346;
+        Windows.UI.Xaml.Controls.Primitives.Popup _settingsPopup;
+
+        void OnWindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+        {
+            _windowBounds = Windows.UI.Xaml.Window.Current.Bounds;
+        }
+
+        //
+        private void SettingCharmManager_CommandsRequested(
+            Windows.UI.ApplicationSettings.SettingsPane sender, 
+            Windows.UI.ApplicationSettings.SettingsPaneCommandsRequestedEventArgs args)
+        {
+            // UICommandInvokedHandler handler = new UICommandInvokedHandler(onPrivacyPolicyCommand);
+            //  args.Request.ApplicationCommands.Add(new SettingsCommand("privacypolicy", "Privacy policy", handler));
+
+
+            Windows.UI.ApplicationSettings.SettingsCommand cmd = new Windows.UI.ApplicationSettings.SettingsCommand("Settings", "Privacy Policy", (x) =>
+            {
+                _settingsPopup = new Windows.UI.Xaml.Controls.Primitives.Popup();
+                _settingsPopup.Closed += OnPopupClosed;
+                Windows.UI.Xaml.Window.Current.Activated += OnWindowActivated;
+                _settingsPopup.IsLightDismissEnabled = true;
+                _settingsPopup.Width = _settingsWidth;
+                _settingsPopup.Height = _windowBounds.Height;
+
+                PrivacyPolicy mypane = new PrivacyPolicy();
+                mypane.Width = _settingsWidth;
+                mypane.Height = _windowBounds.Height;
+
+                _settingsPopup.Child = mypane;
+                _settingsPopup.SetValue(Windows.UI.Xaml.Controls.Canvas.LeftProperty, _windowBounds.Width - _settingsWidth);
+                _settingsPopup.SetValue(Windows.UI.Xaml.Controls.Canvas.TopProperty, 0);
+                _settingsPopup.IsOpen = true;
+            });
+
+            args.Request.ApplicationCommands.Add(cmd);
+
+        }
+
+        private void OnWindowActivated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+        {
+            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
+            {
+                _settingsPopup.IsOpen = false;
+            }
+        }
+
+        void OnPopupClosed(object sender, object e)
+        {
+            Windows.UI.Xaml.Window.Current.Activated -= OnWindowActivated;
+        }
+
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
