@@ -27,7 +27,10 @@ namespace GameCommon
 
     class PilotManager
     {
-        Dictionary<string, int> pilotGroup = new Dictionary<string, int>();
+        Dictionary<string, int> duckEightPilotGroup = new Dictionary<string, int>();
+        Dictionary<string, int> duckCirclePilotGroup = new Dictionary<string, int>();
+        Dictionary<string, int> duckEllipsePilotGroup = new Dictionary<string, int>();
+        Dictionary<string, int> duckSinPilotGroup = new Dictionary<string, int>();
         static PilotManager instance;
         public PilotManager()
         {
@@ -92,16 +95,16 @@ namespace GameCommon
                         }
                         else
                         {
-                            if (pilotGroup.ContainsKey(clustername))
+                            if (duckEightPilotGroup.ContainsKey(clustername))
                             {
-                                int idx = pilotGroup[clustername];
-                                pilotGroup[clustername] = idx + 1;
+                                int idx = duckEightPilotGroup[clustername];
+                                duckEightPilotGroup[clustername] = idx + 1;
                                 pilot = new DuckEightPilot(pos, idx);
                                
                             }
                             else
                             {
-                                pilotGroup.Add(clustername, 1);
+                                duckEightPilotGroup.Add(clustername, 1);
                                 pilot = new DuckEightPilot(pos, 0);
                                
                             }
@@ -117,16 +120,16 @@ namespace GameCommon
                         }
                         else
                         {
-                            if (pilotGroup.ContainsKey(clustername))
+                            if (duckEightPilotGroup.ContainsKey(clustername))
                             {
-                                int idx = pilotGroup[clustername];
-                                pilotGroup[clustername] = idx + 1;
+                                int idx = duckEightPilotGroup[clustername];
+                                duckEightPilotGroup[clustername] = idx + 1;
                                // pilot = new DuckEightPilot(pos, idx);
                                 pilot = new DuckEightPilotWithDepth(pos, idx);
                             }
                             else
                             {
-                                pilotGroup.Add(clustername, 1);
+                                duckEightPilotGroup.Add(clustername, 1);
                                // pilot = new DuckEightPilot(pos, 0);
                                 pilot = new DuckEightPilotWithDepth(pos, 0);
                             }
@@ -141,15 +144,15 @@ namespace GameCommon
                         }
                         else
                         {
-                            if (clustername != "" && pilotGroup.ContainsKey(clustername))
+                            if ( duckCirclePilotGroup.ContainsKey(clustername))
                             {
-                                int idx = pilotGroup[clustername];
-                                pilotGroup[clustername] = idx + 1;
+                                int idx = duckCirclePilotGroup[clustername];
+                                duckCirclePilotGroup[clustername] = idx + 1;
                                 pilot = new DuckCirclePilot(pos, idx);
                             }
                             else
                             {
-                                pilotGroup.Add(clustername, 1);
+                                duckCirclePilotGroup.Add(clustername, 1);
                                 pilot = new DuckCirclePilot(pos, 0);
                             }
                         }
@@ -163,15 +166,15 @@ namespace GameCommon
                         }
                         else
                         {
-                            if (clustername != "" && pilotGroup.ContainsKey(clustername))
+                            if ( duckEllipsePilotGroup.ContainsKey(clustername))
                             {
-                                int idx = pilotGroup[clustername];
-                                pilotGroup[clustername] = idx + 1;
+                                int idx = duckEllipsePilotGroup[clustername];
+                                duckEllipsePilotGroup[clustername] = idx + 1;
                                 pilot = new DuckEllipsePilot(pos, idx);
                             }
                             else
                             {
-                                pilotGroup.Add(clustername, 1);
+                                duckEllipsePilotGroup.Add(clustername, 1);
                                 pilot = new DuckEllipsePilot(pos, 0);
                             }
                         }
@@ -185,15 +188,15 @@ namespace GameCommon
                         }
                         else
                         {
-                            if (clustername != "" && pilotGroup.ContainsKey(clustername))
+                            if (duckSinPilotGroup.ContainsKey(clustername))
                             {
-                                int idx = pilotGroup[clustername];
-                                pilotGroup[clustername] = idx + 1;
+                                int idx = duckSinPilotGroup[clustername];
+                                duckSinPilotGroup[clustername] = idx + 1;
                                 pilot = new DuckSinPilot(pos, idx);
                             }
                             else
                             {
-                                pilotGroup.Add(clustername, 1);
+                                duckSinPilotGroup.Add(clustername, 1);
                                 pilot = new DuckSinPilot(pos, 0);
                             }
                         }
@@ -560,6 +563,7 @@ namespace GameCommon
         protected Vector2 start_pos; //random start position
         protected Vector2 end_pos; //different end position
         protected int lineStep;
+        protected int max_lineSteps;
 
         // current position
         protected Vector2 Position;
@@ -569,16 +573,25 @@ namespace GameCommon
         {
             Position = pos;
 
-            lineStep = -idx*10;
+            lineStep = 0;
+            max_lineSteps = Constants.MaxLineSteps + idx * 10;
         }
 
         public void Initialize(Rectangle space, int seed)
         {
             boundaryRect = space;
+            Random rdm = new Random(seed);
+
+            /*
+            int r = Math.Min(boundaryRect.Height, boundaryRect.Width);
+            r /= Constants.Ratio;
+
+            end_pos.X = boundaryRect.Center.X + rdm.Next(-r, r);
+            end_pos.Y = boundaryRect.Center.Y + rdm.Next(-r, r);
+            */
             end_pos.X = boundaryRect.Center.X;
             end_pos.Y = boundaryRect.Center.Y;
 
-            Random rdm = new Random(seed);
             start_pos.X = rdm.Next(boundaryRect.Left, boundaryRect.Right);
             start_pos.Y = boundaryRect.Bottom;
 
@@ -616,10 +629,10 @@ namespace GameCommon
             {
                 lineStep++;
             }
-            else if (lineStep <= Constants.MaxLineSteps)
+            else if (lineStep <= max_lineSteps)
             {
                 double k = (end_pos.Y - start_pos.Y) / (end_pos.X - start_pos.X);
-                int dx = (int)((end_pos.X - start_pos.X) / Constants.MaxLineSteps);
+                int dx = (int)((end_pos.X - start_pos.X) / max_lineSteps);
                 Position.X = start_pos.X + dx * lineStep;
                 Position.Y = (int)(start_pos.Y + k * dx * lineStep);
                 lineStep++;
@@ -628,7 +641,7 @@ namespace GameCommon
 
         public bool InCurve()
         {
-            return lineStep > Constants.MaxLineSteps ? true : false;
+            return lineStep > max_lineSteps ? true : false;
         }
     }
 
