@@ -107,7 +107,9 @@
     </Compile>
     <Compile Include="AutoPilot.cs" />
     <Compile Include="Controler.cs" />
-    <Compile Include="Duck.cs" />
+    <Compile Include="ControlObjects.cs" />
+    <Compile Include="DuckHuntGame.cs" />
+    <Compile Include="GameModels.cs" />
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>

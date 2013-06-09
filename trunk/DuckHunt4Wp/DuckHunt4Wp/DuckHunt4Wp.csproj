@@ -68,7 +68,9 @@
     <Compile Include="Animation.cs" />
     <Compile Include="AutoPilot.cs" />
     <Compile Include="Controler.cs" />
-    <Compile Include="Duck.cs" />
+    <Compile Include="ControlObjects.cs" />
+    <Compile Include="DuckHuntGame.cs" />
+    <Compile Include="GameModels.cs" />
     <Compile Include="ParallaxingBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Content\Graphics\baby_pluto.xnb" />
