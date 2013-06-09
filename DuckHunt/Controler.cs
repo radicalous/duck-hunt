@@ -192,7 +192,7 @@ namespace DuckHuntCommon
         }
 
         Song gamebackgorundsound;
-
+        bool bgSoundEnabled = false;
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -207,9 +207,14 @@ namespace DuckHuntCommon
             gamebackgorundsound = Content.Load<Song>(soundList[0].soundpath);
             MediaPlayer.IsRepeating = true;
             //MediaPlayer.Volume = 50;
-            MediaPlayer.Play(gamebackgorundsound);
-
             game.StartGame(viewRect);
+
+            if (game.DuckHuntGameData.EnableBgMusic)
+            {
+                MediaPlayer.Play(gamebackgorundsound);
+            }
+            bgSoundEnabled = game.DuckHuntGameData.EnableBgMusic;
+
         }
 
         /// <summary>
@@ -267,6 +272,19 @@ namespace DuckHuntCommon
         public void Update(GameTime gameTime)
         {
             game.Update(gameTime);
+            if (game.DuckHuntGameData.EnableBgMusic != bgSoundEnabled)
+            {
+                //
+                bgSoundEnabled = game.DuckHuntGameData.EnableBgMusic;
+                if (bgSoundEnabled)
+                {
+                    MediaPlayer.Play(gamebackgorundsound);
+                }
+                else
+                {
+                    MediaPlayer.Pause();
+                }
+            }
           
             if (pause)
             {
@@ -296,6 +314,11 @@ namespace DuckHuntCommon
                     obj.SetViewObject(viewObject);
                 }
                 viewObject.Update(gameTime);
+
+                if (game.DuckHuntGameData.EnableGameSound)
+                {
+                    viewObject.PlaySound();
+                }
             }
         }
 
@@ -379,7 +402,7 @@ namespace DuckHuntCommon
     {
         GameChapterPhase chapter;
         int duckcount = 0;
-        int concurrentcount = 6;
+        int concurrentcount = 10;
         public GameChapter(GameChapterPhase chapter1)
         {
             chapter = chapter1;
@@ -412,7 +435,7 @@ namespace DuckHuntCommon
                         }
                         duck = new DuckModel(PilotType.DUCKEIGHT, "charpter2");
                         ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter2");
+                        duck = new DuckModel(PilotType.DUCKCIRCLE, "chapter2");
                         ducks.Add(duck);
                         duckcount += 2;
                     }
@@ -426,9 +449,9 @@ namespace DuckHuntCommon
                         }
                         duck = new DuckModel(PilotType.DUCKSIN, "chapter3");
                         ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKSIN, "chapter3");
+                        duck = new DuckModel(PilotType.DUCKEIGHTDEPTH, "chapter3");
                         ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKSIN, "chapter3");
+                        duck = new DuckModel(PilotType.DUCKELLIPSE, "chapter3");
                         ducks.Add(duck);
                         duckcount += 3;
                     }
@@ -442,7 +465,7 @@ namespace DuckHuntCommon
                         }
                         duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
                         ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
+                        duck = new DuckModel(PilotType.DUCKEIGHTDEPTH, "chapter4");
                         ducks.Add(duck);
                         duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
                         ducks.Add(duck);
@@ -476,7 +499,7 @@ namespace DuckHuntCommon
                     {
                         for (int i = 0; i < concurrentcount; i++)
                         {
-                            duck = new DuckModel(/*PilotType.DUCKEIGHT, "forever"*/);
+                            duck = new DuckModel(PilotType.DUCKEIGHT, "forever");
                             ducks.Add(duck);
                             duckcount += 1;
                         }
@@ -503,15 +526,17 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
-               // chapter = new GameChapter(GameChapterPhase.CHAPTER1);
-                //chapters.Add(chapter);
-                //chapter = new GameChapter(GameChapterPhase.CHAPTER2);
-                //chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER1);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.CHAPTER2);
+                chapters.Add(chapter);
                 chapter = new GameChapter(GameChapterPhase.CHAPTER3);
                 chapters.Add(chapter);
                 chapter = new GameChapter(GameChapterPhase.CHAPTER4);
                 chapters.Add(chapter);
                 chapter = new GameChapter(GameChapterPhase.CHAPTER5);
+                chapters.Add(chapter);
+                chapter = new GameChapter(GameChapterPhase.FOREVER);
                 chapters.Add(chapter);
             }
             else
@@ -1442,24 +1467,6 @@ namespace DuckHuntCommon
 
             returnMenuItem = new MenuItemModel();
 
-            //
-            // load config
-            /*
-            localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-
-            composite = (Windows.Storage.ApplicationDataCompositeValue)localSettings.Values["exampleCompositeSetting"];
-            if (composite == null)
-            {
-                composite = new Windows.Storage.ApplicationDataCompositeValue();
-                composite["GameBackGroundMusic"] = "true";
-                composite["GameSound"] = "true";
-                localSettings.Values["exampleCompositeSetting"] = composite;
-            }
-            string value = composite["GameBackGroundMusic"].ToString();
-            backgroundMusic.Checked = !(value == "false");
-            value = composite["GameSound"].ToString();
-            gameSound.Checked = !(value == "false");
-             */
         }
 
         public void InitGamePage(DuckHuntGame game)
@@ -1517,6 +1524,7 @@ namespace DuckHuntCommon
             gameSound.Checked = duckHuntGame.DuckHuntGameData.EnableGameSound;
             backgroundMusic.Checked = duckHuntGame.DuckHuntGameData.EnableBgMusic;
 
+            returnMenuItem.Conent = "Return";
 
 
         }
