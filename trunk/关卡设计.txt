@@ -1,0 +1,15 @@
+1. traditional duck hunt, 1 duck, normal fly
+2. traditional duck hunt, 2 duck, normal fly
+3. 2 duck fly, one 8, another normal
+4. 2 duck fly, one 8, another sin
+5. 3 duck fly, one 8, one sin, one normal
+6. 4 duck fly, one 8, one circle, one elipplse,on sin
+7. 5 duck fly, one 8, one circle, one ellisple, one sin, one normal
+8, 6 ducks, sequence one 8, circle, ellispe, sin
+9. 7 ducks, one ducky can fly away
+10. 8 ducks, two duck can fly away
+11. forever, n+1 ducks, random selected pilot
+
+
+1. Random fly in a bird, one account a lots of score
+2. when reach 1000, let bear dance, when reach 5000, let panda dance, when reach 10000, panda dance a long time
