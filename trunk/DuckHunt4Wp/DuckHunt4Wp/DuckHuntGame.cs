@@ -432,119 +432,475 @@ namespace DuckHuntCommon
     enum GameChapterPhase { CHAPTER1, CHAPTER2, CHAPTER3, CHAPTER4, CHAPTER5, FOREVER };
 
 
-    class GameChapter
+    abstract class GameChapter
     {
-        GameChapterPhase chapter;
-        int duckcount = 0;
-        int concurrentcount = 10;
-        public GameChapter(GameChapterPhase chapter1)
+        public GameChapter()
         {
-            chapter = chapter1;
+        }
+        abstract public bool GetDuckList(out List<DuckModel> ducks);
+        abstract public bool CanBeRemoved();
+    }
+
+
+    class GameChapter1 : GameChapter
+    {
+        int duckcount = 0;
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 5)
+            {
+                ducks = null;
+                return false;
+            }
+            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter1");
+            ducks.Add(duck);
+            duckcount++;
+            return true;
+        }
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 5)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class GameChapter2 : GameChapter
+    {
+        int duckcount = 0;
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 8)
+            {
+                ducks = null;
+                return false;
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                duck = new DuckModel(PilotType.DUCKNORMAL, "charpter2");
+                ducks.Add(duck);
+                duckcount++;
+            }
+            return true;
         }
 
-        public bool GetDuckList(out List<DuckModel> ducks)
+        public override bool CanBeRemoved()
         {
-            ducks = new List<DuckModel>();
-            DuckModel duck;
-            switch (chapter)
+            if (duckcount >= 8)
             {
-                case GameChapterPhase.CHAPTER1:
-                    {
-                        if (duckcount >= 5)
-                        {
-                            ducks = null;
-                            return false;
-                        }
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "charpter1");
-                        ducks.Add(duck);
-                        duckcount++;
-                    }
-                    break;
-                case GameChapterPhase.CHAPTER2:
-                    {
-                        if (duckcount >= 10)
-                        {
-                            ducks = null;
-                            return false;
-                        }
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "charpter2");
-                        ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKCIRCLE, "chapter2");
-                        ducks.Add(duck);
-                        duckcount += 2;
-                    }
-                    break;
-                case GameChapterPhase.CHAPTER3:
-                    {
-                        if (duckcount >= 15)
-                        {
-                            ducks = null;
-                            return false;
-                        }
-                        duck = new DuckModel(PilotType.DUCKSIN, "chapter3");
-                        ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKEIGHTDEPTH, "chapter3");
-                        ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKELLIPSE, "chapter3");
-                        ducks.Add(duck);
-                        duckcount += 3;
-                    }
-                    break;
-                case GameChapterPhase.CHAPTER4:
-                    {
-                        if (duckcount >= 20)
-                        {
-                            ducks = null;
-                            return false;
-                        }
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
-                        ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKEIGHTDEPTH, "chapter4");
-                        ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
-                        ducks.Add(duck);
-                        duck = new DuckModel(PilotType.DUCKEIGHT, "chapter4");
-                        ducks.Add(duck);
-                        duckcount += 4;
-                    }
-                    break;
-                case GameChapterPhase.CHAPTER5:
-                    {
-                        if (duckcount >= 25)
-                        {
-                            ducks = null;
-                            return false;
-                        }
-                        duck = new DuckModel();
-                        ducks.Add(duck);
-                        duck = new DuckModel();
-                        ducks.Add(duck);
+                return true;
+            }
+            return false;
+        }
+    }
 
-                        duck = new DuckModel();
-                        ducks.Add(duck);
-                        duck = new DuckModel();
-                        ducks.Add(duck);
-                        duck = new DuckModel();
-                        ducks.Add(duck);
-                        duckcount += 5;
-                    }
-                    break;
-                case GameChapterPhase.FOREVER:
-                    {
-                        for (int i = 0; i < concurrentcount; i++)
-                        {
-                            duck = new DuckModel(PilotType.DUCKEIGHT, "forever");
-                            ducks.Add(duck);
-                            duckcount += 1;
-                        }
-                        concurrentcount++;
-                    }
-                    break;
+    class GameChapter3 : GameChapter
+    {
+        int duckcount = 0;
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 8)
+            {
+                ducks = null;
+                return false;
+            }
+
+            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter3");
+            ducks.Add(duck);
+            duckcount++;
+
+
+            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter3");
+            ducks.Add(duck);
+            duckcount++;
+
+            return true;
+        }
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 8)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class GameChapter4 : GameChapter
+    {
+        int duckcount = 0;
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 8)
+            {
+                ducks = null;
+                return false;
+            }
+
+            duck = new DuckModel(PilotType.DUCKSIN, "charpter4");
+            ducks.Add(duck);
+            duckcount++;
+
+
+            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter4");
+            ducks.Add(duck);
+            duckcount++;
+
+            return true;
+        }
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 8)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class GameChapter5 : GameChapter
+    {
+        int duckcount = 0;
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 9)
+            {
+                ducks = null;
+                return false;
+            }
+
+            duck = new DuckModel(PilotType.DUCKSIN, "charpter5");
+            ducks.Add(duck);
+            duckcount++;
+
+
+            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter5");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter5");
+            ducks.Add(duck);
+            duckcount++;
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 9)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class GameChapter6 : GameChapter
+    {
+        int duckcount = 0;
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 12)
+            {
+                ducks = null;
+                return false;
+            }
+
+            duck = new DuckModel(PilotType.DUCKSIN, "charpter6");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter6");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKELLIPSE, "charpter6");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKCIRCLE, "charpter6");
+            ducks.Add(duck);
+            duckcount++;
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 12)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class GameChapter7 : GameChapter
+    {
+        int duckcount = 0;
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 15)
+            {
+                ducks = null;
+                return false;
+            }
+
+            duck = new DuckModel(PilotType.DUCKSIN, "charpter7");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter7");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKELLIPSE, "charpter7");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKCIRCLE, "charpter7");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter7");
+            ducks.Add(duck);
+            duckcount++;
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 15)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    class GameChapter8 : GameChapter
+    {
+        int duckcount = 0;
+        List<PilotType> pilotypelist;
+        int pilotTypeIndex = 0;
+        public GameChapter8()
+        {
+            pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKCIRCLE);
+            pilotypelist.Add(PilotType.DUCKELLIPSE);
+            pilotypelist.Add(PilotType.DUCKEIGHT);
+            //pilotypelist.Add(PilotType.DUCKSIN);
+        }
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 18)
+            {
+                ducks = null;
+                return false;
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                duck = new DuckModel(pilotypelist[pilotTypeIndex], "charpter7");
+                ducks.Add(duck);
+                duckcount++;
+            }
+            pilotTypeIndex++;
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            if (pilotTypeIndex == pilotypelist.Count)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class GameChapter9 : GameChapter
+    {
+        int duckcount = 0;
+        List<PilotType> pilotypelist;
+        public GameChapter9()
+        {
+            pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKCIRCLE);
+            pilotypelist.Add(PilotType.DUCKELLIPSE);
+            pilotypelist.Add(PilotType.DUCKEIGHT);
+           // pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
+            pilotypelist.Add(PilotType.DUCKNORMAL);
+            pilotypelist.Add(PilotType.DUCKNORMAL);
+
+        }
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 21)
+            {
+                ducks = null;
+                return false;
+            }
+
+            int pilottypeindex = 0;
+            for (int i = 0; i < 7; i++)
+            {
+                duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], "charpter9");
+                ducks.Add(duck);
+                duckcount++;
+                pilottypeindex++;
             }
 
             return true;
         }
+
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 21)
+            {
+                return true;
+            }
+            return false;
+        }
     }
+
+
+    class GameChapter10 : GameChapter
+    {
+        int duckcount = 0;
+        List<PilotType> pilotypelist;
+        public GameChapter10()
+        {
+            pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKCIRCLE);
+            pilotypelist.Add(PilotType.DUCKELLIPSE);
+            pilotypelist.Add(PilotType.DUCKEIGHT);
+            //pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
+            pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
+            pilotypelist.Add(PilotType.DUCKNORMAL);
+            pilotypelist.Add(PilotType.DUCKNORMAL);
+
+        }
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (duckcount >= 21)
+            {
+                ducks = null;
+                return false;
+            }
+
+            int pilottypeindex = 0;
+            for (int i = 0; i < 7; i++)
+            {
+                duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], "charpter10");
+                ducks.Add(duck);
+                duckcount++;
+                pilottypeindex++;
+            }
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 24)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class GameChapterForever : GameChapter
+    {
+        int duckcount = 0;
+        List<PilotType> pilotypelist;
+        int concurrentduck = 8;
+        public GameChapterForever()
+        {
+            pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKCIRCLE);
+            pilotypelist.Add(PilotType.DUCKELLIPSE);
+            pilotypelist.Add(PilotType.DUCKEIGHT);
+           // pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
+            pilotypelist.Add(PilotType.DUCKNORMAL);
+
+        }
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+
+            for (int i = 0; i < concurrentduck; i++)
+            {
+                int pilottypeindex =  i%concurrentduck;
+                duck = new DuckModel(pilotypelist[pilottypeindex], "charpter10");
+                ducks.Add(duck);
+                duckcount++;
+            }
+
+            concurrentduck++;
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            return false;
+        }
+    }
+
 
     class GameChapterManager
     {
@@ -560,34 +916,54 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
-                chapter = new GameChapter(GameChapterPhase.CHAPTER1);
+                chapter = new GameChapter1();
                 chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER2);
+                chapter = new GameChapter2();
                 chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER3);
+                chapter = new GameChapter3();
                 chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER4);
+                chapter = new GameChapter4();
                 chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER5);
+                chapter = new GameChapter5();
                 chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.FOREVER);
+                chapter = new GameChapter6();
+                chapters.Add(chapter);
+                chapter = new GameChapter7();
+                chapters.Add(chapter);
+                chapter = new GameChapter8();
+                chapters.Add(chapter);
+                chapter = new GameChapter9();
+                chapters.Add(chapter);
+                chapter = new GameChapter10();
+                chapters.Add(chapter);
+                chapter = new GameChapterForever();
                 chapters.Add(chapter);
             }
             else
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
-                //chapter = new GameChapter(GameChapterPhase.CHAPTER1);
-                //chapters.Add(chapter);
-                //chapter = new GameChapter(GameChapterPhase.CHAPTER2);
-                //chapters.Add(chapter);
-                //chapter = new GameChapter(GameChapterPhase.CHAPTER3);
-                //chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER4);
+                chapter = new GameChapter1();
                 chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.CHAPTER5);
+                chapter = new GameChapter2();
                 chapters.Add(chapter);
-                chapter = new GameChapter(GameChapterPhase.FOREVER);
+                chapter = new GameChapter3();
+                chapters.Add(chapter);
+                chapter = new GameChapter4();
+                chapters.Add(chapter);
+                chapter = new GameChapter5();
+                chapters.Add(chapter);
+                chapter = new GameChapter6();
+                chapters.Add(chapter);
+                chapter = new GameChapter7();
+                chapters.Add(chapter);
+                chapter = new GameChapter8();
+                chapters.Add(chapter);
+                chapter = new GameChapter9();
+                chapters.Add(chapter);
+                chapter = new GameChapter10();
+                chapters.Add(chapter);
+                chapter = new GameChapterForever();
                 chapters.Add(chapter);
             }
             return true;
@@ -595,13 +971,23 @@ namespace DuckHuntCommon
         public bool GetNextChapter(out GameChapter chapter)
         {
             chapter = null;
-            if (chapters.Count <= 0)
+
+            while (true)
             {
-                return false;
+                if (chapters.Count <= 0)
+                {
+                    return false;
+                }
+                chapter = chapters[0];
+                if (chapter.CanBeRemoved())
+                {
+                    chapters.RemoveAt(0);
+                }
+                else
+                {
+                    return true;
+                }
             }
-            chapter = chapters[0];
-            chapters.RemoveAt(0);
-            return true;
         }
     }
 
