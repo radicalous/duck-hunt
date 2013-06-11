@@ -25,15 +25,23 @@ namespace GameCommon
         PilotType GetType();
     }
 
+    struct pilotGroupInfo
+    {
+        public int idx;
+        public Point endpoint;
+    }
+
     class PilotManager
     {
-        Dictionary<string, int> duckEightPilotGroup = new Dictionary<string, int>();
-        Dictionary<string, int> duckCirclePilotGroup = new Dictionary<string, int>();
-        Dictionary<string, int> duckEllipsePilotGroup = new Dictionary<string, int>();
-        Dictionary<string, int> duckSinPilotGroup = new Dictionary<string, int>();
+        Dictionary<string, pilotGroupInfo> duckEightPilotGroup = new Dictionary<string, pilotGroupInfo>();
+        Dictionary<string, pilotGroupInfo> duckCirclePilotGroup = new Dictionary<string, pilotGroupInfo>();
+        Dictionary<string, pilotGroupInfo> duckEllipsePilotGroup = new Dictionary<string, pilotGroupInfo>();
+        Dictionary<string, pilotGroupInfo> duckSinPilotGroup = new Dictionary<string, pilotGroupInfo>();
+
         static PilotManager instance;
         public PilotManager()
         {
+
         }
 
         public static PilotManager GetInstance()
@@ -64,7 +72,6 @@ namespace GameCommon
         }
 
         public AiPilot CreatePilot(PilotType type, Vector2 pos, string clustername) 
-        /*different type can't have same clustername*/
         {    
             AiPilot pilot = null;
 
@@ -90,22 +97,33 @@ namespace GameCommon
                     {
                         if (clustername == "")
                         {
-                            pilot = new DuckEightPilot(pos, 0);
+                            Point p = new Point(0,0);
+                            pilot = new DuckEightPilot(pos, 0, p);
                          
                         }
                         else
                         {
                             if (duckEightPilotGroup.ContainsKey(clustername))
                             {
-                                int idx = duckEightPilotGroup[clustername];
-                                duckEightPilotGroup[clustername] = idx + 1;
-                                pilot = new DuckEightPilot(pos, idx);
+                                pilotGroupInfo pgi = duckEightPilotGroup[clustername];
+                                pgi.idx++;
+                                duckEightPilotGroup[clustername] = pgi;
+                                pilot = new DuckEightPilot(pos, pgi.idx, pgi.endpoint);
                                
                             }
                             else
                             {
-                                duckEightPilotGroup.Add(clustername, 1);
-                                pilot = new DuckEightPilot(pos, 0);
+                                pilotGroupInfo pgi = new pilotGroupInfo();
+                                pgi.idx = 0;
+                                pgi.endpoint = new Point(0, 0);
+                                DateTime now = System.DateTime.Now;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                Random rdm = new Random(s);
+                                pgi.endpoint.X = rdm.Next(0, 100);
+                                pgi.endpoint.Y = rdm.Next(0, 100);
+
+                                duckEightPilotGroup.Add(clustername, pgi);
+                                pilot = new DuckEightPilot(pos, pgi.idx, pgi.endpoint);
                                
                             }
                         }
@@ -115,23 +133,31 @@ namespace GameCommon
                     {
                         if (clustername == "")
                         {
-                            //pilot = new DuckEightPilot(pos, 0);
-                            pilot = new DuckEightPilotWithDepth(pos, 0);
+                            Point p = new Point(0, 0);
+                            pilot = new DuckEightPilotWithDepth(pos, 0, p);
                         }
                         else
                         {
                             if (duckEightPilotGroup.ContainsKey(clustername))
                             {
-                                int idx = duckEightPilotGroup[clustername];
-                                duckEightPilotGroup[clustername] = idx + 1;
-                               // pilot = new DuckEightPilot(pos, idx);
-                                pilot = new DuckEightPilotWithDepth(pos, idx);
+                                pilotGroupInfo pgi = duckEightPilotGroup[clustername];
+                                pgi.idx++;
+                                duckEightPilotGroup[clustername] = pgi;
+                                pilot = new DuckEightPilotWithDepth(pos, pgi.idx, pgi.endpoint);
                             }
                             else
                             {
-                                duckEightPilotGroup.Add(clustername, 1);
-                               // pilot = new DuckEightPilot(pos, 0);
-                                pilot = new DuckEightPilotWithDepth(pos, 0);
+                                pilotGroupInfo pgi = new pilotGroupInfo();
+                                pgi.idx = 0;
+                                pgi.endpoint = new Point(0, 0);
+                                DateTime now = System.DateTime.Now;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                Random rdm = new Random(s);
+                                pgi.endpoint.X = rdm.Next(0, 100);
+                                pgi.endpoint.Y = rdm.Next(0, 100);
+
+                                duckEightPilotGroup.Add(clustername, pgi);
+                                pilot = new DuckEightPilotWithDepth(pos, pgi.idx, pgi.endpoint);
                             }
                         }
                     }
@@ -140,20 +166,31 @@ namespace GameCommon
                     {
                         if (clustername == "")
                         {
-                            pilot = new DuckCirclePilot(pos, 0);
+                            Point p = new Point(0, 0);
+                            pilot = new DuckCirclePilot(pos, 0, p);
                         }
                         else
                         {
                             if ( duckCirclePilotGroup.ContainsKey(clustername))
                             {
-                                int idx = duckCirclePilotGroup[clustername];
-                                duckCirclePilotGroup[clustername] = idx + 1;
-                                pilot = new DuckCirclePilot(pos, idx);
+                                pilotGroupInfo pgi = duckCirclePilotGroup[clustername];
+                                pgi.idx++;
+                                duckCirclePilotGroup[clustername] = pgi;
+                                pilot = new DuckCirclePilot(pos, pgi.idx, pgi.endpoint);
                             }
                             else
                             {
-                                duckCirclePilotGroup.Add(clustername, 1);
-                                pilot = new DuckCirclePilot(pos, 0);
+                                pilotGroupInfo pgi = new pilotGroupInfo();
+                                pgi.idx = 0;
+                                pgi.endpoint = new Point(0, 0);
+                                DateTime now = System.DateTime.Now;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                Random rdm = new Random(s);
+                                pgi.endpoint.X = rdm.Next(0, 100);
+                                pgi.endpoint.Y = rdm.Next(0, 100);
+
+                                duckCirclePilotGroup.Add(clustername, pgi);
+                                pilot = new DuckCirclePilot(pos, pgi.idx, pgi.endpoint);
                             }
                         }
                     }
@@ -162,20 +199,31 @@ namespace GameCommon
                     {
                         if (clustername == "")
                         {
-                            pilot = new DuckEllipsePilot(pos, 0);
+                            Point p = new Point(0, 0);
+                            pilot = new DuckEllipsePilot(pos, 0, p);
                         }
                         else
                         {
                             if ( duckEllipsePilotGroup.ContainsKey(clustername))
                             {
-                                int idx = duckEllipsePilotGroup[clustername];
-                                duckEllipsePilotGroup[clustername] = idx + 1;
-                                pilot = new DuckEllipsePilot(pos, idx);
+                                pilotGroupInfo pgi = duckEllipsePilotGroup[clustername];
+                                pgi.idx++;
+                                duckEllipsePilotGroup[clustername] = pgi;
+                                pilot = new DuckEllipsePilot(pos, pgi.idx, pgi.endpoint);
                             }
                             else
                             {
-                                duckEllipsePilotGroup.Add(clustername, 1);
-                                pilot = new DuckEllipsePilot(pos, 0);
+                                pilotGroupInfo pgi = new pilotGroupInfo();
+                                pgi.idx = 0;
+                                pgi.endpoint = new Point(0, 0);
+                                DateTime now = System.DateTime.Now;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                Random rdm = new Random(s);
+                                pgi.endpoint.X = rdm.Next(0, 100);
+                                pgi.endpoint.Y = rdm.Next(0, 100);
+
+                                duckEllipsePilotGroup.Add(clustername, pgi);
+                                pilot = new DuckEllipsePilot(pos, pgi.idx, pgi.endpoint);
                             }
                         }
                     }
@@ -184,20 +232,31 @@ namespace GameCommon
                     {
                         if (clustername == "")
                         {
-                            pilot = new DuckSinPilot(pos, 0);
+                            Point p = new Point(0, 0);
+                            pilot = new DuckSinPilot(pos, 0, p);
                         }
                         else
                         {
                             if (duckSinPilotGroup.ContainsKey(clustername))
                             {
-                                int idx = duckSinPilotGroup[clustername];
-                                duckSinPilotGroup[clustername] = idx + 1;
-                                pilot = new DuckSinPilot(pos, idx);
+                                pilotGroupInfo pgi = duckSinPilotGroup[clustername];
+                                pgi.idx++;
+                                duckSinPilotGroup[clustername] = pgi;
+                                pilot = new DuckSinPilot(pos, pgi.idx, pgi.endpoint);
                             }
                             else
                             {
-                                duckSinPilotGroup.Add(clustername, 1);
-                                pilot = new DuckSinPilot(pos, 0);
+                                pilotGroupInfo pgi = new pilotGroupInfo();
+                                pgi.idx = 0;
+                                pgi.endpoint = new Point(0, 0);
+                                DateTime now = System.DateTime.Now;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                Random rdm = new Random(s);
+                                pgi.endpoint.X = rdm.Next(0, 100);
+                                pgi.endpoint.Y = rdm.Next(0, 100);
+
+                                duckSinPilotGroup.Add(clustername, pgi);
+                                pilot = new DuckSinPilot(pos, pgi.idx, pgi.endpoint);
                             }
                         }
                     }
@@ -562,6 +621,8 @@ namespace GameCommon
 
         protected Vector2 start_pos; //random start position
         protected Vector2 end_pos; //different end position
+        protected Point endpoint;
+
         protected int lineStep;
         protected int max_lineSteps;
 
@@ -569,9 +630,11 @@ namespace GameCommon
         protected Vector2 Position;
 		protected float depthpos = 0;
 
-        public DuckPilot(Vector2 pos, int idx)
+        public DuckPilot(Vector2 pos, int idx, Point ep)
         {
             Position = pos;
+
+            endpoint = ep;
 
             lineStep = 0;
             max_lineSteps = Constants.MaxLineSteps + idx * 10;
@@ -582,16 +645,17 @@ namespace GameCommon
             boundaryRect = space;
             Random rdm = new Random(seed);
 
-            /*
             int r = Math.Min(boundaryRect.Height, boundaryRect.Width);
             r /= Constants.Ratio;
 
-            end_pos.X = boundaryRect.Center.X + rdm.Next(-r, r);
-            end_pos.Y = boundaryRect.Center.Y + rdm.Next(-r, r);
-            */
+            end_pos.X = boundaryRect.Center.X + (endpoint.X - 50)*r/50;
+            end_pos.Y = boundaryRect.Center.Y + (endpoint.Y - 50)*r/50;
+
+            /*
             end_pos.X = boundaryRect.Center.X;
             end_pos.Y = boundaryRect.Center.Y;
-
+            */
+ 
             start_pos.X = rdm.Next(boundaryRect.Left, boundaryRect.Right);
             start_pos.Y = boundaryRect.Bottom;
 
@@ -650,8 +714,8 @@ namespace GameCommon
         double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckEightPilot(Vector2 pos, int idx)
-            :base(pos, idx)
+        public DuckEightPilot(Vector2 pos, int idx, Point ep)
+            :base(pos, idx, ep)
         {
         }
 
@@ -714,8 +778,8 @@ namespace GameCommon
     {
         double z = 0.0;
         double z_delta = 2 * Constants.Pi / Constants.MaxCurveSteps;
-        public DuckEightPilotWithDepth(Vector2 pos, int idx)
-            :base(pos, idx)
+        public DuckEightPilotWithDepth(Vector2 pos, int idx, Point ep)
+            :base(pos, idx, ep)
         {
         }
 
@@ -742,8 +806,8 @@ namespace GameCommon
         double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckCirclePilot(Vector2 pos, int idx)
-            :base(pos, idx)
+        public DuckCirclePilot(Vector2 pos, int idx, Point ep)
+            :base(pos, idx, ep)
         {
 
         }
@@ -817,8 +881,8 @@ namespace GameCommon
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckEllipsePilot(Vector2 pos, int idx)
-            :base(pos, idx)
+        public DuckEllipsePilot(Vector2 pos, int idx, Point ep)
+            :base(pos, idx, ep)
         {
 
         }
@@ -892,8 +956,8 @@ namespace GameCommon
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckSinPilot(Vector2 pos, int idx)
-            :base(pos, idx)
+        public DuckSinPilot(Vector2 pos, int idx, Point ep)
+            :base(pos, idx, ep)
         {
 
         }
