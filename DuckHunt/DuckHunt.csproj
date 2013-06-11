@@ -239,6 +239,30 @@
     <Content Include="Content\Graphics\Pause.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Graphics\duck_blue_dead.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_blue_flying.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_blue_flying_r.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_blue_shot.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_dead.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_flying.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_flying_r.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_shot.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\MenuItem.xnb" />
     <None Include="DuckHunt_TemporaryKey.pfx" />
   </ItemGroup>
