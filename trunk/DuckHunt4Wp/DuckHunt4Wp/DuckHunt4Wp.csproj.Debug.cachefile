@@ -37,6 +37,14 @@ Content\Graphics\checkbox_unchecked.xnb
 Content\Graphics\panda_run.xnb
 Content\Graphics\continue.xnb
 Content\Graphics\Pause.xnb
+Content\Graphics\duck_blue_dead.xnb
+Content\Graphics\duck_blue_flying.xnb
+Content\Graphics\duck_blue_flying_r.xnb
+Content\Graphics\duck_blue_shot.xnb
+Content\Graphics\duck_red_dead.xnb
+Content\Graphics\duck_red_flying.xnb
+Content\Graphics\duck_red_flying_r.xnb
+Content\Graphics\duck_red_shot.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
 Content\DuckHunt.xml

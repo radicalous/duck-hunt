@@ -916,6 +916,7 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
+                /*
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -928,6 +929,7 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
+                 */
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
                 chapter = new GameChapter8();
