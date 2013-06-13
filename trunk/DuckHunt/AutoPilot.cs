@@ -39,6 +39,7 @@ namespace GameCommon
         Dictionary<string, pilotGroupInfo> duckCirclePilotGroup = new Dictionary<string, pilotGroupInfo>();
         Dictionary<string, pilotGroupInfo> duckEllipsePilotGroup = new Dictionary<string, pilotGroupInfo>();
         Dictionary<string, pilotGroupInfo> duckSinPilotGroup = new Dictionary<string, pilotGroupInfo>();
+        Dictionary<string, pilotGroupInfo> duckLinePilotGroup = new Dictionary<string, pilotGroupInfo>();
 
         static PilotManager instance;
         public PilotManager()
@@ -121,8 +122,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckEightPilotGroup.Add(clustername, pgi);
                                 pilot = new DuckEightPilot(pos, pgi.idx, pgi.endpoint);
@@ -155,8 +156,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckEightPilotGroup.Add(clustername, pgi);
                                 pilot = new DuckEightPilotWithDepth(pos, pgi.idx, pgi.endpoint);
@@ -188,8 +189,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckCirclePilotGroup.Add(clustername, pgi);
                                 pilot = new DuckCirclePilot(pos, pgi.idx, pgi.endpoint);
@@ -221,8 +222,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckCirclePilotGroup.Add(clustername, pgi);
                                 pilot = new DuckCirclePilotWithDepth(pos, pgi.idx, pgi.endpoint);
@@ -254,8 +255,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckEllipsePilotGroup.Add(clustername, pgi);
                                 pilot = new DuckEllipsePilot(pos, pgi.idx, pgi.endpoint);
@@ -287,8 +288,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckEllipsePilotGroup.Add(clustername, pgi);
                                 pilot = new DuckEllipsePilotWithDepth(pos, pgi.idx, pgi.endpoint);
@@ -320,8 +321,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckSinPilotGroup.Add(clustername, pgi);
                                 pilot = new DuckSinPilot(pos, pgi.idx, pgi.endpoint);
@@ -353,8 +354,8 @@ namespace GameCommon
                                 DateTime now = System.DateTime.Now;
                                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                                 Random rdm = new Random(s);
-                                pgi.endpoint.X = rdm.Next(0, 100);
-                                pgi.endpoint.Y = rdm.Next(0, 100);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
 
                                 duckSinPilotGroup.Add(clustername, pgi);
                                 pilot = new DuckSinPilotWithDepth(pos, pgi.idx, pgi.endpoint);
@@ -364,7 +365,38 @@ namespace GameCommon
                     break;
                 case PilotType.DUCKLINE:
                     {
-                        //not done yet
+                        if (clustername == "")
+                        {
+                            Point p = new Point(0, 0);
+                            pilot = new DuckLinePilot(pos, 0, p);
+
+                        }
+                        else
+                        {
+                            if (duckLinePilotGroup.ContainsKey(clustername))
+                            {
+                                pilotGroupInfo pgi = duckLinePilotGroup[clustername];
+                                pgi.idx++;
+                                duckLinePilotGroup[clustername] = pgi;
+                                pilot = new DuckLinePilot(pos, pgi.idx, pgi.endpoint);
+
+                            }
+                            else
+                            {
+                                pilotGroupInfo pgi = new pilotGroupInfo();
+                                pgi.idx = 0;
+                                pgi.endpoint = new Point(0, 0);
+                                DateTime now = System.DateTime.Now;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                Random rdm = new Random(s);
+                                pgi.endpoint.X = rdm.Next(-50,50);
+                                pgi.endpoint.Y = rdm.Next(-50,50);
+
+                                duckLinePilotGroup.Add(clustername, pgi);
+                                pilot = new DuckLinePilot(pos, pgi.idx, pgi.endpoint);
+
+                            }
+                        }
                     }
                     break;
                 case PilotType.DUCKREN:
@@ -759,8 +791,8 @@ namespace GameCommon
             int r = Math.Min(boundaryRect.Height, boundaryRect.Width);
             r /= Constants.Ratio;
 
-            end_pos.X = boundaryRect.Center.X + (endpoint.X - 50)*r/50;
-            end_pos.Y = boundaryRect.Center.Y + (endpoint.Y - 50)*r/50;
+            end_pos.X = boundaryRect.Center.X + (endpoint.X)*r/50;
+            end_pos.Y = boundaryRect.Center.Y + (endpoint.Y)*r/50;
 
             /*
             end_pos.X = boundaryRect.Center.X;
@@ -807,9 +839,9 @@ namespace GameCommon
             else if (lineStep <= max_lineSteps)
             {
                 double k = (end_pos.Y - start_pos.Y) / (end_pos.X - start_pos.X);
-                int dx = (int)((end_pos.X - start_pos.X) / max_lineSteps);
-                Position.X = start_pos.X + dx * lineStep;
-                Position.Y = (int)(start_pos.Y + k * dx * lineStep);
+                double dx = (double)((end_pos.X - start_pos.X) / max_lineSteps);
+                Position.X = (float)(start_pos.X + dx * lineStep);
+                Position.Y = (float)(start_pos.Y + k * dx * lineStep);
                 lineStep++;
             }
         }
@@ -839,6 +871,25 @@ namespace GameCommon
             float depthpos = (float)(Math.Cos(z) * 100.0 + 100.0) / 2;
             if (depthpos < 20)
                 depthpos = 20;
+            else if (depthpos > 80)
+                depthpos = 80;
+
+            return depthpos;
+        }
+    }
+
+    class DepthLinearCom : DepthCom
+    {
+        double z = 0.0;
+        double z_delta = 100.0 / Constants.MaxCurveSteps;
+
+        public float update_depth(float cur_dp)
+        {
+            z += z_delta;
+
+            float depthpos = (float)(z);
+            if (depthpos < 0)
+                depthpos = 0;
             else if (depthpos > 80)
                 depthpos = 80;
 
@@ -917,6 +968,11 @@ namespace GameCommon
         public DuckEightPilotWithDepth(Vector2 pos, int idx, Point ep)
             :base(pos, idx, ep)
         {
+        }
+
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKEIGHTDEPTH;
         }
 
         public override void Update(GameTime gameTime)
@@ -1007,6 +1063,11 @@ namespace GameCommon
         public DuckCirclePilotWithDepth(Vector2 pos, int idx, Point ep)
             :base(pos, idx, ep)
         {
+        }
+
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKCIRCLEDEPTH;
         }
 
         public override void Update(GameTime gameTime)
@@ -1100,6 +1161,11 @@ namespace GameCommon
         {
         }
 
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKELLIPSEDEPTH;
+        }
+
         public override void Update(GameTime gameTime)
         {
             depthpos = d.update_depth(depthpos);
@@ -1185,12 +1251,71 @@ namespace GameCommon
         {
         }
 
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKSINDEPTH;
+        }
+
         public override void Update(GameTime gameTime)
         {
             depthpos = d.update_depth(depthpos);
             base.Update(gameTime);
         }
     }
+
+    class DuckLinePilot : DuckPilot
+    {
+        DepthLinearCom d = new DepthLinearCom();
+        int x_steps = 0;
+
+        public DuckLinePilot(Vector2 pos, int idx, Point ep)
+            :base(pos, idx, ep)
+        {
+        }
+
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKLINE;
+        }
+
+        public override Direction GetHorizationDirection()
+        {
+            if (InCurve())
+            {
+                return Direction.RIGHT;
+            }
+            else
+            {
+                return base.GetHorizationDirection();
+            }
+        }
+
+        public override Direction GetZDirection()
+        {
+            return base.GetZDirection();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (InCurve())
+            {
+                depthpos = d.update_depth(depthpos);
+
+                x_steps++;
+                double dx = (double)(boundaryRect.Right - end_pos.X) / Constants.MaxCurveSteps;
+
+                Position.X = (float)(end_pos.X + dx * x_steps);
+                Position.Y = (float)(end_pos.Y + -0.35 * dx * x_steps);
+            }
+            else
+            {
+                base.Update(gameTime);
+            }
+        }
+    }
+
+
+
 
     class DogPilot: AiPilot
     {
