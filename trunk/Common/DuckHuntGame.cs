@@ -179,6 +179,8 @@ namespace DuckHuntCommon
             objlst.Add(new CheckBoxModel());
             objlst.Add(new PandaModel());
             objlst.Add(new ButtonModel());
+            objlst.Add(new FireworkModel());
+
             foreach (ModelObject obj in objlst)
             {
                 ObjectResourceItem objResItem = new ObjectResourceItem();
@@ -916,6 +918,7 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
+                /*
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -928,6 +931,7 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
+                 */
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
                 chapter = new GameChapter8();
@@ -1038,6 +1042,9 @@ namespace DuckHuntCommon
         Rectangle pauseButtonSpace;
 
 
+        FireworkModel firework;
+        Rectangle fireworkSpace;
+
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
@@ -1147,10 +1154,20 @@ namespace DuckHuntCommon
                 pauseButtonSpace.Height = button.GetSpace().Height;
             }
 
+            FireworkModel firework1 = new FireworkModel();
+
+            fireworkSpace.X = (rectBackground.Width - firework1.GetSpace().Width) / 2;
+            fireworkSpace.Y = 20;
+            fireworkSpace.Width = firework1.GetSpace().Width;
+            fireworkSpace.Height = firework1.GetSpace().Height;
+
 
             NewDog();
             NewScoreBoard();
             NewAssistBoard();
+
+            firework = new FireworkModel();
+            firework.Initialize(null, fireworkSpace, 0);
         }
 
 
@@ -1166,7 +1183,7 @@ namespace DuckHuntCommon
             {
                 objlst.Add(panda);
                 objlst.Add(pause);
-
+               // objlst.Add(firework);
                 foreach (DuckModel duck in duckList)
                 {
                     objlst.Add(duck);
@@ -1187,7 +1204,6 @@ namespace DuckHuntCommon
                     objlst.Add(lostDuck);
                 }
             }
-
             List<ModelObject> backgroundobjlst;
             backgroundPage.GetObjects(out backgroundobjlst);
             foreach (ModelObject obj in backgroundobjlst)
@@ -1205,6 +1221,8 @@ namespace DuckHuntCommon
             //
             backgroundPage.Update(gametime);
             panda.Update(gametime);
+            firework.Update(gametime);
+
             if (phase == GAME_PHASE.GAME_SELECT)
             {
             }
@@ -1379,6 +1397,7 @@ namespace DuckHuntCommon
 
             lostDuck = new LostDuckBoardModel();
             lostDuck.Initialize(null, leftTimeBoardSpace, 0);
+
         }
 
         int flycount = 0;

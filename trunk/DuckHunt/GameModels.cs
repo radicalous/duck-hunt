@@ -14,7 +14,8 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA
+        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
+        FIREWORK,
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -3913,7 +3914,164 @@ namespace DuckHuntCommon
         {
             return depth;
         }
+    }
 
+
+    class FireworkModel : BaseModel
+    {
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        Rectangle fireworkspace;
+
+        bool gone = false;
+
+        float depth = 0.001F;
+
+        Vector2 relativePos;
+
+        Vector2 RelativePosition
+        {
+            get
+            {
+                return relativePos;
+            }
+        }
+
+        public FireworkModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // firework
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 1101;
+            animationInfo.frameHeight = 742;
+            animationInfo.frameCount = 10;
+            animationInfo.frameTime = 150;
+            anationInfoList.Add(animationInfo);
+        }
+
+
+
+        override public ModelType Type()
+        {
+            return ModelType.FIREWORK;
+        }
+
+
+        override public void Initialize(ModelObject parent1, Rectangle space, int seed)
+        {
+            base.Initialize(null, space, seed);
+
+            fireworkspace = space;
+            relativePos.X = space.Left;
+            relativePos.Y = space.Top;
+        }
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks1";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks2";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks3";
+            resourceList.Add(resourceItm);
+
+
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks5";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks7";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks8";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks9";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks10";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks11";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        override public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = RelativePosition;
+            // adjust from lefttop conner to center
+            /*
+            abspos.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            abspos.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+             */
+            return abspos;
+        }
+
+        override public Rectangle GetSpace()
+        {
+            Rectangle space = new Rectangle(0, 0
+            , anationInfoList[GetCurrentAnimationIndex()].frameWidth
+            , anationInfoList[GetCurrentAnimationIndex()].frameHeight);
+
+            return space;
+        }
+        override public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+
+        override public void Update(GameTime gameTime)
+        {
+            /*
+            relativePos.X -= 3;
+            if (relativePos.X <= 0)
+            {
+                relativePos.X = fireworkspace.Left;
+            }
+             */
+        }
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        override public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        override public float GetAnimationDepth()
+        {
+            return depth;
+        }
     }
 
 

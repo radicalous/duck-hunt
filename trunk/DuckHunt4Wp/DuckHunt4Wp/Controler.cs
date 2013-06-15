@@ -144,6 +144,11 @@ namespace DuckHuntCommon
                         viewObject = new CheckBoxViewObject(model);
                     }
                     break;
+                case ModelType.FIREWORK:
+                    {
+                        viewObject = new FireworkViewObject();
+                    }
+                    break;
             }
             if (commViewObj != null)
             {
