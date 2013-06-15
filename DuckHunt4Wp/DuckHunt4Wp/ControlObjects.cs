@@ -18,8 +18,8 @@ namespace DuckHuntCommon
         public bool backGroundAnimation;
         public StaticBackground2 staticBackground;
         public Animation bganimation;
-
     }
+
 
     abstract class ViewObject
     {
@@ -357,6 +357,127 @@ namespace DuckHuntCommon
         }
     }
 
+
+
+    class FireworkViewObject : DefViewObject
+    {
+        List<AnimationInfo> animationList;
+        //List<AnimationEx> viewItmList;
+        AnimationEx animation;
+
+        FireworkModel model;
+
+        Vector2 _orgpointinscreen;
+        float _defscaleinscreen;
+
+        public Vector2 OrgPointInScreen
+        {
+            get
+            {
+                return _orgpointinscreen;
+            }
+        }
+        public float DefScaleInScreen
+        {
+            get
+            {
+                return _defscaleinscreen;
+            }
+        }
+
+        public List<SpriteFont> ObjFontList
+        {
+            get
+            {
+                return _resLst[model.Type()].fontList;
+            }
+        }
+        List<SpriteFont> fontlist;
+
+        // screen rect
+        public Rectangle screenRc = new Rectangle();
+
+        public FireworkViewObject(ModelObject model1, Vector2 orgpointinscreen, float defscaleinscreen)
+        {
+
+        }
+
+        public FireworkViewObject()
+        {
+
+        }
+
+        Dictionary<ModelType, ObjectTexturesItem> _resLst;
+
+        public override void Init(Vector2 orgpointinscreen, float defscaleinscreen, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle spaceInLogic)
+        {
+            if (model == null || (model.Type() != ModelType.KEYBORD && model.Type() != ModelType.KEYITEM))
+            {
+                _orgpointinscreen = orgpointinscreen;
+                _defscaleinscreen = defscaleinscreen;
+            }
+
+            animation = new AnimationEx();
+            model = (FireworkModel)model1;
+
+            _orgpointinscreen = orgpointinscreen;
+            _defscaleinscreen = defscaleinscreen;
+
+            _resLst = objTextureLst;
+            // try to calculate how may textures are needed by children
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+            AnimationInfo animationInfo = model.GetAnimationInfoList()[0];
+            animation.Initialize(texturesList, Vector2.Zero,
+                animationInfo.frameWidth, animationInfo.frameHeight,
+                animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+
+            animation.Position = model.GetAbsolutePosition();
+            animation.Position.X += (animation.FrameWidth / 2) * _defscaleinscreen;
+            animation.Position.Y += (animation.FrameHeight / 2) * _defscaleinscreen;
+            animation.scale = model.GetSacle() * _defscaleinscreen;
+            //animation.Update(gameTime);
+
+        }
+
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
+        public override void Update(GameTime gameTime)
+        {
+            animation.Update(gameTime);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+                // check if the position is zero,
+                // when button pause, it switch a animation, but update will never be called
+               animation.Draw(spriteBatch, model.GetAnimationDepth());
+  
+        }
+
+        public override void PlaySound()
+        {
+            // check need to play audio
+            //play init sound
+            if (_resLst[model.Type()].soundList.Count > 0)
+            {
+                int soundindex = model.GetSoundIndex();
+                if (soundindex >= 0 && soundindex < _resLst[model.Type()].soundList.Count)
+                {
+                    float mastvol = SoundEffect.MasterVolume;
+                    _resLst[model.Type()].soundList[0].Play(1, 0, 0);
+                }
+
+            }
+        }
+    }
 
 
     class KeyboardViewObject : DefViewObject
@@ -1413,45 +1534,6 @@ namespace DuckHuntCommon
             Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
         {
             base.Init(orgpoint, defscale, model, objTextureLst, space);
-            /*
-            model = (ScroeListBoardModel)model1;
-
-            _orgpoint = orgpoint;
-            _defscale = defscale;
-
-            fontList = objTextureLst[model.Type()].fontList;
-
-
-            // create view items for this object
-            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
-            animationList = model.GetAnimationInfoList();
-
-            // background
-            viewItmList = new List<ViewItem>();
-            for (int i = 0; i < texturesList.Count; i++)
-            {
-                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
-                ViewItem viewItm = new ViewItem();
-                if (animationInfo.animation)
-                {
-                    viewItm.animation = new Animation();
-                    viewItm.animation.Initialize(
-                        texturesList[i],
-                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
-                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
-                        model.GetSacle(), true);
-                }
-                else
-                {
-                    viewItm.staticBackground = new StaticBackground2();
-                    viewItm.staticBackground.Initialize(
-                        texturesList[i],
-                        orgpoint,
-                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
-                }
-                viewItmList.Add(viewItm);
-            }
-            */
 
             scoreposition = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
             scoreposition.X += 0 * DefScaleInScreen;
@@ -1475,12 +1557,24 @@ namespace DuckHuntCommon
             //string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            Vector2 pos2 = pos1;
+            pos2.X += 150 * DefScaleInScreen;
+            spriteBatch.DrawString(base.ObjFontList[0], "Top 10 Score List",
+                pos2, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            pos1.Y += 60 * DefScaleInScreen;
 
             var result = model.ScoreList.OrderByDescending(c => c.Key);
             foreach (KeyValuePair<int, string> pair in result)
             {
-                spriteBatch.DrawString(base.ObjFontList[0], pair.Value + ":     " + pair.Key,
+                spriteBatch.DrawString(base.ObjFontList[0], pair.Value,
                     pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                    SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+                pos2 = pos1;
+                pos2.X += 500 * DefScaleInScreen;
+                spriteBatch.DrawString(base.ObjFontList[0], pair.Key.ToString(),
+                    pos2, Color.Yellow, 0, Vector2.Zero, 1,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos1.Y += 30 * DefScaleInScreen;
             }

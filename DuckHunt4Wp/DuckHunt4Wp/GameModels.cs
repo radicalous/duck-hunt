@@ -14,7 +14,8 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA
+        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
+        FIREWORK,
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -1354,11 +1355,32 @@ namespace DuckHuntCommon
             boundingTrigle2 = new List<Vector2>();
         }
 
+        int duckstyle = 0;
 
         public DuckModel(PilotType type, string groupname)
         {
             //
             flyduckPilot = PilotManager.GetInstance().CreatePilot(type, groupname);
+            switch(type)
+            {
+                case PilotType.DUCKEIGHT:
+                case PilotType.DUCKELLIPSE:
+                case PilotType.DUCKCIRCLE:
+                    {
+                        duckstyle = 1;
+                    }
+                    break;
+                case PilotType.DUCKEIGHTDEPTH:
+                    {
+                        duckstyle = 2;
+                    }
+                    break;
+                default:
+                    {
+                    }
+                    break;
+
+            }
             anationInfoList = new List<AnimationInfo>();
 
             // 0. flying duck
@@ -1398,6 +1420,88 @@ namespace DuckHuntCommon
            // animationInfo.frameWidth = 180;
            // animationInfo.frameHeight = 202;
            // animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+
+            // 0. flying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            //animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            //animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+            //1. dying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 3000;
+            anationInfoList.Add(animationInfo);
+
+            // 2. dead duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            //animationInfo.frameWidth = 180;
+            //animationInfo.frameHeight = 202;
+            animationInfo.frameCount = 2;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+            // 3. reverse fly duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            // animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            // animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+
+            // 0. flying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            //animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            //animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+            //1. dying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 3000;
+            anationInfoList.Add(animationInfo);
+
+            // 2. dead duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            //animationInfo.frameWidth = 180;
+            //animationInfo.frameHeight = 202;
+            animationInfo.frameCount = 2;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+            // 3. reverse fly duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 105;
+            animationInfo.frameHeight = 102;
+            animationInfo.frameCount = 3;
+            // animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            // animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -1476,8 +1580,55 @@ namespace DuckHuntCommon
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_flying_r";
             //resourceItm.path = "Graphics\\duckflying";
-
             resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_blue_flying";
+            //resourceItm.path = "Graphics\\duckrflying";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_blue_shot";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_blue_dead";
+            //resourceItm.path = "Graphics\\duckdying";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_blue_flying_r";
+            //resourceItm.path = "Graphics\\duckflying";
+            resourceList.Add(resourceItm);
+
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_red_flying";
+            //resourceItm.path = "Graphics\\duckrflying";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_red_shot";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_red_dead";
+            //resourceItm.path = "Graphics\\duckdying";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\duck_red_flying_r";
+            //resourceItm.path = "Graphics\\duckflying";
+            resourceList.Add(resourceItm);
+
 
             return resourceList;
         }
@@ -1554,11 +1705,11 @@ namespace DuckHuntCommon
             {
                 if (deadstopcount < 10)
                 {
-                    return 1;
+                    return 1 + this.duckstyle*4;
                 }
                 else
                 {
-                    return 2;
+                    return 2 + this.duckstyle * 4;
                 }
             }
             else
@@ -1567,30 +1718,30 @@ namespace DuckHuntCommon
                 {
                     if (flyduckPilot.GetZDirection() ==  Direction.IN)
                     {
-                        return 0;
+                        return 0 + this.duckstyle * 4;
                     }
                     else if (flyduckPilot.GetZDirection() == Direction.OUT)
                     {
-                        return 0;
+                        return 0 + this.duckstyle * 4;
                     }
                     else
                     {
-                        return 0;
+                        return 0 + this.duckstyle * 4;
                     }
                 }
                 else
                 {
                     if ( flyduckPilot.GetZDirection() == Direction.IN)
                     {
-                        return 3;
+                        return 3 + this.duckstyle * 4;
                     }
                     else if (flyduckPilot.GetZDirection() == Direction.OUT)
                     {
-                        return 3;
+                        return 3 + this.duckstyle * 4;
                     }
                     else 
                     {
-                        return 3;
+                        return 3 + this.duckstyle * 4;
                     }
                 }
             }
@@ -2762,7 +2913,7 @@ namespace DuckHuntCommon
             }
             return childrenlst;
         }
-
+           
         /// <summary>
         /// 
         /// </summary>
@@ -2774,7 +2925,6 @@ namespace DuckHuntCommon
                 SetViewObject(null);
             }
         }
-
 
         int bulletcount = 3;
         public void LoadBullet(int count)
@@ -3764,7 +3914,164 @@ namespace DuckHuntCommon
         {
             return depth;
         }
+    }
 
+
+    class FireworkModel : BaseModel
+    {
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        Rectangle fireworkspace;
+
+        bool gone = false;
+
+        float depth = 0.001F;
+
+        Vector2 relativePos;
+
+        Vector2 RelativePosition
+        {
+            get
+            {
+                return relativePos;
+            }
+        }
+
+        public FireworkModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // firework
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 1101;
+            animationInfo.frameHeight = 742;
+            animationInfo.frameCount = 10;
+            animationInfo.frameTime = 150;
+            anationInfoList.Add(animationInfo);
+        }
+
+
+
+        override public ModelType Type()
+        {
+            return ModelType.FIREWORK;
+        }
+
+
+        override public void Initialize(ModelObject parent1, Rectangle space, int seed)
+        {
+            base.Initialize(null, space, seed);
+
+            fireworkspace = space;
+            relativePos.X = space.Left;
+            relativePos.Y = space.Top;
+        }
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks1";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks2";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks3";
+            resourceList.Add(resourceItm);
+
+
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks5";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks7";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks8";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks9";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks10";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\fireworks11";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        override public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = RelativePosition;
+            // adjust from lefttop conner to center
+            /*
+            abspos.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            abspos.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+             */
+            return abspos;
+        }
+
+        override public Rectangle GetSpace()
+        {
+            Rectangle space = new Rectangle(0, 0
+            , anationInfoList[GetCurrentAnimationIndex()].frameWidth
+            , anationInfoList[GetCurrentAnimationIndex()].frameHeight);
+
+            return space;
+        }
+        override public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+
+        override public void Update(GameTime gameTime)
+        {
+            /*
+            relativePos.X -= 3;
+            if (relativePos.X <= 0)
+            {
+                relativePos.X = fireworkspace.Left;
+            }
+             */
+        }
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        override public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        override public float GetAnimationDepth()
+        {
+            return depth;
+        }
     }
 
 
