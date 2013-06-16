@@ -460,9 +460,22 @@ namespace DuckHuntCommon
                 ducks = null;
                 return false;
             }
-            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter1");
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
             ducks.Add(duck);
             duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
+            ducks.Add(duck);
+            duckcount++;
+
             return true;
         }
         public override bool CanBeRemoved()
@@ -490,9 +503,9 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 4; i++)
             {
-                duck = new DuckModel(PilotType.DUCKNORMAL, "charpter2");
+                duck = new DuckModel(PilotType.DUCKEIGHT, "charpter2");
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -870,7 +883,7 @@ namespace DuckHuntCommon
         int duckcount = 0;
         List<PilotType> pilotypelist;
         //int concurrentduck = 8;
-        int concurrentduck = 20;
+        int concurrentduck = 100;
         //int duckstyle = 8;
         int duckstyle = 1;
         public GameChapterForever()
@@ -894,10 +907,12 @@ namespace DuckHuntCommon
 
             DuckModel duck;
 
+            string name = "chapter10_" + concurrentduck.ToString();
             for (int i = 0; i < concurrentduck; i++)
             {
                 int pilottypeindex = i % duckstyle;
-                duck = new DuckModel(pilotypelist[pilottypeindex], "charpter10");
+               
+                duck = new DuckModel(pilotypelist[pilottypeindex], name);
                 ducks.Add(duck);
                 duckcount++;
             }
