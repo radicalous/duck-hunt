@@ -441,7 +441,6 @@ namespace DuckHuntCommon
             animation.Position.Y += (animation.FrameHeight / 2) * _defscaleinscreen;
             animation.scale = model.GetSacle() * _defscaleinscreen;
             //animation.Update(gameTime);
-
         }
 
         // local rect, global rect
