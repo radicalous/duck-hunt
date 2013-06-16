@@ -74,6 +74,8 @@ namespace DuckHuntCommon
                 case ModelType.DOG:
                 case ModelType.DUCK:
                 case ModelType.BULLET:
+                case ModelType.PLANE:
+                case ModelType.BALOON:
                     {
                         commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
                     }

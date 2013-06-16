@@ -290,6 +290,12 @@
     <Content Include="Content\Graphics\fireworks9.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Graphics\plane.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\flag.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\MenuItem.xnb" />
     <None Include="DuckHunt_TemporaryKey.pfx" />
   </ItemGroup>

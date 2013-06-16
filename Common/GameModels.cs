@@ -15,7 +15,7 @@ namespace DuckHuntCommon
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
         LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
-        FIREWORK,
+        FIREWORK,PLANE, BALOON
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -3370,14 +3370,14 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
 
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 256;
-            animationInfo.frameHeight = 256;
+            animationInfo.frameWidth = 128;
+            animationInfo.frameHeight = 128;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
-            animationInfo.frameWidth = 256;
-            animationInfo.frameHeight = 256;
+            animationInfo.frameWidth = 128;
+            animationInfo.frameHeight = 128;
             animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
@@ -3498,11 +3498,11 @@ namespace DuckHuntCommon
         {
             // check if it clicked
             Vector2 lefttop = this.GetAbsolutePosition();
-            lefttop.X += 256 / 2;
-            lefttop.Y += 256 / 2;
-            lefttop.X -= (int)(256 * GetSacle()/2);
-            lefttop.Y -= (int)(256 * GetSacle()/2);
-            int boxsize = (int)(256 * GetSacle());
+            lefttop.X += 128 / 2;
+            lefttop.Y += 128 / 2;
+            lefttop.X -= (int)(128 * GetSacle()/2);
+            lefttop.Y -= (int)(128 * GetSacle()/2);
+            int boxsize = (int)(128 * GetSacle());
             if (logicpos.X > lefttop.X && logicpos.X - lefttop.X <= boxsize &&
                 logicpos.Y > lefttop.Y && logicpos.Y - lefttop.Y <= boxsize)
             {
@@ -4074,6 +4074,225 @@ namespace DuckHuntCommon
         }
     }
 
+
+
+    class PlaneModel : BaseModel
+    {
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        Rectangle planespace;
+        float depth = 0.4F;
+
+        Vector2 relativePos;
+
+        Vector2 RelativePosition
+        {
+            get
+            {
+                return relativePos;
+            }
+        }
+
+        public PlaneModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 400;
+            animationInfo.frameHeight = 256;
+            animationInfo.frameCount = 4;
+            animationInfo.frameTime = 250;
+            anationInfoList.Add(animationInfo);
+        }
+
+
+
+        override public ModelType Type()
+        {
+            return ModelType.PLANE;
+        }
+
+
+        override public void Initialize(ModelObject parent1, Rectangle space, int seed)
+        {
+            base.Initialize(null, space, seed);
+
+            planespace = space;
+            relativePos.X = space.Left;
+            relativePos.Y = space.Bottom;
+        }
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\plane";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        override public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = RelativePosition;
+            // adjust from lefttop conner to center
+            abspos.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            abspos.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+            return abspos;
+        }
+
+        override public Rectangle GetSpace()
+        {
+            Rectangle space = new Rectangle(0, 0
+            , anationInfoList[GetCurrentAnimationIndex()].frameWidth
+            , anationInfoList[GetCurrentAnimationIndex()].frameHeight);
+
+            return space;
+        }
+        override public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+
+        override public void Update(GameTime gameTime)
+        {
+            relativePos.X += 3;
+            if (relativePos.X >= planespace.Right)
+            {
+                relativePos.X = planespace.Left;
+            }
+        }
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        override public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        override public float GetAnimationDepth()
+        {
+            return depth;
+        }
+    }
+
+
+
+    class BaloonModel : BaseModel
+    {
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        Rectangle planespace;
+        float depth = 0.4F;
+
+        Vector2 relativePos;
+
+        Vector2 RelativePosition
+        {
+            get
+            {
+                return relativePos;
+            }
+        }
+
+        public BaloonModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+            // flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 535;
+            animationInfo.frameHeight = 211;
+            animationInfo.frameCount = 3;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+        }
+
+
+
+        override public ModelType Type()
+        {
+            return ModelType.BALOON;
+        }
+
+
+        override public void Initialize(ModelObject parent1, Rectangle space, int seed)
+        {
+            base.Initialize(null, space, seed);
+
+            planespace = space;
+            relativePos.X = space.Left;
+            relativePos.Y = space.Bottom;
+        }
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\flag";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        override public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = RelativePosition;
+            // adjust from lefttop conner to center
+            abspos.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            abspos.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+            return abspos;
+        }
+
+        override public Rectangle GetSpace()
+        {
+            Rectangle space = new Rectangle(0, 0
+            , anationInfoList[GetCurrentAnimationIndex()].frameWidth
+            , anationInfoList[GetCurrentAnimationIndex()].frameHeight);
+
+            return space;
+        }
+        override public float GetSacle()
+        {
+            return 1.0f;
+        }
+
+
+        override public void Update(GameTime gameTime)
+        {
+            relativePos.X += 3;
+            if (relativePos.X >= planespace.Right)
+            {
+                relativePos.X = planespace.Left;
+            }
+        }
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+        override public int GetCurrentAnimationIndex()
+        {
+            return 0;
+        }
+
+        override public float GetAnimationDepth()
+        {
+            return depth;
+        }
+    }
 
     class CollectionDetect
     {

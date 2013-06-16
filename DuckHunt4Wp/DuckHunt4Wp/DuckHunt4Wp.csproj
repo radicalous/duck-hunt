@@ -91,12 +91,14 @@
     <None Include="Content\Graphics\duck_black_flying.xnb" />
     <None Include="Content\Graphics\duck_black_flying_r.xnb" />
     <None Include="Content\Graphics\duck_black_shot.xnb" />
+    <None Include="Content\Graphics\flag.xnb" />
     <None Include="Content\Graphics\font_test.xnb" />
     <None Include="Content\Graphics\Forest.xnb" />
     <None Include="Content\Graphics\gameFont.xnb" />
     <None Include="Content\Graphics\gameFont_10.xnb" />
     <None Include="Content\Graphics\laser1.xnb" />
     <None Include="Content\Graphics\MenuItemBg_unselected.xnb" />
+    <None Include="Content\Graphics\plane.xnb" />
     <None Include="Content\Graphics\plutojumpdown.xnb" />
     <None Include="Content\Graphics\plutojumpup.xnb" />
     <None Include="Content\Graphics\plutoseeking.xnb" />
