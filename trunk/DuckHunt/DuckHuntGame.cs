@@ -180,6 +180,8 @@ namespace DuckHuntCommon
             objlst.Add(new PandaModel());
             objlst.Add(new ButtonModel());
             objlst.Add(new FireworkModel());
+            objlst.Add(new PlaneModel());
+            objlst.Add(new BaloonModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -833,11 +835,13 @@ namespace DuckHuntCommon
             ducks = new List<DuckModel>();
 
             DuckModel duck;
+            /*
             if (duckcount >= 21)
             {
                 ducks = null;
                 return false;
             }
+             */
 
             int pilottypeindex = 0;
             for (int i = 0; i < 7; i++)
@@ -865,16 +869,22 @@ namespace DuckHuntCommon
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
-        int concurrentduck = 8;
+        //int concurrentduck = 8;
+        int concurrentduck = 20;
+        //int duckstyle = 8;
+        int duckstyle = 1;
         public GameChapterForever()
         {
             pilotypelist = new List<PilotType>();
+            /*
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
            // pilotypelist.Add(PilotType.DUCKSIN);
             pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
             pilotypelist.Add(PilotType.DUCKNORMAL);
+             */
+            pilotypelist.Add(PilotType.DUCKLINE);
 
         }
         override public bool GetDuckList(out List<DuckModel> ducks)
@@ -886,7 +896,7 @@ namespace DuckHuntCommon
 
             for (int i = 0; i < concurrentduck; i++)
             {
-                int pilottypeindex =  i%concurrentduck;
+                int pilottypeindex = i % duckstyle;
                 duck = new DuckModel(pilotypelist[pilottypeindex], "charpter10");
                 ducks.Add(duck);
                 duckcount++;
@@ -931,7 +941,6 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
-                 */
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
                 chapter = new GameChapter8();
@@ -940,6 +949,7 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter10();
                 chapters.Add(chapter);
+                */
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
             }
@@ -1030,6 +1040,9 @@ namespace DuckHuntCommon
         Rectangle dogRunSpace;
 
         PandaModel panda;
+        PlaneModel plane;
+        BaloonModel baloon;
+        Rectangle planeSpace;
 
 
         HitBoardModel hitBoard;
@@ -1085,6 +1098,9 @@ namespace DuckHuntCommon
                 dogRunSpace.Height = 150;
             }
 
+            planeSpace.Width = rectBackground.Width;
+            planeSpace.Y = 100;
+            planeSpace.Height = 150;
 
             HitBoardModel hitBoard1 = new HitBoardModel();
             if (rectBackground.Width < rectBackground.Height)
@@ -1140,16 +1156,16 @@ namespace DuckHuntCommon
             ButtonModel button = new ButtonModel();
             if (rectBackground.Width < rectBackground.Height)
             {
-                pauseButtonSpace.X = rectBackground.Height - button.GetSpace().Width - 20;
-                pauseButtonSpace.Y = rectBackground.Right - 300; ;
+                pauseButtonSpace.X = rectBackground.Height - button.GetSpace().Width+130 ;
+                pauseButtonSpace.Y = rectBackground.Right - 150; ;
                 pauseButtonSpace.Width = button.GetSpace().Width;
                 pauseButtonSpace.Height = button.GetSpace().Height;
             }
             else
             {
 
-                pauseButtonSpace.X = rectBackground.Width - button.GetSpace().Width - 20;
-                pauseButtonSpace.Y = rectBackground.Bottom - 300;
+                pauseButtonSpace.X = rectBackground.Width - button.GetSpace().Width +130;
+                pauseButtonSpace.Y = rectBackground.Bottom - 150;
                 pauseButtonSpace.Width = button.GetSpace().Width;
                 pauseButtonSpace.Height = button.GetSpace().Height;
             }
@@ -1177,13 +1193,17 @@ namespace DuckHuntCommon
             if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 objlst.Add(dog);
-                objlst.Add(panda);
+                //objlst.Add(panda);
+                objlst.Add(plane);
+
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
-                objlst.Add(panda);
+                //objlst.Add(panda);
                 objlst.Add(pause);
-               // objlst.Add(firework);
+                //objlst.Add(firework);
+                //objlst.Add(plane);
+                objlst.Add(baloon);
                 foreach (DuckModel duck in duckList)
                 {
                     objlst.Add(duck);
@@ -1220,8 +1240,10 @@ namespace DuckHuntCommon
             }
             //
             backgroundPage.Update(gametime);
-            panda.Update(gametime);
-            firework.Update(gametime);
+            //panda.Update(gametime);
+            //firework.Update(gametime);
+            plane.Update(gametime);
+            baloon.Update(gametime);
 
             if (phase == GAME_PHASE.GAME_SELECT)
             {
@@ -1374,6 +1396,12 @@ namespace DuckHuntCommon
             dog.StartPilot();
 
             panda = new PandaModel();
+            plane = new PlaneModel();
+            plane.Initialize(null, planeSpace, 0);
+
+            baloon = new BaloonModel();
+            baloon.Initialize(null, planeSpace, 0);
+
             panda.Initialize(null, dogRunSpace, 0);
         }
 
@@ -1476,6 +1504,7 @@ namespace DuckHuntCommon
             leftTime.SetTime(5 * 60);
             lostDuck.ResetLostCount();
             phase = GAME_PHASE.SEEK_DUCK;
+            //phase = GAME_PHASE.DUCK_FLY;
         }
     }
 

@@ -180,6 +180,8 @@ namespace DuckHuntCommon
             objlst.Add(new PandaModel());
             objlst.Add(new ButtonModel());
             objlst.Add(new FireworkModel());
+            objlst.Add(new PlaneModel());
+            objlst.Add(new BaloonModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -833,11 +835,13 @@ namespace DuckHuntCommon
             ducks = new List<DuckModel>();
 
             DuckModel duck;
+            /*
             if (duckcount >= 21)
             {
                 ducks = null;
                 return false;
             }
+             */
 
             int pilottypeindex = 0;
             for (int i = 0; i < 7; i++)
@@ -1030,6 +1034,9 @@ namespace DuckHuntCommon
         Rectangle dogRunSpace;
 
         PandaModel panda;
+        PlaneModel plane;
+        BaloonModel baloon;
+        Rectangle planeSpace;
 
 
         HitBoardModel hitBoard;
@@ -1085,6 +1092,9 @@ namespace DuckHuntCommon
                 dogRunSpace.Height = 150;
             }
 
+            planeSpace.Width = rectBackground.Width;
+            planeSpace.Y = 100;
+            planeSpace.Height = 150;
 
             HitBoardModel hitBoard1 = new HitBoardModel();
             if (rectBackground.Width < rectBackground.Height)
@@ -1140,16 +1150,16 @@ namespace DuckHuntCommon
             ButtonModel button = new ButtonModel();
             if (rectBackground.Width < rectBackground.Height)
             {
-                pauseButtonSpace.X = rectBackground.Height - button.GetSpace().Width - 20;
-                pauseButtonSpace.Y = rectBackground.Right - 300; ;
+                pauseButtonSpace.X = rectBackground.Height - button.GetSpace().Width+50 ;
+                pauseButtonSpace.Y = rectBackground.Right - 200; ;
                 pauseButtonSpace.Width = button.GetSpace().Width;
                 pauseButtonSpace.Height = button.GetSpace().Height;
             }
             else
             {
 
-                pauseButtonSpace.X = rectBackground.Width - button.GetSpace().Width - 20;
-                pauseButtonSpace.Y = rectBackground.Bottom - 300;
+                pauseButtonSpace.X = rectBackground.Width - button.GetSpace().Width +50;
+                pauseButtonSpace.Y = rectBackground.Bottom - 200;
                 pauseButtonSpace.Width = button.GetSpace().Width;
                 pauseButtonSpace.Height = button.GetSpace().Height;
             }
@@ -1177,13 +1187,17 @@ namespace DuckHuntCommon
             if (phase == GAME_PHASE.SEEK_DUCK)
             {
                 objlst.Add(dog);
-                objlst.Add(panda);
+                //objlst.Add(panda);
+                objlst.Add(plane);
+
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
             {
-                objlst.Add(panda);
+                //objlst.Add(panda);
                 objlst.Add(pause);
-               // objlst.Add(firework);
+                //objlst.Add(firework);
+                //objlst.Add(plane);
+                objlst.Add(baloon);
                 foreach (DuckModel duck in duckList)
                 {
                     objlst.Add(duck);
@@ -1220,8 +1234,10 @@ namespace DuckHuntCommon
             }
             //
             backgroundPage.Update(gametime);
-            panda.Update(gametime);
-            firework.Update(gametime);
+            //panda.Update(gametime);
+            //firework.Update(gametime);
+            plane.Update(gametime);
+            baloon.Update(gametime);
 
             if (phase == GAME_PHASE.GAME_SELECT)
             {
@@ -1374,6 +1390,12 @@ namespace DuckHuntCommon
             dog.StartPilot();
 
             panda = new PandaModel();
+            plane = new PlaneModel();
+            plane.Initialize(null, planeSpace, 0);
+
+            baloon = new BaloonModel();
+            baloon.Initialize(null, planeSpace, 0);
+
             panda.Initialize(null, dogRunSpace, 0);
         }
 
