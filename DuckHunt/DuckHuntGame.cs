@@ -492,9 +492,9 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            string name = "chapter2_" + duckcount.ToString();
             for (int i = 0; i < 2; i++)
             {
+                string name = "chapter2_" + duckcount.ToString();
                 duck = new DuckModel(PilotType.DUCKNORMAL, name);
                 ducks.Add(duck);
                 duckcount++;
@@ -533,6 +533,7 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter3_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
@@ -570,6 +571,7 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter4_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
@@ -607,11 +609,14 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter5_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter5");
+
+            name = "chapter5_" + duckcount.ToString(); 
+            duck = new DuckModel(PilotType.DUCKNORMAL, name);
             ducks.Add(duck);
             duckcount++;
 
@@ -737,7 +742,7 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
-            //pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKSIN);
         }
         override public bool GetDuckList(out List<DuckModel> ducks)
         {
@@ -745,7 +750,7 @@ namespace DuckHuntCommon
             ducks = new List<DuckModel>();
 
             DuckModel duck;
-            if (duckcount >= 18)
+            if (pilotTypeIndex >= pilotypelist.Count)
             {
                 ducks = null;
                 return false;
@@ -755,6 +760,7 @@ namespace DuckHuntCommon
 
             for (int i = 0; i < 6; i++)
             {
+                name = "chapter8_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilotTypeIndex], name);
                 ducks.Add(duck);
                 duckcount++;
@@ -766,7 +772,7 @@ namespace DuckHuntCommon
 
         public override bool CanBeRemoved()
         {
-            if (pilotTypeIndex == pilotypelist.Count)
+            if (pilotTypeIndex >= pilotypelist.Count)
             {
                 return true;
             }
@@ -784,7 +790,7 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
-           // pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKSIN);
             pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
             pilotypelist.Add(PilotType.DUCKNORMAL);
             pilotypelist.Add(PilotType.DUCKNORMAL);
@@ -796,7 +802,7 @@ namespace DuckHuntCommon
             ducks = new List<DuckModel>();
 
             DuckModel duck;
-            if (duckcount >= 21)
+            if (duckcount >= 3 * pilotypelist.Count)
             {
                 ducks = null;
                 return false;
@@ -805,8 +811,9 @@ namespace DuckHuntCommon
             string name = "chapter9_" + duckcount.ToString();
 
             int pilottypeindex = 0;
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < pilotypelist.Count; i++)
             {
+                name = "chapter9_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
                 duckcount++;
@@ -818,7 +825,7 @@ namespace DuckHuntCommon
 
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 21)
+            if (duckcount >= 3 * pilotypelist.Count)
             {
                 return true;
             }
@@ -837,7 +844,7 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
-            //pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKSIN);
             pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
             pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
             pilotypelist.Add(PilotType.DUCKNORMAL);
@@ -850,19 +857,18 @@ namespace DuckHuntCommon
             ducks = new List<DuckModel>();
 
             DuckModel duck;
-            /*
-            if (duckcount >= 21)
+            if (duckcount >= 3 * pilotypelist.Count)
             {
                 ducks = null;
                 return false;
             }
-             */
 
             string name = "chapter10_" + duckcount.ToString();
 
             int pilottypeindex = 0;
             for (int i = 0; i < 7; i++)
             {
+                name = "chapter10_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
                 duckcount++;
@@ -874,7 +880,7 @@ namespace DuckHuntCommon
 
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 24)
+            if (duckcount >= 3 * pilotypelist.Count)
             {
                 return true;
             }
@@ -912,6 +918,7 @@ namespace DuckHuntCommon
             string name = "chapterforever_" + concurrentduck.ToString();
             for (int i = 0; i < concurrentduck; i++)
             {
+                name = "chapterforever_" + concurrentduck.ToString();
                 int pilottypeindex = i % duckstyle;
                
                 duck = new DuckModel(pilotypelist[pilottypeindex], name);
