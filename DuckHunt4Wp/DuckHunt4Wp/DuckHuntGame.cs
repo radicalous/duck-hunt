@@ -179,7 +179,7 @@ namespace DuckHuntCommon
             objlst.Add(new CheckBoxModel());
             objlst.Add(new PandaModel());
             objlst.Add(new ButtonModel());
-            objlst.Add(new FireworkModel());
+            //objlst.Add(new FireworkModel());
             objlst.Add(new PlaneModel());
             objlst.Add(new BaloonModel());
 
@@ -460,9 +460,22 @@ namespace DuckHuntCommon
                 ducks = null;
                 return false;
             }
-            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter1");
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
             ducks.Add(duck);
             duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
+            ducks.Add(duck);
+            duckcount++;
+
+            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
+            ducks.Add(duck);
+            duckcount++;
+
             return true;
         }
         public override bool CanBeRemoved()
@@ -490,9 +503,9 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 4; i++)
             {
-                duck = new DuckModel(PilotType.DUCKNORMAL, "charpter2");
+                duck = new DuckModel(PilotType.DUCKEIGHT, "charpter2");
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -869,16 +882,22 @@ namespace DuckHuntCommon
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
-        int concurrentduck = 8;
+        //int concurrentduck = 8;
+        int concurrentduck = 100;
+        //int duckstyle = 8;
+        int duckstyle = 1;
         public GameChapterForever()
         {
             pilotypelist = new List<PilotType>();
+            /*
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
            // pilotypelist.Add(PilotType.DUCKSIN);
             pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
             pilotypelist.Add(PilotType.DUCKNORMAL);
+             */
+            pilotypelist.Add(PilotType.DUCKLINE);
 
         }
         override public bool GetDuckList(out List<DuckModel> ducks)
@@ -888,10 +907,12 @@ namespace DuckHuntCommon
 
             DuckModel duck;
 
+            string name = "chapter10_" + concurrentduck.ToString();
             for (int i = 0; i < concurrentduck; i++)
             {
-                int pilottypeindex =  i%concurrentduck;
-                duck = new DuckModel(pilotypelist[pilottypeindex], "charpter10");
+                int pilottypeindex = i % duckstyle;
+               
+                duck = new DuckModel(pilotypelist[pilottypeindex], name);
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -935,7 +956,6 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
-                 */
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
                 chapter = new GameChapter8();
@@ -944,6 +964,7 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter10();
                 chapters.Add(chapter);
+                */
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
             }
@@ -1049,7 +1070,7 @@ namespace DuckHuntCommon
         Rectangle pauseButtonSpace;
 
 
-        FireworkModel firework;
+        //FireworkModel firework;
         Rectangle fireworkSpace;
 
 
@@ -1150,16 +1171,16 @@ namespace DuckHuntCommon
             ButtonModel button = new ButtonModel();
             if (rectBackground.Width < rectBackground.Height)
             {
-                pauseButtonSpace.X = rectBackground.Height - button.GetSpace().Width+50 ;
-                pauseButtonSpace.Y = rectBackground.Right - 200; ;
+                pauseButtonSpace.X = rectBackground.Height - button.GetSpace().Width+130 ;
+                pauseButtonSpace.Y = rectBackground.Right - 150; ;
                 pauseButtonSpace.Width = button.GetSpace().Width;
                 pauseButtonSpace.Height = button.GetSpace().Height;
             }
             else
             {
 
-                pauseButtonSpace.X = rectBackground.Width - button.GetSpace().Width +50;
-                pauseButtonSpace.Y = rectBackground.Bottom - 200;
+                pauseButtonSpace.X = rectBackground.Width - button.GetSpace().Width +130;
+                pauseButtonSpace.Y = rectBackground.Bottom - 150;
                 pauseButtonSpace.Width = button.GetSpace().Width;
                 pauseButtonSpace.Height = button.GetSpace().Height;
             }
@@ -1176,8 +1197,8 @@ namespace DuckHuntCommon
             NewScoreBoard();
             NewAssistBoard();
 
-            firework = new FireworkModel();
-            firework.Initialize(null, fireworkSpace, 0);
+           // firework = new FireworkModel();
+           // firework.Initialize(null, fireworkSpace, 0);
         }
 
 
@@ -1498,6 +1519,7 @@ namespace DuckHuntCommon
             leftTime.SetTime(5 * 60);
             lostDuck.ResetLostCount();
             phase = GAME_PHASE.SEEK_DUCK;
+            //phase = GAME_PHASE.DUCK_FLY;
         }
     }
 

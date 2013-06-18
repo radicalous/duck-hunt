@@ -1397,14 +1397,6 @@ namespace DuckHuntCommon
     class MenuItemViewObject : CommonViewObject
     {
         MenuItemModel model;
-        /*
-        List<AnimationInfo> animationList;
-        List<ViewItem> viewItmList;
-        List<SpriteFont> fontList;  
-        Vector2 _orgpoint;
-        float _defscale;
-
-        */
         Vector2 menuContentPos;
 
         public MenuItemViewObject(ModelObject model1)
@@ -1416,86 +1408,20 @@ namespace DuckHuntCommon
             Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
         {
             base.Init(orgpoint, defscale, model, objTextureLst, space);
-            /*
-            model = (MenuItemModel)model1;
-
-            _orgpoint = orgpoint;
-            _defscale = defscale;
-
-            fontList = objTextureLst[model.Type()].fontList;
-
-
-            // create view items for this object
-            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
-            animationList = model.GetAnimationInfoList();
-
-            // background
-            viewItmList = new List<ViewItem>();
-            for (int i = 0; i < texturesList.Count; i++)
-            {
-                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
-                ViewItem viewItm = new ViewItem();
-                if (animationInfo.animation)
-                {
-                    viewItm.animation = new Animation();
-                    viewItm.animation.Initialize(
-                        texturesList[i],
-                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
-                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
-                        model.GetSacle(), true);
-                }
-                else
-                {
-                    viewItm.staticBackground = new StaticBackground2();
-                    viewItm.staticBackground.Initialize(
-                        texturesList[i],
-                        orgpoint,
-                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
-                }
-                viewItmList.Add(viewItm);
-            }
-            */
-
             menuContentPos = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
 
-            menuContentPos.X += (120 - model.Conent.Length * 10) * DefScaleInScreen;
+            menuContentPos.X += (120 - model.Conent.Length * 10 ) * DefScaleInScreen;
             menuContentPos.Y += 60 * DefScaleInScreen;
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            /*
-            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
-            if (animationList[model.GetCurrentAnimationIndex()].animation)
-            {
-                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() * _defscale;
-
-                viewItm.animation.Position.X += (viewItm.animation.FrameWidth / 2) * _defscale;
-                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight / 2) * _defscale;
-                viewItm.animation.scale = model.GetSacle() * _defscale;
-                viewItm.animation.Update(gameTime);
-            }
-            else
-            {
-                viewItm.staticBackground.Update(gameTime);
-            }
-             */
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            /*
-            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
-            if (animationList[model.GetCurrentAnimationIndex()].animation)
-            {
-                viewItm.animation.Draw(spriteBatch, model.GetAnimationDepth());
-            }
-            else
-            {
-                viewItm.staticBackground.Draw(spriteBatch, model.GetAnimationDepth());
-            }
-            */
+
             // draw score
             Vector2 pos1 = menuContentPos;
             Rectangle space = model.GetSpace();
@@ -1567,12 +1493,12 @@ namespace DuckHuntCommon
             var result = model.ScoreList.OrderByDescending(c => c.Key);
             foreach (KeyValuePair<int, string> pair in result)
             {
-                spriteBatch.DrawString(base.ObjFontList[0], pair.Value,
+                spriteBatch.DrawString(base.ObjFontList[1], pair.Value,
                     pos1, Color.Yellow, 0, Vector2.Zero, 1,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos2 = pos1;
                 pos2.X += 500 * DefScaleInScreen;
-                spriteBatch.DrawString(base.ObjFontList[0], pair.Key.ToString(),
+                spriteBatch.DrawString(base.ObjFontList[1], pair.Key.ToString(),
                     pos2, Color.Yellow, 0, Vector2.Zero, 1,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos1.Y += 30 * DefScaleInScreen;

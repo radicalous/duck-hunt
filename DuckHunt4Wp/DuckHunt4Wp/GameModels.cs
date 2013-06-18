@@ -553,9 +553,9 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\font_15";
 #else
-            resourceItm.path = "Graphics\\font";
+            resourceItm.path = "Graphics\\font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -2173,6 +2173,9 @@ namespace DuckHuntCommon
         Vector2 targetposition = Vector2.Zero;
         List<DuckModel> shootduckList;
 
+        PlaneModel plane;
+        BaloonModel baloon;
+
         // Animation representing the player
         List<AnimationInfo> anationInfoList;
         Rectangle bulletspace;
@@ -2378,23 +2381,35 @@ namespace DuckHuntCommon
             return null;
         }
 
+        public void SetTarget(PlaneModel plane)
+        {
+            if (plane != null)
+            {
+                this.plane = plane;
+                depth =plane.GetAnimationDepth() + 0.1f;
+            }
+        }
+
+        public void SetTarget(BaloonModel baloon)
+        {
+            if (baloon != null)
+            {
+                this.baloon = baloon;
+                depth = baloon.GetAnimationDepth() + 0.1f;
+            }
+        }
+
         public void SetTarget(DuckModel duck)
         {
             if (duck != null)
             {
                 shootduckList.Add(duck);
                 depth = duck.GetAnimationDepth() + 0.1f;
-                //position = duck.GetAbsolutePosition();
-                //targetposition = relativePositionInParent;
-                //targetposition.X += 10;
-                //targetposition.Y -= 5;
-                //relativePositionInParent.X = relativePositionInParent.X - 20 * 6;
-                //relativePositionInParent.Y = relativePositionInParent.Y + 10 * 6;
             }
         }
         public void AdjustForFlyEffect()
         {
-            if (shootduckList.Count > 0)
+            if (shootduckList.Count > 0 || plane != null || baloon != null)
             {
                 targetposition = relativePositionInParent;
                 relativePositionInParent.X = relativePositionInParent.X - 20 * 6;
@@ -2565,6 +2580,14 @@ namespace DuckHuntCommon
 
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
+
+        public int HitCount
+        {
+            get
+            {
+                return hitcount;
+            }
+        }
 
         public HitBoardModel()
         {
@@ -3166,15 +3189,38 @@ namespace DuckHuntCommon
         {
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
-            ResourceItem resourceItm = new ResourceItem();
-
-            resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
-#else
-            resourceItm.path = "Graphics\\font";
-#endif
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\font_15";
             resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\font_10";
+            resourceList.Add(resourceItm);
+#else
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_30";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_25";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_20";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_15";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_10";
+            resourceList.Add(resourceItm);
+
+#endif
 
             return resourceList;
         }
@@ -4081,6 +4127,7 @@ namespace DuckHuntCommon
         // Animation representing the player
         List<AnimationInfo> anationInfoList;
         Rectangle planespace;
+        Rectangle crashspace;
         float depth = 0.4F;
 
         Vector2 relativePos;
@@ -4090,6 +4137,19 @@ namespace DuckHuntCommon
             get
             {
                 return relativePos;
+            }
+        }
+
+        List<Vector2> triangle = null;
+
+        bool gone = false;
+        bool dead = false;
+
+        public bool Gone
+        {
+            get
+            {
+                return gone;
             }
         }
 
@@ -4105,6 +4165,9 @@ namespace DuckHuntCommon
             animationInfo.frameCount = 4;
             animationInfo.frameTime = 250;
             anationInfoList.Add(animationInfo);
+
+            triangle = new List<Vector2>();
+
         }
 
 
@@ -4120,8 +4183,13 @@ namespace DuckHuntCommon
             base.Initialize(null, space, seed);
 
             planespace = space;
-            relativePos.X = space.Left;
-            relativePos.Y = space.Bottom;
+            crashspace = space;
+
+            planespace.Y = 100;
+            planespace.Height = 150;
+
+            relativePos.X = planespace.Left;
+            relativePos.Y = planespace.Bottom;
         }
 
         override public List<ResourceItem> GetResourceList()
@@ -4161,10 +4229,19 @@ namespace DuckHuntCommon
 
         override public void Update(GameTime gameTime)
         {
-            relativePos.X += 3;
-            if (relativePos.X >= planespace.Right)
+            if (dead == false)
             {
-                relativePos.X = planespace.Left;
+                relativePos.X += 3;
+            }
+            else
+            {
+                relativePos.X += 3;
+                relativePos.Y += 3;
+            }
+            if (relativePos.X >= crashspace.Right || relativePos.Y >= crashspace.Bottom)
+            {
+                //relativePos.X = planespace.Left;
+                gone = true;
             }
         }
 
@@ -4182,6 +4259,59 @@ namespace DuckHuntCommon
         {
             return depth;
         }
+
+
+        public void Shoot(BulletModel bullet)
+        {
+            // check if it's shoot
+
+            Vector2 position = bullet.GetAbsolutePosition();
+            Rectangle bulletRc = bullet.GetSpace();
+            Vector2 bulletCenter = position;
+            bulletCenter.X += bulletRc.Width / 2;
+            bulletCenter.Y += bulletRc.Height / 2;
+
+            Vector2 planeLeftTop = GetAbsolutePosition();
+            planeLeftTop.X += anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            planeLeftTop.Y += anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+            planeLeftTop.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2 * this.GetSacle();
+            planeLeftTop.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2 * this.GetSacle();
+
+            Vector2 p1, p2, p3, p4;
+            p1.X = planeLeftTop.X + 273 * GetSacle();
+            p1.Y = planeLeftTop.Y + 119 * GetSacle();
+            p2.X = planeLeftTop.X + 332 * GetSacle();
+            p2.Y = planeLeftTop.Y + 98 * GetSacle();
+            p3.X = planeLeftTop.X + 390 * GetSacle();
+            p3.Y = planeLeftTop.Y + 128 * GetSacle();
+            p4.X = planeLeftTop.X + 309 * GetSacle();
+            p4.Y = planeLeftTop.Y + 144 * GetSacle();
+
+            triangle.Clear();
+            triangle.Add(p1);
+            triangle.Add(p2);
+            triangle.Add(p3);
+            if (CollectionDetect.PointInTriangle(bulletCenter, triangle))
+            {
+                //
+                bullet.SetTarget(this);
+                dead = true;
+                return;
+            }
+
+            triangle.Clear();
+            triangle.Add(p2);
+            triangle.Add(p3);
+            triangle.Add(p4);
+            if (CollectionDetect.PointInTriangle(bulletCenter, triangle))
+            {
+                //
+                bullet.SetTarget(this);
+                dead = true;
+                return;
+            }
+
+        }
     }
 
 
@@ -4195,11 +4325,24 @@ namespace DuckHuntCommon
 
         Vector2 relativePos;
 
+        bool gone = false;
+
+
+
         Vector2 RelativePosition
         {
             get
             {
                 return relativePos;
+            }
+        }
+
+
+        public bool Gone
+        {
+            get
+            {
+                return gone;
             }
         }
 
@@ -4215,6 +4358,7 @@ namespace DuckHuntCommon
             animationInfo.frameCount = 3;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
+
         }
 
 
@@ -4274,7 +4418,8 @@ namespace DuckHuntCommon
             relativePos.X += 3;
             if (relativePos.X >= planespace.Right)
             {
-                relativePos.X = planespace.Left;
+                //relativePos.X = planespace.Left;
+                gone = true;
             }
         }
 
@@ -4291,6 +4436,13 @@ namespace DuckHuntCommon
         override public float GetAnimationDepth()
         {
             return depth;
+        }
+
+
+        public void Shoot(BulletModel bullet)
+        {
+            // check if it's shoot
+
         }
     }
 
