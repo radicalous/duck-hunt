@@ -602,6 +602,190 @@ namespace GameCommon
             Position.X += ((float)deltax) * factorx;
             Position.Y += ((float)deltay) * factory;
 
+            /*
+            depthpos += detalz;
+            if (depthpos < 0 || depthpos > 50)
+            {
+                detalz = -detalz;
+            }
+            if (depthpos < 0)
+            {
+                depthpos = 0;
+            }
+            if (depthpos > 50)
+            {
+                depthpos = 50;
+            }
+             */
+        }
+    }
+
+
+    class DuckNormalDepthPilot : AiPilot
+    {
+
+        // The boundary
+        public Rectangle boundaryRect = new Rectangle();
+
+        public Direction GetHorizationDirection()
+        {
+            if (deltax > 0)
+            {
+                return Direction.RIGHT;
+            }
+            else
+            {
+                return Direction.LEFT;
+            }
+        }
+        public Direction GetZDirection()
+        {
+            if (detalz > 0)
+            {
+                return Direction.IN;
+            }
+            else
+            {
+                return Direction.OUT;
+            }
+        }
+
+        // current position
+        Vector2 prePos;
+        Vector2 Position;
+        //public float scale = 1.0f;
+
+        public float depthpos = 0;
+
+        int deltax = 1;
+        int deltay = 1;
+        int factorx = 1;
+        int factory = 1;
+        float detalz = 1;
+
+        Random radom;
+        int maxRatio = 8;
+        public void Initialize(Rectangle boundary, int seed)
+        {
+            radom = new Random(seed);
+            boundaryRect = boundary;
+
+            // radom a intial position
+            Position.X = boundary.Width / 2;
+            Position.Y = boundary.Height / 2;
+
+            Rectangle startSpace = new Rectangle(0, 0 + (int)(0.9 * boundaryRect.Height),
+                boundaryRect.Width, (int)(boundaryRect.Height * 0.1));
+
+            LeadDirection(Direction.RANDOM, Direction.UP);
+            RadomStartPos(startSpace);
+
+        }
+
+        public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        public float GetDepth()
+        {
+            return depthpos;
+        }
+        public PilotType GetType()
+        {
+            return PilotType.DUCKNORMAL;
+        }
+
+        void LeadDirection(Direction hor, Direction ver)
+        {
+            if (hor == Direction.RANDOM)
+            {
+                if (radom.Next(10) > 5)
+                {
+                    deltax = -deltax;
+                }
+            }
+            else if (hor == Direction.LEFT)
+            {
+                if (deltax < 0)
+                {
+                    deltax = -deltax;
+                }
+            }
+            else
+            {
+                if (deltax > 0)
+                {
+                    deltax = -deltax;
+                }
+            }
+
+            if (ver == Direction.RANDOM)
+            {
+                if (radom.Next(10) > 5)
+                {
+                    deltay = -deltay;
+                }
+            }
+            else if (ver == Direction.UP)
+            {
+                if (deltay > 0)
+                {
+                    deltay = -deltay;
+                }
+            }
+            else
+            {
+                if (deltay < 0)
+                {
+                    deltay = -deltay;
+                }
+            }
+        }
+
+        void RadomStartPos(Rectangle startSpace)
+        {
+            //
+            Position.X = radom.Next(startSpace.Width);
+            Position.Y = startSpace.Y + radom.Next(startSpace.Height);
+            prePos = Position;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (Position.X >= (boundaryRect.Right - 10) || Position.X <= boundaryRect.X + 10)
+            {
+                deltax = -deltax;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+            if (Position.Y >= boundaryRect.Bottom - 10 || Position.Y <= boundaryRect.Y + 10)
+            {
+                deltay = -deltay;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+            prePos = Position;
+            Position.X += ((float)deltax) * factorx;
+            Position.Y += ((float)deltay) * factory;
+
             depthpos += detalz;
             if (depthpos < 0 || depthpos > 50)
             {

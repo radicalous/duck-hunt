@@ -177,9 +177,9 @@ namespace DuckHuntCommon
             objlst.Add(new KeyboardModel());
             objlst.Add(new KeyItemModel());
             objlst.Add(new CheckBoxModel());
-            objlst.Add(new PandaModel());
+            //objlst.Add(new PandaModel());
             objlst.Add(new ButtonModel());
-            objlst.Add(new FireworkModel());
+            //objlst.Add(new FireworkModel());
             objlst.Add(new PlaneModel());
             objlst.Add(new BaloonModel());
 
@@ -460,19 +460,8 @@ namespace DuckHuntCommon
                 ducks = null;
                 return false;
             }
-            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
-            ducks.Add(duck);
-            duckcount++;
-
-            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
-            ducks.Add(duck);
-            duckcount++;
-
-            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
-            ducks.Add(duck);
-            duckcount++;
-
-            duck = new DuckModel(PilotType.DUCKLINE, "charpter1");
+            string name = "chapter1_" + duckcount.ToString();
+            duck = new DuckModel(PilotType.DUCKNORMAL, name);
             ducks.Add(duck);
             duckcount++;
 
@@ -503,9 +492,10 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            for (int i = 0; i < 4; i++)
+            string name = "chapter2_" + duckcount.ToString();
+            for (int i = 0; i < 2; i++)
             {
-                duck = new DuckModel(PilotType.DUCKEIGHT, "charpter2");
+                duck = new DuckModel(PilotType.DUCKNORMAL, name);
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -537,12 +527,13 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter3");
+            string name = "chapter3_" + duckcount.ToString();
+
+            duck = new DuckModel(PilotType.DUCKNORMAL, name);
             ducks.Add(duck);
             duckcount++;
 
-
-            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter3");
+            duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
@@ -573,12 +564,13 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            duck = new DuckModel(PilotType.DUCKSIN, "charpter4");
+            string name = "chapter4_" + duckcount.ToString();
+
+            duck = new DuckModel(PilotType.DUCKSIN, name);
             ducks.Add(duck);
             duckcount++;
 
-
-            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter4");
+            duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
@@ -609,12 +601,13 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            duck = new DuckModel(PilotType.DUCKSIN, "charpter5");
+            string name = "chapter5_" + duckcount.ToString();
+
+            duck = new DuckModel(PilotType.DUCKSIN, name);
             ducks.Add(duck);
             duckcount++;
 
-
-            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter5");
+            duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
@@ -650,19 +643,22 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            duck = new DuckModel(PilotType.DUCKSIN, "charpter6");
+            string name = "chapter6_" + duckcount.ToString();
+
+
+            duck = new DuckModel(PilotType.DUCKSIN, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter6");
+            duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKELLIPSE, "charpter6");
+            duck = new DuckModel(PilotType.DUCKELLIPSE, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKCIRCLE, "charpter6");
+            duck = new DuckModel(PilotType.DUCKCIRCLE, name);
             ducks.Add(duck);
             duckcount++;
 
@@ -694,23 +690,25 @@ namespace DuckHuntCommon
                 return false;
             }
 
-            duck = new DuckModel(PilotType.DUCKSIN, "charpter7");
+            string name = "chapter7_" + duckcount.ToString();
+
+            duck = new DuckModel(PilotType.DUCKSIN, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKEIGHT, "charpter7");
+            duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKELLIPSE, "charpter7");
+            duck = new DuckModel(PilotType.DUCKELLIPSE, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKCIRCLE, "charpter7");
+            duck = new DuckModel(PilotType.DUCKCIRCLE, name);
             ducks.Add(duck);
             duckcount++;
 
-            duck = new DuckModel(PilotType.DUCKNORMAL, "charpter7");
+            duck = new DuckModel(PilotType.DUCKNORMAL, name);
             ducks.Add(duck);
             duckcount++;
 
@@ -753,9 +751,11 @@ namespace DuckHuntCommon
                 return false;
             }
 
+            string name = "chapter8_" + duckcount.ToString();
+
             for (int i = 0; i < 6; i++)
             {
-                duck = new DuckModel(pilotypelist[pilotTypeIndex], "charpter7");
+                duck = new DuckModel(pilotypelist[pilotTypeIndex], name);
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -802,10 +802,12 @@ namespace DuckHuntCommon
                 return false;
             }
 
+            string name = "chapter9_" + duckcount.ToString();
+
             int pilottypeindex = 0;
             for (int i = 0; i < 7; i++)
             {
-                duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], "charpter9");
+                duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
                 duckcount++;
                 pilottypeindex++;
@@ -856,10 +858,12 @@ namespace DuckHuntCommon
             }
              */
 
+            string name = "chapter10_" + duckcount.ToString();
+
             int pilottypeindex = 0;
             for (int i = 0; i < 7; i++)
             {
-                duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], "charpter10");
+                duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
                 duckcount++;
                 pilottypeindex++;
@@ -889,14 +893,12 @@ namespace DuckHuntCommon
         public GameChapterForever()
         {
             pilotypelist = new List<PilotType>();
-            /*
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
            // pilotypelist.Add(PilotType.DUCKSIN);
             pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
             pilotypelist.Add(PilotType.DUCKNORMAL);
-             */
             pilotypelist.Add(PilotType.DUCKLINE);
 
         }
@@ -907,7 +909,7 @@ namespace DuckHuntCommon
 
             DuckModel duck;
 
-            string name = "chapter10_" + concurrentduck.ToString();
+            string name = "chapterforever_" + concurrentduck.ToString();
             for (int i = 0; i < concurrentduck; i++)
             {
                 int pilottypeindex = i % duckstyle;
@@ -943,7 +945,6 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
-                /*
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -964,7 +965,6 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter10();
                 chapters.Add(chapter);
-                */
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
             }
@@ -1070,7 +1070,7 @@ namespace DuckHuntCommon
         Rectangle pauseButtonSpace;
 
 
-        FireworkModel firework;
+        //FireworkModel firework;
         Rectangle fireworkSpace;
 
 
@@ -1197,8 +1197,8 @@ namespace DuckHuntCommon
             NewScoreBoard();
             NewAssistBoard();
 
-            firework = new FireworkModel();
-            firework.Initialize(null, fireworkSpace, 0);
+           // firework = new FireworkModel();
+           // firework.Initialize(null, fireworkSpace, 0);
         }
 
 
@@ -1209,7 +1209,7 @@ namespace DuckHuntCommon
             {
                 objlst.Add(dog);
                 //objlst.Add(panda);
-                objlst.Add(plane);
+
 
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
@@ -1217,8 +1217,15 @@ namespace DuckHuntCommon
                 //objlst.Add(panda);
                 objlst.Add(pause);
                 //objlst.Add(firework);
+                if (plane != null)
+                {
+                    objlst.Add(plane);
+                }
+                if (baloon != null)
+                {
+                    objlst.Add(baloon);
+                }
                 //objlst.Add(plane);
-                objlst.Add(baloon);
                 foreach (DuckModel duck in duckList)
                 {
                     objlst.Add(duck);
@@ -1257,8 +1264,22 @@ namespace DuckHuntCommon
             backgroundPage.Update(gametime);
             //panda.Update(gametime);
             //firework.Update(gametime);
-            plane.Update(gametime);
-            baloon.Update(gametime);
+            if (plane != null)
+            {
+                plane.Update(gametime);
+                if (plane.Gone)
+                {
+                    plane = null;
+                }
+            }
+            if (baloon != null)
+            {
+                baloon.Update(gametime);
+                if (baloon.Gone)
+                {
+                    baloon = null;
+                }
+            }
 
             if (phase == GAME_PHASE.GAME_SELECT)
             {
@@ -1267,7 +1288,7 @@ namespace DuckHuntCommon
             {
                 //
                 dog.Update(gametime);
-                if (dog.Gone)
+                if (dog.Gone || true)
                 {
                     // show duck
                     phase = GAME_PHASE.DUCK_FLY;
@@ -1335,6 +1356,37 @@ namespace DuckHuntCommon
             }
         }
 
+        int previousTotalScore = 0;
+        int previousHitCount = 0;
+        void ShowEastEgg()
+        {
+            if (previousTotalScore < 1000 && scoreBoard.TotalScore >= 1000)
+            {
+                // show plane
+                if (plane == null)
+                {
+                    plane = new PlaneModel();
+
+                    plane.Initialize(null, this.duckFlySpace, 0);
+                }
+            }
+
+            if (hitBoard.HitCount - previousHitCount > 20)
+            {
+                // show baloon
+                previousHitCount = hitBoard.HitCount;
+                if (baloon == null)
+                {
+                    baloon = new BaloonModel();
+                    baloon.Initialize(null, planeSpace, 0);
+                }
+
+            }
+
+
+            previousTotalScore = scoreBoard.TotalScore;
+        }
+
         public void Click(List<Vector2> clickpositionlist)
         {
 
@@ -1367,6 +1419,14 @@ namespace DuckHuntCommon
                 {
                     duck.Shoot(bullet);
                 }
+                if (plane != null)
+                {
+                    plane.Shoot(bullet);
+                }
+                if (baloon != null)
+                {
+                    baloon.Shoot(bullet);
+                }
 
                 bullet.AdjustForFlyEffect();
                 bulletsList.Add(bullet);
@@ -1375,6 +1435,7 @@ namespace DuckHuntCommon
                 {
                     //
                     float score = 100;
+                    bool showplane = false;
                     for (int i = 0; i < bullet.GetShootDucks().Count; i++)
                     {
                         score = 100;
@@ -1394,6 +1455,7 @@ namespace DuckHuntCommon
                         ii++;
                     }
 
+                    ShowEastEgg();
                 }
 
             }
@@ -1410,14 +1472,18 @@ namespace DuckHuntCommon
             dog.Initialize(null, dogRunSpace, 0);
             dog.StartPilot();
 
+            /*
             panda = new PandaModel();
+            panda.Initialize(null, dogRunSpace, 0);
+             */
+
+            /*
             plane = new PlaneModel();
             plane.Initialize(null, planeSpace, 0);
 
             baloon = new BaloonModel();
             baloon.Initialize(null, planeSpace, 0);
-
-            panda.Initialize(null, dogRunSpace, 0);
+            */
         }
 
         void NewScoreBoard()
