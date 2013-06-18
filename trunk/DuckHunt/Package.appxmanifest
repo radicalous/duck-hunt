@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="85af78aa-89f3-40a1-8a4c-cfbf79f1188b" Publisher="CN=pennerz" Version="1.0.0.0" />
+  <Identity Name="85af78aa-89f3-40a1-8a4c-cfbf79f1188b" Publisher="CN=pennerz" Version="1.0.0.2" />
   <Properties>
     <DisplayName>DuckHunt</DisplayName>
     <PublisherDisplayName>pennerz</PublisherDisplayName>

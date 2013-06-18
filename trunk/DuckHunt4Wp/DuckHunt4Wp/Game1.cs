@@ -36,7 +36,8 @@ namespace DuckHunt4Wp
             Content.RootDirectory = "Content";
 
             // Frame rate is 30 fps by default for Windows Phone.
-            TargetElapsedTime = TimeSpan.FromTicks(/*222222*/166666/*333333*/);
+            IsFixedTimeStep = true;
+            TargetElapsedTime = TimeSpan.FromTicks(/*222222*//*166666*/166666/*333333*/);
 
             // Extend battery life under lock.
             InactiveSleepTime = TimeSpan.FromSeconds(1);
