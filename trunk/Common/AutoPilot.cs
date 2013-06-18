@@ -41,6 +41,7 @@ namespace GameCommon
         Dictionary<string, pilotGroupInfo> duckSinPilotGroup = new Dictionary<string, pilotGroupInfo>();
         Dictionary<string, pilotGroupInfo> duckLinePilotGroup = new Dictionary<string, pilotGroupInfo>();
 
+        static int count = 0;
         static PilotManager instance;
         public PilotManager()
         {
@@ -120,7 +121,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -154,7 +155,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -187,7 +188,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -220,7 +221,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -253,7 +254,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -286,7 +287,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -319,7 +320,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -352,7 +353,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -387,7 +388,7 @@ namespace GameCommon
                                 pgi.idx = 0;
                                 pgi.endpoint = new Point(0, 0);
                                 DateTime now = System.DateTime.Now;
-                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second + count++;
                                 Random rdm = new Random(s);
                                 pgi.endpoint.X = rdm.Next(-50,50);
                                 pgi.endpoint.Y = rdm.Next(-50,50);
@@ -969,7 +970,7 @@ namespace GameCommon
         public const double Pi = 3.14159;
         public const int Ratio = 2;
         public const int MaxLineSteps = 80;
-        public const int MaxCurveSteps = 200;
+        public const int MaxCurveSteps = 400;
     }
 
 	class DuckPilot : AiPilot
