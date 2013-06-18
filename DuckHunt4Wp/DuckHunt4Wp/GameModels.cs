@@ -1658,8 +1658,11 @@ namespace DuckHuntCommon
                 //scale = autoPilot.scale;
                 scale = 1 - flyduckPilot.GetDepth() * 1.0f / 100;
             }
-
+#if WINDOWS_PHONE
+            return scale * 1.3f;
+#else
             return scale;
+#endif
         }
 
 
@@ -4277,7 +4280,7 @@ namespace DuckHuntCommon
             planeLeftTop.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2 * this.GetSacle();
             planeLeftTop.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2 * this.GetSacle();
 
-            Vector2 p1, p2, p3, p4;
+            Vector2 p1 = Vector2.Zero, p2 = Vector2.Zero, p3 = Vector2.Zero, p4 = Vector2.Zero;
             p1.X = planeLeftTop.X + 273 * GetSacle();
             p1.Y = planeLeftTop.Y + 119 * GetSacle();
             p2.X = planeLeftTop.X + 332 * GetSacle();

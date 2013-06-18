@@ -570,7 +570,7 @@ namespace GameCommon
         public void Update(GameTime gameTime)
         {
             // Update the elapsed time
-            if (Position.X >= (boundaryRect.Right-10) || Position.X <= boundaryRect.X+10)
+            if (deltax < 0 && Position.X <= boundaryRect.X + 10)
             {
                 deltax = -deltax;
                 factorx = radom.Next(maxRatio);
@@ -584,7 +584,37 @@ namespace GameCommon
                     factory = 1;
                 }
             }
-            if (Position.Y >= boundaryRect.Bottom-10 || Position.Y <= boundaryRect.Y+10)
+            if (deltax > 0 && Position.X >= boundaryRect.Right - 10)
+            {
+                deltax = -deltax;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+
+            if ( deltay > 0 && Position.Y >= boundaryRect.Bottom-10)
+            {
+                deltay = -deltay;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+
+            if (deltay < 0 &&  Position.Y <= boundaryRect.Y + 10)
             {
                 deltay = -deltay;
                 factorx = radom.Next(maxRatio);
