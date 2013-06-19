@@ -16,16 +16,25 @@ namespace GameCommon
                             CLOUD,
     };
 
-    interface AiPilot
+    abstract class AiPilot
     {
-        void Initialize(Rectangle boundary, int seed);
-        void Update(GameTime gameTime);
-        Direction GetHorizationDirection();
-        Direction GetZDirection();
-        float GetDepth();
-        Vector2 GetPosition();
-        PilotType GetType();
+        public abstract  void Initialize(Rectangle boundary, int seed);
+        public abstract  void SetStartPos(Vector2 pos);
+        public abstract  void Update(GameTime gameTime);
+        public abstract  Direction GetHorizationDirection();
+        public abstract  Direction GetZDirection();
+        public abstract  float GetDepth();
+        public abstract  Vector2 GetPosition();
+        public abstract  PilotType GetType();
     }
+
+    abstract class BasePilot: AiPilot
+    {
+        override public void SetStartPos(Vector2 pos)
+        {
+        }
+    }
+
 
     struct pilotGroupInfo
     {
@@ -438,13 +447,13 @@ namespace GameCommon
     }
 
 
-    class DuckNormalPilot: AiPilot
+    class DuckNormalPilot: BasePilot
     {
 
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
 
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             if (deltax > 0)
             {
@@ -455,7 +464,7 @@ namespace GameCommon
                 return Direction.LEFT;
             }
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             if (detalz > 0)
             {
@@ -482,7 +491,7 @@ namespace GameCommon
 
         Random radom;
         int maxRatio = 8;
-        public void Initialize(Rectangle boundary, int seed)
+        override public void Initialize(Rectangle boundary, int seed)
         {
             radom = new Random(seed);
             boundaryRect = boundary;
@@ -499,16 +508,16 @@ namespace GameCommon
 
         }
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
-        public float GetDepth()
+        override public float GetDepth()
         {
             return depthpos;
         }
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DUCKNORMAL;
         }
@@ -568,7 +577,7 @@ namespace GameCommon
             prePos = Position;
         }
 
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
             // Update the elapsed time
             if (deltax < 0 && Position.X <= boundaryRect.X + 10)
@@ -652,13 +661,13 @@ namespace GameCommon
     }
 
 
-    class DuckNormalDepthPilot : AiPilot
+    class DuckNormalDepthPilot : BasePilot
     {
 
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
 
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             if (deltax > 0)
             {
@@ -669,7 +678,7 @@ namespace GameCommon
                 return Direction.LEFT;
             }
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             if (detalz > 0)
             {
@@ -696,7 +705,7 @@ namespace GameCommon
 
         Random radom;
         int maxRatio = 8;
-        public void Initialize(Rectangle boundary, int seed)
+        override public void Initialize(Rectangle boundary, int seed)
         {
             radom = new Random(seed);
             boundaryRect = boundary;
@@ -713,16 +722,16 @@ namespace GameCommon
 
         }
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
-        public float GetDepth()
+        override public float GetDepth()
         {
             return depthpos;
         }
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DUCKNORMAL;
         }
@@ -782,7 +791,7 @@ namespace GameCommon
             prePos = Position;
         }
 
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
             // Update the elapsed time
             if (Position.X >= (boundaryRect.Right - 10) || Position.X <= boundaryRect.X + 10)
@@ -834,7 +843,7 @@ namespace GameCommon
     }
 
 
-    class DuckDeadPilot: AiPilot
+    class DuckDeadPilot: BasePilot
     {
         // The boundary
         Rectangle boundaryRect = new Rectangle();
@@ -850,43 +859,40 @@ namespace GameCommon
             Position = pos;
         }
 
-        public void Initialize(Rectangle space, int seed)
+        override public void Initialize(Rectangle space, int seed)
         {
             boundaryRect = space;
         }
 
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
 
-        public float GetDepth()
+        override public float GetDepth()
         {
             return 0f;
         }
 
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DUCKDEAD;
         }
-        public void Initialize(Rectangle boundary)
-        {
-            boundaryRect = boundary;
-        }
+        
 
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             return Direction.RIGHT;
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             return Direction.IN;
         }
 
 
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
 
             // Update the elapsed time
@@ -900,7 +906,7 @@ namespace GameCommon
         }
     }
 
-    class DuckFlyawayPilot : AiPilot
+    class DuckFlyawayPilot : BasePilot
     {
         // The boundary
         Rectangle boundaryRect = new Rectangle();
@@ -916,44 +922,40 @@ namespace GameCommon
             Position = pos;
         }
 
-        public void Initialize(Rectangle space, int seed)
+        override public void Initialize(Rectangle space, int seed)
         {
             boundaryRect = space;
         }
 
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
         float depthpos = 0;
-        public float GetDepth()
+        override public float GetDepth()
         {
             return depthpos;
         }
 
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DUCKFLYAWAY;
         }
 
-        public void Initialize(Rectangle boundary)
-        {
-            boundaryRect = boundary;
-        }
 
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             return Direction.RIGHT;
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             return Direction.IN;
         }
 
 
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
             // Update the elapsed time
             if (stopcnt < 10)
@@ -973,7 +975,7 @@ namespace GameCommon
         public const int MaxCurveSteps = 400;
     }
 
-	class DuckPilot : AiPilot
+	class DuckPilot : BasePilot
     {
         protected Rectangle boundaryRect = new Rectangle();
 
@@ -998,7 +1000,7 @@ namespace GameCommon
             max_lineSteps = Constants.MaxLineSteps + idx * 10;
         }
 
-        public void Initialize(Rectangle space, int seed)
+        override public void Initialize(Rectangle space, int seed)
         {
             boundaryRect = space;
             Random rdm = new Random(seed);
@@ -1020,32 +1022,32 @@ namespace GameCommon
             Position = start_pos;
         }
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
-        public float GetDepth()
+        override public float GetDepth()
         {
             return depthpos;
         }
 
-        public virtual PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DUCKEIGHT;
         }
 
-        public virtual Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             return start_pos.X < end_pos.X ? Direction.RIGHT : Direction.LEFT;
         }
 
-        public virtual Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             return Direction.IN;
         }
 
-        public virtual void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
             if (lineStep <= 0)
             {
@@ -1532,7 +1534,7 @@ namespace GameCommon
 
 
 
-    class DogPilot: AiPilot
+    class DogPilot: BasePilot
     {
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
@@ -1575,40 +1577,40 @@ namespace GameCommon
 
         }
 
-        public void Initialize(Rectangle dogspace, int seed)
+        override public void Initialize(Rectangle dogspace, int seed)
         {
             boundaryRect = dogspace;
             Position.X = dogspace.Left;
             Position.Y = dogspace.Bottom;
         }
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
 
         float depth = 0;
-        public float GetDepth()
+        override public float GetDepth()
         {
             return depth;
         }
 
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DOGSEEK;
         }
 
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             return Direction.RIGHT;
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             return Direction.IN;
         }
 
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
 
             // Update the elapsed time
@@ -1637,7 +1639,7 @@ namespace GameCommon
 
 
 
-    class DogJumpPilot: AiPilot
+    class DogJumpPilot: BasePilot
     {
         // The boundary
         public Rectangle boundaryRect ;
@@ -1649,17 +1651,17 @@ namespace GameCommon
 
         int direction = 0; // 0, up, 1, down
 
-        public void Initialize(Rectangle jumpspace, int seed)
+        override public void Initialize(Rectangle jumpspace, int seed)
         {
             boundaryRect = jumpspace;
         }
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DOGJUMP;
         }
@@ -1668,20 +1670,20 @@ namespace GameCommon
             //boundaryRect = pilot.boundaryRect;
             Position = pos;
         }
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             return Direction.RIGHT;
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             return Direction.IN;
         }
-        public float GetDepth()
+        override public float GetDepth()
         {
             return 0f;
         }
 
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
 
             // Update the elapsed time
@@ -1702,7 +1704,7 @@ namespace GameCommon
     }
 
 
-    class DogShowPilot: AiPilot
+    class DogShowPilot: BasePilot
     {
        // The boundary
         public Rectangle boundaryRect ;
@@ -1721,37 +1723,37 @@ namespace GameCommon
             Position = pos;
         }
         
-        public void Initialize(Rectangle space, int seed)
+        override public void Initialize(Rectangle space, int seed)
         {
             boundaryRect = space;
         }
 
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.DOGSHOW;
         }
 
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             return Direction.RIGHT;
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             return Direction.IN;
         }
 
-        public float GetDepth()
+        override public float GetDepth()
         {
             return 0f;
         }
 
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
 
             // Update the elapsed time
@@ -1771,7 +1773,7 @@ namespace GameCommon
         }
     }
 
-    class CloudPilot: AiPilot
+    class CloudPilot: BasePilot
     {
         // The boundary
         public Rectangle boundaryRect = new Rectangle();
@@ -1792,11 +1794,11 @@ namespace GameCommon
         Random radom;
         int maxRatio = 8;
 
-        public PilotType GetType()
+        override public PilotType GetType()
         {
             return PilotType.CLOUD;
         }
-        public void Initialize(Rectangle boundary, int seed)
+        override public void Initialize(Rectangle boundary, int seed)
         {
             radom = new Random(seed);
             boundaryRect = boundary;
@@ -1806,21 +1808,21 @@ namespace GameCommon
             Position.Y =  100;
 
         }
-        public Direction GetHorizationDirection()
+        override public Direction GetHorizationDirection()
         {
             return Direction.RIGHT;
         }
-        public Direction GetZDirection()
+        override public Direction GetZDirection()
         {
             return Direction.IN;
         }
 
-        public Vector2 GetPosition()
+        override public Vector2 GetPosition()
         {
             return Position;
         }
 
-        public float GetDepth()
+        override public float GetDepth()
         {
             return depthpos;
         }
@@ -1834,7 +1836,7 @@ namespace GameCommon
         }
 
         int elapsedTime = 0;
-        public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime)
         {
             // Update the elapsed time
             if (Position.X >= (boundaryRect.Right + 100) )
