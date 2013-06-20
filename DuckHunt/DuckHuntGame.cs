@@ -991,6 +991,8 @@ namespace DuckHuntCommon
     class GameChapterManager
     {
         List<GameChapter> chapters;
+        GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
+
         public GameChapterManager()
         {
 
@@ -1058,6 +1060,13 @@ namespace DuckHuntCommon
             }
             return true;
         }
+
+        public bool GetBonusChapter(out GameChapter bounusChapter)
+        {
+            bounusChapter = curveChapter;
+            return true;
+        }
+
         public bool GetNextChapter(out GameChapter chapter)
         {
             chapter = null;
@@ -1519,6 +1528,18 @@ namespace DuckHuntCommon
                     ShowEastEgg();
                 }
 
+                if (bullet.GetBaloon() != null)
+                {
+                    // show award
+                    AddBonusDuck(clickpos);
+                }
+
+                if (bullet.GetPlane() != null)
+                {
+                    // show award
+                    AddBonusDuck(clickpos);
+                }
+
             }
         }
 
@@ -1634,6 +1655,37 @@ namespace DuckHuntCommon
                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                 duck.Initialize(null, duckFlySpace, s + (i++) * 7);
                 duck.StartPilot();
+                duckList.Add(duck);
+
+            }
+        }
+
+
+        void AddBonusDuck(Vector2 startPos)
+        {
+            if (duckList == null)
+            {
+                return ;
+            }
+
+            List<DuckModel> ducks = null;
+            GameChapter bonousChapter = null;
+            gameChapterMgr.GetBonusChapter(out bonousChapter);
+            bonousChapter.GetDuckList(out ducks);
+
+
+            if (ducks == null)
+            {
+                return;
+            }
+
+            int i = 0;
+            DateTime now = System.DateTime.Now;
+            foreach (DuckModel duck in ducks)
+            {
+                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                duck.StartPilot(startPos);
                 duckList.Add(duck);
 
             }

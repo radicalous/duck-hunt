@@ -62,6 +62,10 @@ Content\Graphics\font_15.xnb
 Content\Graphics\font_20.xnb
 Content\Graphics\font_25.xnb
 Content\Graphics\font_30.xnb
+Content\Graphics\red_bird.xnb
+Content\Graphics\red_bird_dead.xnb
+Content\Graphics\red_bird_dying.xnb
+Content\Graphics\red_bird_r.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
 Content\DuckHunt.xml
