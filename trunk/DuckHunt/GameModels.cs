@@ -1311,6 +1311,8 @@ namespace DuckHuntCommon
             flyduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKNORMAL);
             anationInfoList = new List<AnimationInfo>();
 
+            // a. normal duck
+
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 105;
@@ -1377,11 +1379,14 @@ namespace DuckHuntCommon
                     break;
                 default:
                     {
+                        duckstyle = 3;
                     }
                     break;
 
             }
             anationInfoList = new List<AnimationInfo>();
+
+            // a. normal duck
 
             // 0. flying duck
             AnimationInfo animationInfo = new AnimationInfo();
@@ -1424,6 +1429,8 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
 
+            // b. blue duck 
+
             // 0. flying duck
             animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 105;
@@ -1465,6 +1472,8 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
 
 
+            // c red duck
+
             // 0. flying duck
             animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 105;
@@ -1499,6 +1508,49 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
+            // animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            // animationInfo.frameCount = 4;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+            // d. red bird
+
+
+            // 0. flying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 6;
+            //animationInfo.frameWidth = 180;
+            // animationInfo.frameHeight = 202;
+            //animationInfo.frameCount = 4;
+            animationInfo.frameTime = 100;
+            anationInfoList.Add(animationInfo);
+
+            //1. dying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 3000;
+            anationInfoList.Add(animationInfo);
+
+            // 2. dead duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            //animationInfo.frameWidth = 180;
+            //animationInfo.frameHeight = 202;
+            animationInfo.frameCount = 2;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+            // 3. reverse fly duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 6;
             // animationInfo.frameWidth = 180;
             // animationInfo.frameHeight = 202;
             // animationInfo.frameCount = 4;
@@ -1628,6 +1680,33 @@ namespace DuckHuntCommon
             resourceItm.path = "Graphics\\duck_red_flying_r";
             //resourceItm.path = "Graphics\\duckflying";
             resourceList.Add(resourceItm);
+
+
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\red_bird_r";
+            //resourceItm.path = "Graphics\\duckrflying";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\red_bird_dying";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\red_bird_dead";
+            //resourceItm.path = "Graphics\\duckdying";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\red_bird";
+            //resourceItm.path = "Graphics\\duckflying";
+            resourceList.Add(resourceItm);
+
+
 
 
             return resourceList;
@@ -1763,6 +1842,13 @@ namespace DuckHuntCommon
         /// </summary>
 
         public void StartPilot()
+        {
+            // Set the starting position of the player around the middle of the screen and to the back
+
+            flyduckPilot.Initialize(duckspace, randomseed);
+        }
+
+        public void StartPilot(Vector2 pos)
         {
             // Set the starting position of the player around the middle of the screen and to the back
 
@@ -2379,6 +2465,16 @@ namespace DuckHuntCommon
             }
 
             return null;
+        }
+
+        public BaloonModel GetBaloon()
+        {
+            return baloon;
+        }
+
+        public PlaneModel GetPlane()
+        {
+            return plane;
         }
 
         public void SetTarget(PlaneModel plane)
@@ -4277,7 +4373,7 @@ namespace DuckHuntCommon
             planeLeftTop.X -= anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2 * this.GetSacle();
             planeLeftTop.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2 * this.GetSacle();
 
-            Vector2 p1, p2, p3, p4;
+            Vector2 p1 = Vector2.Zero, p2 = Vector2.Zero, p3 = Vector2.Zero, p4 = Vector2.Zero;
             p1.X = planeLeftTop.X + 273 * GetSacle();
             p1.Y = planeLeftTop.Y + 119 * GetSacle();
             p2.X = planeLeftTop.X + 332 * GetSacle();
@@ -4326,7 +4422,7 @@ namespace DuckHuntCommon
         Vector2 relativePos;
 
         bool gone = false;
-
+        bool active = true;
 
 
         Vector2 RelativePosition
@@ -4441,7 +4537,14 @@ namespace DuckHuntCommon
 
         public void Shoot(BulletModel bullet)
         {
+            if (!active)
+            {
+                return;
+            }
             // check if it's shoot
+
+            // if shoot, 
+            active = false;
 
         }
     }

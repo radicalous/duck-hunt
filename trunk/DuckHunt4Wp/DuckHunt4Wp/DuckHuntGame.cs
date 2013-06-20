@@ -486,7 +486,7 @@ namespace DuckHuntCommon
             ducks = new List<DuckModel>();
 
             DuckModel duck;
-            if (duckcount >= 8)
+            if (duckcount >= 6)
             {
                 ducks = null;
                 return false;
@@ -504,7 +504,7 @@ namespace DuckHuntCommon
 
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 8)
+            if (duckcount >= 6)
             {
                 return true;
             }
@@ -888,12 +888,62 @@ namespace DuckHuntCommon
         }
     }
 
+
+    class GameChapterFunShowCurve : GameChapter
+    {
+        int duckcount = 0;
+        List<PilotType> pilotypelist;
+        int pilottypeindex = 0;
+
+        public GameChapterFunShowCurve()
+        {
+            pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKCIRCLE);
+            pilotypelist.Add(PilotType.DUCKELLIPSE);
+            pilotypelist.Add(PilotType.DUCKEIGHT);
+        }
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            if (pilottypeindex >= pilotypelist.Count)
+            {
+                ducks = null;
+                return false;
+            }
+
+            string name = "chaptershowfuncurve_" + duckcount.ToString();
+
+            for (int i = 0; i < 7; i++)
+            {
+                duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
+                ducks.Add(duck);
+                duckcount++;
+            }
+            pilottypeindex++;
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            if (pilottypeindex >= pilotypelist.Count)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
     class GameChapterForever : GameChapter
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
-        //int concurrentduck = 8;
-        int concurrentduck = 100;
+        int concurrentduck = 8;
+        //int concurrentduck = 100;
         //int duckstyle = 8;
         int duckstyle = 1;
         public GameChapterForever()
@@ -902,7 +952,7 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
-           // pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKSIN);
             pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
             pilotypelist.Add(PilotType.DUCKNORMAL);
             pilotypelist.Add(PilotType.DUCKLINE);
@@ -941,6 +991,8 @@ namespace DuckHuntCommon
     class GameChapterManager
     {
         List<GameChapter> chapters;
+        GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
+
         public GameChapterManager()
         {
 
@@ -962,6 +1014,10 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter5();
                 chapters.Add(chapter);
+
+                chapter = new GameChapterFunShowCurve();
+                chapters.Add(chapter);
+
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
                 chapter = new GameChapter7();
@@ -1004,6 +1060,13 @@ namespace DuckHuntCommon
             }
             return true;
         }
+
+        public bool GetBonusChapter(out GameChapter bounusChapter)
+        {
+            bounusChapter = curveChapter;
+            return true;
+        }
+
         public bool GetNextChapter(out GameChapter chapter)
         {
             chapter = null;
@@ -1465,6 +1528,18 @@ namespace DuckHuntCommon
                     ShowEastEgg();
                 }
 
+                if (bullet.GetBaloon() != null)
+                {
+                    // show award
+                    AddBonusDuck(clickpos);
+                }
+
+                if (bullet.GetPlane() != null)
+                {
+                    // show award
+                    AddBonusDuck(clickpos);
+                }
+
             }
         }
 
@@ -1585,11 +1660,42 @@ namespace DuckHuntCommon
             }
         }
 
+
+        void AddBonusDuck(Vector2 startPos)
+        {
+            if (duckList == null)
+            {
+                return ;
+            }
+
+            List<DuckModel> ducks = null;
+            GameChapter bonousChapter = null;
+            gameChapterMgr.GetBonusChapter(out bonousChapter);
+            bonousChapter.GetDuckList(out ducks);
+
+
+            if (ducks == null)
+            {
+                return;
+            }
+
+            int i = 0;
+            DateTime now = System.DateTime.Now;
+            foreach (DuckModel duck in ducks)
+            {
+                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                duck.StartPilot(startPos);
+                duckList.Add(duck);
+
+            }
+        }
+
         public void NewGame(GameMode gameMode1)
         {
             gameMode = gameMode1;
             gameChapterMgr.Init(gameMode);
-            leftTime.SetTime(5 * 60);
+            leftTime.SetTime(2 * 60);
             lostDuck.ResetLostCount();
             phase = GAME_PHASE.SEEK_DUCK;
             //phase = GAME_PHASE.DUCK_FLY;

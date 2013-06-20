@@ -101,6 +101,10 @@
     <None Include="Content\Graphics\plutojumpup.xnb" />
     <None Include="Content\Graphics\plutoseeking.xnb" />
     <None Include="Content\Graphics\pluto_found.xnb" />
+    <None Include="Content\Graphics\red_bird.xnb" />
+    <None Include="Content\Graphics\red_bird_dead.xnb" />
+    <None Include="Content\Graphics\red_bird_dying.xnb" />
+    <None Include="Content\Graphics\red_bird_r.xnb" />
     <None Include="Content\Graphics\sky_2.xnb" />
     <None Include="Content\Graphics\SpriteFontTexture2.xnb" />
     <None Include="Content\Sound\dog_found.xnb" />
