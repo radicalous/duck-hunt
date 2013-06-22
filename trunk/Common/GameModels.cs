@@ -3494,6 +3494,10 @@ namespace DuckHuntCommon
     }
 
 
+    enum ButtonStyle
+    {
+        RESTART, PAUSE
+    }
 
     class ButtonModel : BaseModel
     {
@@ -3503,6 +3507,8 @@ namespace DuckHuntCommon
         bool _checked = true;
 
         List<AnimationInfo> anationInfoList;
+
+        ButtonStyle style = ButtonStyle.PAUSE;
 
         public ButtonModel()
         {
@@ -3524,7 +3530,41 @@ namespace DuckHuntCommon
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
+            animationInfo.frameWidth = 128;
+            animationInfo.frameHeight = 128;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+        }
 
+
+        public ButtonModel(ButtonStyle style)
+        {
+            this.style = style;
+
+            space.Width = 256;
+            space.Height = 256;
+
+            anationInfoList = new List<AnimationInfo>();
+
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 128;
+            animationInfo.frameHeight = 128;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo.frameWidth = 128;
+            animationInfo.frameHeight = 128;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo.frameWidth = 128;
+            animationInfo.frameHeight = 128;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 300;
+            anationInfoList.Add(animationInfo);
         }
 
         override public ModelType Type()
@@ -3549,6 +3589,11 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\Pause";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\continue";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
@@ -3594,13 +3639,20 @@ namespace DuckHuntCommon
         }
         override public int GetCurrentAnimationIndex()
         {
-            if (_checked)
+            if (style == ButtonStyle.PAUSE)
             {
-                return 0;
+                if (_checked)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
             }
             else
             {
-                return 1;
+                return 2;
             }
         }
 
@@ -4449,9 +4501,9 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 535;
-            animationInfo.frameHeight = 211;
-            animationInfo.frameCount = 3;
+            animationInfo.frameWidth = 402;
+            animationInfo.frameHeight = 595;
+            animationInfo.frameCount = 1;
             animationInfo.frameTime = 300;
             anationInfoList.Add(animationInfo);
 
@@ -4480,7 +4532,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\flag";
+            resourceItm.path = "Graphics\\balloon";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -4505,7 +4557,7 @@ namespace DuckHuntCommon
         }
         override public float GetSacle()
         {
-            return 1.0f;
+            return 0.5f;
         }
 
 
@@ -4542,7 +4594,25 @@ namespace DuckHuntCommon
                 return;
             }
             // check if it's shoot
+            // calculate baloon center ( 190, 164), r = 150
+            Vector2 baloonCenter = GetAbsolutePosition();
+            baloonCenter.X += anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
+            baloonCenter.Y += anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
+            baloonCenter.Y -= anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2 * GetSacle();
+            baloonCenter.Y += 164 * GetSacle();
 
+            Vector2 bulletCenter = bullet.GetAbsolutePosition();
+            bulletCenter.X += bullet.GetSpace().Width / 2;
+            bulletCenter.Y += bullet.GetSpace().Height / 2;
+
+            Vector2 subpos = bulletCenter - baloonCenter;
+            float r = 150;
+            if (subpos.Length() > r * GetSacle())
+            {
+                return;
+            }
+
+            bullet.SetTarget(this);
             // if shoot, 
             active = false;
 

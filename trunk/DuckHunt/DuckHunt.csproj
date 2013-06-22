@@ -303,6 +303,9 @@
     <Content Include="Content\Graphics\red_bird_r.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Graphics\balloon.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\MenuItem.xnb" />
     <None Include="DuckHunt_TemporaryKey.pfx" />
   </ItemGroup>
