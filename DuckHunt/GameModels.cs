@@ -15,7 +15,7 @@ namespace DuckHuntCommon
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
         LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
-        FIREWORK,PLANE, BALOON
+        FIREWORK,PLANE, BALOON, LEVELUPBOARD
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -3494,6 +3494,122 @@ namespace DuckHuntCommon
     }
 
 
+
+    class LevelUpBoardModel : BaseModel
+    {
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        public LevelUpBoardModel()
+        {
+
+            space.Width = 300;
+            space.Height = 63;
+
+        }
+
+        override public ModelType Type()
+        {
+            return ModelType.LEVELUPBOARD;
+        }
+
+        override public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            base.Initialize(null, rangespace, seed);
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+#if  WINDOWS_PHONE
+            resourceItm.path = "Graphics\\gameFont_10";
+#else
+            resourceItm.path = "Graphics\\font";
+#endif
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        override public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        override public Rectangle GetSpace()
+        {
+            return space;
+        }
+        override public float GetSacle()
+        {
+            return 1;
+        }
+
+
+        override public void Update(GameTime gameTime)
+        {
+            // no update for itself
+            if (lefttime >= 0)
+            {
+                lefttime -= gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (lefttime < 0)
+            {
+                lefttime = 0;
+            }
+
+            // update child object
+        }
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return null;
+        }
+        override public int GetCurrentAnimationIndex()
+        {
+            return -1;
+        }
+
+        override public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
+        double lefttime = 0;
+        public void SetTime(int time)
+        {
+            lefttime = time;
+        }
+
+        public bool Show()
+        {
+            if (lefttime > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void Reset()
+        {
+            lefttime = 3;
+        }
+    }
+
     enum ButtonStyle
     {
         RESTART, PAUSE
@@ -4462,8 +4578,6 @@ namespace DuckHuntCommon
         }
     }
 
-
-
     class BaloonModel : BaseModel
     {
         // Animation representing the player
@@ -4615,7 +4729,6 @@ namespace DuckHuntCommon
             bullet.SetTarget(this);
             // if shoot, 
             active = false;
-
         }
     }
 
