@@ -1197,6 +1197,62 @@ namespace DuckHuntCommon
 
 
     // draw the score myself
+    class LevelUpBoardViewObject : CommonViewObject
+    {
+        LevelUpBoardModel model;
+        Vector2 scoreposition;
+        Color color1 = Color.Yellow;
+        public LevelUpBoardViewObject(ModelObject model1)
+        {
+            model = (LevelUpBoardModel)model1;
+            color1.A = 100;
+        }
+
+        public override void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            model = (LevelUpBoardModel)model1;
+
+            base.Init(orgpoint, defscale, model, objTextureLst, space);
+
+            scoreposition = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
+            scoreposition.X += 20 * DefScaleInScreen;
+            scoreposition.Y += 25 * DefScaleInScreen;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (!model.Show())
+            {
+                return;
+            }
+            // this rc is logic rc
+            Rectangle rc = model.GetSpace();
+            rc.Height = 63; // same height with hitboard
+            rc.Width = 200;
+            rc.Width = (int)(rc.Width * DefScaleInScreen);
+            rc.Height = (int)(rc.Height * DefScaleInScreen);
+            rc.X += (int)scoreposition.X; // scoreposition is position in local view
+            rc.Y += (int)scoreposition.Y;
+
+
+            // draw score
+            Vector2 pos1 = scoreposition;
+            pos1.Y += 10 * DefScaleInScreen;
+            pos1.X += 10 * DefScaleInScreen;
+
+            color1.A = 100;
+            spriteBatch.DrawString(base.ObjFontList[0], "Level Up", pos1, color1, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+    }
+
+
+    // draw the score myself
     class LostDuckBoardViewObject : CommonViewObject
     {
         LostDuckBoardModel model;

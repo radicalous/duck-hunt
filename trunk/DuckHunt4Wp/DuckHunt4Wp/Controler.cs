@@ -90,6 +90,11 @@ namespace DuckHuntCommon
                         scorelistobj = new ScoreListBoardViewObject(model);
                     }
                     break;
+                case ModelType.LEVELUPBOARD:
+                    {
+                        viewObject = new LevelUpBoardViewObject(model);
+                    }
+                    break;
                 case ModelType.DUCKICON:
                     {
                         commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);

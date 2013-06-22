@@ -80,6 +80,8 @@
     <None Include="Content\Graphics\bg_grass.xnb" />
     <None Include="Content\Graphics\bg_tree.xnb" />
     <None Include="Content\Graphics\carton_font.xnb" />
+    <None Include="Content\Graphics\checkbox_checked.xnb" />
+    <None Include="Content\Graphics\checkbox_unchecked.xnb" />
     <None Include="Content\Graphics\Cloud.xnb" />
     <None Include="Content\Graphics\duck_black_dead.xnb" />
     <None Include="Content\Graphics\duck_black_flying.xnb" />

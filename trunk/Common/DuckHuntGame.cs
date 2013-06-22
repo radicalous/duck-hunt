@@ -182,6 +182,7 @@ namespace DuckHuntCommon
             //objlst.Add(new FireworkModel());
             objlst.Add(new PlaneModel());
             objlst.Add(new BaloonModel());
+            objlst.Add(new LevelUpBoardModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -1142,6 +1143,8 @@ namespace DuckHuntCommon
         //FireworkModel firework;
         Rectangle fireworkSpace;
 
+        LevelUpBoardModel levelUp;
+        Rectangle levelUpSpace;
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
@@ -1266,6 +1269,12 @@ namespace DuckHuntCommon
             fireworkSpace.Width = firework1.GetSpace().Width;
             fireworkSpace.Height = firework1.GetSpace().Height;
 
+            LevelUpBoardModel levelUp1 = new LevelUpBoardModel();
+            levelUpSpace.X = rectBackground.Width / 2 - levelUp1.GetSpace().Width / 2;
+            levelUpSpace.Y = rectBackground.Height / 2 - levelUp1.GetSpace().Height / 2 - 100;
+            levelUpSpace.Width = levelUp1.GetSpace().Width;
+            levelUpSpace.Height = levelUp1.GetSpace().Height;
+
 
             NewScoreBoard();
             NewAssistBoard();
@@ -1282,7 +1291,7 @@ namespace DuckHuntCommon
             {
                 objlst.Add(dog);
                 //objlst.Add(panda);
-
+                objlst.Add(levelUp);
 
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
@@ -1290,6 +1299,11 @@ namespace DuckHuntCommon
                 //objlst.Add(panda);
                 objlst.Add(pause);
                 objlst.Add(restart);
+                if (levelUp.Show())
+                {
+                    objlst.Add(levelUp);
+                }
+
                 //objlst.Add(firework);
                 if (plane != null)
                 {
@@ -1377,6 +1391,8 @@ namespace DuckHuntCommon
                 {
                     leftTime.Update(gametime);
                 }
+
+                levelUp.Update(gametime);
 
                 bool finished = true;
                 int deadcount = 0;
@@ -1589,6 +1605,9 @@ namespace DuckHuntCommon
             restart = new ButtonModel(ButtonStyle.RESTART);
             restart.Initialize(null, restartButtonSpace, 0);
 
+            levelUp = new LevelUpBoardModel();
+            levelUp.Initialize(null, levelUpSpace, 0);
+
         }
 
         void NewAssistBoard()
@@ -1602,6 +1621,11 @@ namespace DuckHuntCommon
             lostDuck = new LostDuckBoardModel();
             lostDuck.Initialize(null, leftTimeBoardSpace, 0);
 
+        }
+
+        void ShowLevelUp()
+        {
+            levelUp.Reset();
         }
 
         int flycount = 0;
@@ -1654,6 +1678,7 @@ namespace DuckHuntCommon
                     break;
                 }
                 gameChapterMgr.GetNextChapter(out chapter);
+                ShowLevelUp();
             } while (chapter != null);
 
             if (ducks == null)
@@ -1732,7 +1757,11 @@ namespace DuckHuntCommon
             gameChapterMgr.Init(gameMode);
             leftTime.SetTime(2 * 60);
             lostDuck.ResetLostCount();
+
+            gameChapterMgr.GetNextChapter(out chapter);
             phase = GAME_PHASE.SEEK_DUCK;
+
+
         }
     }
 
