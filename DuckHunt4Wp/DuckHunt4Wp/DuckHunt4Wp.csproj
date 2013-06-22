@@ -74,6 +74,9 @@
     <Compile Include="ParallaxingBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Content\Graphics\baby_pluto.xnb" />
+    <Content Include="Content\Graphics\balloon.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\Graphics\bg_grass.xnb" />
     <None Include="Content\Graphics\bg_tree.xnb" />
     <None Include="Content\Graphics\carton_font.xnb" />
