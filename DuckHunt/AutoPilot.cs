@@ -22,6 +22,7 @@ namespace GameCommon
     {
         public abstract void Initialize(Rectangle boundary, int seed);
         public abstract void SetStartPos(Vector2 pos);
+        public abstract void SetEndPos(Vector2 pos);
         public abstract void Update(GameTime gameTime);
         public abstract Direction GetHorizationDirection();
         public abstract Direction GetZDirection();
@@ -33,6 +34,9 @@ namespace GameCommon
     abstract class BasePilot : AiPilot
     {
         override public void SetStartPos(Vector2 pos)
+        {
+        }
+        override public void SetEndPos(Vector2 pos)
         {
         }
     }

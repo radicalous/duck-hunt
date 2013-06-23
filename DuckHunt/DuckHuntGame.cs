@@ -1376,7 +1376,7 @@ namespace DuckHuntCommon
             {
                 //
                 dog.Update(gametime);
-                if (dog.Gone/* || true*/)
+                if (dog.Gone || true)
                 {
                     // show duck
                     phase = GAME_PHASE.DUCK_FLY;
