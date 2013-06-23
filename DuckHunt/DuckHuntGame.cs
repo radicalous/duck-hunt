@@ -656,14 +656,17 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter6_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter6_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKELLIPSE, name);
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter6_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKCIRCLE, name);
             ducks.Add(duck);
             duckcount++;
@@ -702,18 +705,22 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter7_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKEIGHT, name);
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter7_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKELLIPSE, name);
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter7_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKCIRCLE, name);
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter7_" + duckcount.ToString();
             duck = new DuckModel(PilotType.DUCKNORMAL, name);
             ducks.Add(duck);
             duckcount++;
@@ -1002,6 +1009,7 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
+                /*
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -1018,6 +1026,7 @@ namespace DuckHuntCommon
 
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
+                 */
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
                 chapter = new GameChapter8();
