@@ -61,6 +61,9 @@ namespace GameCommon
         Dictionary<string, pilotGroupInfo> duckEllipsePilotGroup = new Dictionary<string, pilotGroupInfo>();
         Dictionary<string, pilotGroupInfo> duckSinPilotGroup = new Dictionary<string, pilotGroupInfo>();
         Dictionary<string, pilotGroupInfo> duckLinePilotGroup = new Dictionary<string, pilotGroupInfo>();
+        Dictionary<string, pilotGroupInfo> duckILoveU_IPilotGroup = new Dictionary<string, pilotGroupInfo>();
+        Dictionary<string, pilotGroupInfo> duckILoveU_LPilotGroup = new Dictionary<string, pilotGroupInfo>();
+        Dictionary<string, pilotGroupInfo> duckILoveU_UPilotGroup = new Dictionary<string, pilotGroupInfo>();
 
         static int count = 0;
         static PilotManager instance;
@@ -315,17 +318,62 @@ namespace GameCommon
                     break;
                 case PilotType.DUCKILOVEU_I:
                     {
-                        //not done yet
+                        if (duckILoveU_IPilotGroup.ContainsKey(clustername))
+                        {
+                            pilotGroupInfo pgi = duckILoveU_IPilotGroup[clustername];
+                            pgi.idx++;
+                            duckILoveU_IPilotGroup[clustername] = pgi;
+                            pilot = new DuckILoveU_IPilot(pos, pgi);
+
+                        }
+                        else
+                        {
+                            pilotGroupInfo pgi = GenPGI();
+
+                            duckILoveU_IPilotGroup.Add(clustername, pgi);
+                            pilot = new DuckILoveU_IPilot(pos, pgi);
+
+                        }
                     }
                     break;
                 case PilotType.DUCKILOVEU_L:
                     {
-                        //not done yet
+                        if (duckILoveU_LPilotGroup.ContainsKey(clustername))
+                        {
+                            pilotGroupInfo pgi = duckILoveU_LPilotGroup[clustername];
+                            pgi.idx++;
+                            duckILoveU_LPilotGroup[clustername] = pgi;
+                            pilot = new DuckILoveU_LPilot(pos, pgi);
+
+                        }
+                        else
+                        {
+                            pilotGroupInfo pgi = GenPGI();
+
+                            duckILoveU_LPilotGroup.Add(clustername, pgi);
+                            pilot = new DuckILoveU_LPilot(pos, pgi);
+
+                        }
                     }
                     break;
                 case PilotType.DUCKILOVEU_U:
                     {
-                        //not done yet
+                        if (duckILoveU_UPilotGroup.ContainsKey(clustername))
+                        {
+                            pilotGroupInfo pgi = duckILoveU_UPilotGroup[clustername];
+                            pgi.idx++;
+                            duckILoveU_UPilotGroup[clustername] = pgi;
+                            pilot = new DuckILoveU_UPilot(pos, pgi);
+
+                        }
+                        else
+                        {
+                            pilotGroupInfo pgi = GenPGI();
+
+                            duckILoveU_UPilotGroup.Add(clustername, pgi);
+                            pilot = new DuckILoveU_UPilot(pos, pgi);
+
+                        }
                     }
                     break;
                 case PilotType.DOGSEEK:
@@ -1671,7 +1719,337 @@ namespace GameCommon
         }
     }
 
+    class DuckILoveU_IPilot : DuckPilot
+    {
+        double cur_angle = 0;
+        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
+        float a = 10;
 
+        public DuckILoveU_IPilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
+        {
+
+        }
+
+        private void adjustEndPos()
+        {
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+    
+            if (cur_angle > 2 * Constants.Pi)
+                cur_angle = 0;
+
+            float b = boundaryRect.Height / (2 * Constants.Ratio);
+
+            end_pos.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
+            end_pos.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            delta_angle = delta_angle * group_info.speed_ratio;
+        }
+
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKILOVEU_I;
+        }
+
+        public override Direction GetHorizationDirection()
+        {
+            if (InCurve())
+            {
+                if (cur_angle >= 0.5*Constants.Pi && cur_angle < 1.5 * Constants.Pi)
+                {
+                    return Direction.LEFT;
+                }
+                else
+                {
+                    return Direction.RIGHT;
+                }
+            }
+            else
+            {
+                return base.GetHorizationDirection();
+            }
+        }
+
+        public override Direction GetZDirection()
+        {
+            return base.GetZDirection();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (InCurve())
+            {
+                float b = boundaryRect.Height / (2 * Constants.Ratio);
+
+                cur_angle += delta_angle;
+                if (cur_angle > 2 * Constants.Pi)
+                    cur_angle = 0;
+
+                Position.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
+                Position.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
+            }
+            else
+            {
+                base.Update(gameTime);
+            }
+        }
+    }
+
+    class DuckILoveU_LPilot : DuckPilot
+    {
+        double cur_angle = 0;
+        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
+
+        public DuckILoveU_LPilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
+        {
+
+        }
+
+        private void adjustEndPos()
+        {
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+
+            if (cur_angle > 2 * Constants.Pi)
+                cur_angle = 0;
+
+            float a = boundaryRect.Width / (3 * Constants.Ratio);
+            float b = boundaryRect.Height / (2 * Constants.Ratio);
+
+            double sin_v = Math.Sin(cur_angle);
+            double cos_v = Math.Cos(cur_angle);
+            double cos_2v = Math.Cos(2 * cur_angle);
+            double cos_3v = Math.Cos(3 * cur_angle);
+            double cos_4v = Math.Cos(4 * cur_angle);
+            end_pos.X = center_pos.X + (float)(a * sin_v * sin_v * sin_v);
+            end_pos.Y = center_pos.Y - (float)(b* (cos_v - 5 * cos_2v/13 - 2 * cos_3v/13 - cos_4v/13));
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            delta_angle = delta_angle * group_info.speed_ratio;
+        }
+
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKILOVEU_L;
+        }
+
+        public override Direction GetHorizationDirection()
+        {
+            if (InCurve())
+            {
+                if (cur_angle >= 0.5 * Constants.Pi && cur_angle < 1.5 * Constants.Pi)
+                {
+                    return Direction.LEFT;
+                }
+                else
+                {
+                    return Direction.RIGHT;
+                }
+            }
+            else
+            {
+                return base.GetHorizationDirection();
+            }
+        }
+
+        public override Direction GetZDirection()
+        {
+            return base.GetZDirection();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (InCurve())
+            {
+                cur_angle += delta_angle;
+                if (cur_angle > 2 * Constants.Pi)
+                    cur_angle = 0;
+
+                float a = boundaryRect.Width / (3 * Constants.Ratio);
+                float b = boundaryRect.Height / (2 * Constants.Ratio);
+
+                double sin_v = Math.Sin(cur_angle);
+                double cos_v = Math.Cos(cur_angle);
+                double cos_2v = Math.Cos(2 * cur_angle);
+                double cos_3v = Math.Cos(3 * cur_angle);
+                double cos_4v = Math.Cos(4 * cur_angle);
+
+                Position.X = center_pos.X + (float)(a * sin_v * sin_v * sin_v);
+                Position.Y = center_pos.Y - (float)(b * (cos_v - 5 * cos_2v / 13 - 2 * cos_3v / 13 - cos_4v / 13));
+                //Position.X = center_pos.X + (float)(16 * sin_v * sin_v * sin_v);
+                //Position.Y = center_pos.Y + (float)(13 * cos_v - 5 * cos_2v - 2 * cos_3v - cos_4v);
+            }
+            else
+            {
+                base.Update(gameTime);
+            }
+        }
+    }
+
+    class DuckILoveU_UPilot : DuckPilot
+    {
+        int left2right = 1;
+        double cur_angle = Constants.Pi;
+        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
+
+        public DuckILoveU_UPilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
+        {
+
+        }
+
+        private void adjustEndPos()
+        {
+            if (left2right == 1)
+            {
+                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor; ;
+            }
+            else
+            {
+                cur_angle -= delta_angle * group_info.idx * Constants.Groupfactor; ;
+            }
+
+            if (cur_angle > 2 * Constants.Pi)
+            {
+                cur_angle = 2 * Constants.Pi;
+                left2right = 0;
+            }
+            else if (cur_angle < Constants.Pi)
+            {
+                cur_angle = Constants.Pi;
+                left2right = 1;
+            }
+
+            float a = boundaryRect.Width / (5 * Constants.Ratio);
+            float b = boundaryRect.Height / (Constants.Ratio);
+
+            end_pos.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
+            end_pos.Y = center_pos.Y - (float)(b * Math.Sin(cur_angle));
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            delta_angle = delta_angle * group_info.speed_ratio;
+        }
+
+        public override PilotType GetType()
+        {
+            return PilotType.DUCKILOVEU_U;
+        }
+
+        public override Direction GetHorizationDirection()
+        {
+            if (InCurve())
+            {
+                if (left2right == 0)
+                {
+                    return Direction.LEFT;
+                }
+                else
+                {
+                    return Direction.RIGHT;
+                }
+            }
+            else
+            {
+                return base.GetHorizationDirection();
+            }
+        }
+
+        public override Direction GetZDirection()
+        {
+            return base.GetZDirection();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (InCurve())
+            {
+                if (left2right == 1)
+                {
+                    cur_angle += delta_angle;
+                }
+                else
+                {
+                    cur_angle -= delta_angle;
+                }
+
+                if (cur_angle > 2 * Constants.Pi)
+                {
+                    cur_angle = 2 * Constants.Pi;
+                    left2right = 0;
+                }
+                else if (cur_angle < Constants.Pi)
+                {
+                    cur_angle = Constants.Pi;
+                    left2right = 1;
+                }
+
+                float a = boundaryRect.Width / (5 * Constants.Ratio);
+                float b = boundaryRect.Height / (Constants.Ratio);
+
+                Position.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
+                Position.Y = center_pos.Y - (float)(b * Math.Sin(cur_angle));
+            }
+            else
+            {
+                base.Update(gameTime);
+            }
+        }
+    }
 
 
     class DogPilot : BasePilot
