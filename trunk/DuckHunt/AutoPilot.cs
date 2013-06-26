@@ -15,7 +15,7 @@ namespace GameCommon
         DUCKELLIPSE, DUCKELLIPSEDEPTH, DUCKSIN, DUCKSINDEPTH,
         DUCKLINE, DUCKREN, DUCKILOVEU_I, DUCKILOVEU_L, DUCKILOVEU_U,
         DOGSEEK, DOGJUMP, DOGSHOW,
-        CLOUD,
+        CLOUD,PARROT,
     };
 
     abstract class AiPilot
@@ -396,6 +396,11 @@ namespace GameCommon
                         pilot = new CloudPilot();
                     }
                     break;
+                case PilotType.PARROT:
+                    {
+                        pilot = new ParrotPilot();
+                    }
+                    break;
                 default:
                     break;
             }
@@ -405,6 +410,193 @@ namespace GameCommon
 
         public void ReturnPilot(AiPilot pilot)
         {
+        }
+    }
+
+
+    class ParrotPilot : BasePilot
+    {
+
+        // The boundary
+        public Rectangle boundaryRect = new Rectangle();
+
+        override public Direction GetHorizationDirection()
+        {
+            if (deltax > 0)
+            {
+                return Direction.RIGHT;
+            }
+            else
+            {
+                return Direction.LEFT;
+            }
+        }
+        override public Direction GetZDirection()
+        {
+            if (detalz > 0)
+            {
+                return Direction.IN;
+            }
+            else
+            {
+                return Direction.OUT;
+            }
+        }
+
+        // current position
+        Vector2 prePos;
+        Vector2 Position;
+        //public float scale = 1.0f;
+
+        public float depthpos = 0;
+
+        int deltax = 1;
+        int deltay = 1;
+        int factorx = 1;
+        int factory = 1;
+        float detalz = 1;
+
+        Random radom;
+        int maxRatio = 8;
+        override public void Initialize(Rectangle boundary, int seed)
+        {
+            radom = new Random(seed);
+            boundaryRect = boundary;
+
+            // radom a intial position
+            Position.X = boundary.Width / 2;
+            Position.Y = boundary.Height / 2;
+
+            Rectangle startSpace = new Rectangle(0, 0 + (int)(0.1 * boundaryRect.Height),
+                boundaryRect.Width, (int)(boundaryRect.Height * 0.4));
+
+            LeadDirection(Direction.RANDOM, Direction.UP);
+            RadomStartPos(startSpace);
+
+        }
+
+        override public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        override public float GetDepth()
+        {
+            return depthpos;
+        }
+        override public PilotType GetType()
+        {
+            return PilotType.DUCKNORMAL;
+        }
+
+        void LeadDirection(Direction hor, Direction ver)
+        {
+            if (hor == Direction.RANDOM)
+            {
+                if (radom.Next(10) > 5)
+                {
+                    deltax = -deltax;
+                }
+            }
+            else if (hor == Direction.LEFT)
+            {
+                if (deltax < 0)
+                {
+                    deltax = -deltax;
+                }
+            }
+            else
+            {
+                if (deltax > 0)
+                {
+                    deltax = -deltax;
+                }
+            }
+
+            if (ver == Direction.RANDOM)
+            {
+                if (radom.Next(10) > 5)
+                {
+                    deltay = -deltay;
+                }
+            }
+            else if (ver == Direction.UP)
+            {
+                if (deltay > 0)
+                {
+                    deltay = -deltay;
+                }
+            }
+            else
+            {
+                if (deltay < 0)
+                {
+                    deltay = -deltay;
+                }
+            }
+        }
+
+        void RadomStartPos(Rectangle startSpace)
+        {
+            //
+            if (deltax > 0)
+            {
+                // flying right
+                Position.X = startSpace.Left;
+            }
+            else
+            {
+                // flying left
+                Position.X = startSpace.Right;
+            }
+            Position.Y = startSpace.Y + radom.Next(startSpace.Height);
+            prePos = Position;
+            boundaryRect = startSpace;
+        }
+
+        override public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (deltax < 0 && Position.X <= boundaryRect.X )
+            {
+            }
+            if (deltax > 0 && Position.X >= boundaryRect.Right)
+            {
+            }
+
+            if (deltay > 0 && Position.Y >= boundaryRect.Bottom - 10)
+            {
+                deltay = -deltay;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+
+            if (deltay < 0 && Position.Y <= boundaryRect.Y + 10)
+            {
+                deltay = -deltay;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+            prePos = Position;
+            Position.X += ((float)deltax) * factorx;
+            Position.Y += ((float)deltay) * factory;
+
         }
     }
 
