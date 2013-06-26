@@ -111,6 +111,9 @@
     <None Include="Content\Graphics\red_bird_dying.xnb" />
     <None Include="Content\Graphics\red_bird_r.xnb" />
     <None Include="Content\Graphics\sky_2.xnb" />
+    <None Include="Content\Graphics\sky_a_1.xnb" />
+    <None Include="Content\Graphics\sky_a_2.xnb" />
+    <None Include="Content\Graphics\sky_a_3.xnb" />
     <None Include="Content\Graphics\SpriteFontTexture2.xnb" />
     <None Include="Content\Sound\dog_found.xnb" />
     <None Include="Content\Sound\explosion.xnb" />

@@ -63,6 +63,12 @@ namespace DuckHuntCommon
             switch (model.Type())
             {
                 case ModelType.SKY:
+                    {
+                        CommonViewObjectEx objext  = new CommonViewObjectEx(model, s_backgroundOrgPoint, s_backgroundDefScale);
+                        objext.screenRc = s_localViewRect;
+                        viewObject = objext;
+                    }
+                    break;
                 case ModelType.CLOUD:
                 case ModelType.GRASS:
                 case ModelType.FORGROUND:
@@ -76,6 +82,7 @@ namespace DuckHuntCommon
                 case ModelType.BULLET:
                 case ModelType.PLANE:
                 case ModelType.BALOON:
+                case ModelType.PARROT:
                     {
                         commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
                     }
@@ -298,12 +305,14 @@ namespace DuckHuntCommon
                 }
             }
           
+            /*
             if (pause)
             {
                 pause = game.Pause;
                 return;
             }
             pause = game.Pause;
+            */
 
             List<ModelObject> objlst = null;
             game.GetObjects(out objlst);

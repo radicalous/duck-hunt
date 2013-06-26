@@ -358,6 +358,203 @@ namespace DuckHuntCommon
     }
 
 
+    class CommonViewObjectEx : DefViewObject
+    {
+        List<AnimationInfo> animationList;
+        AnimationEx viewItm;
+
+        ModelObject model;
+        List<ViewObject> childViewObjectList;
+
+        Vector2 _orgpointinscreen;
+        float _defscaleinscreen;
+
+        public Vector2 OrgPointInScreen
+        {
+            get
+            {
+                return _orgpointinscreen;
+            }
+        }
+        public float DefScaleInScreen
+        {
+            get
+            {
+                return _defscaleinscreen;
+            }
+        }
+
+        public List<SpriteFont> ObjFontList
+        {
+            get
+            {
+                return _resLst[model.Type()].fontList;
+            }
+        }
+        List<SpriteFont> fontlist;
+
+        // screen rect
+        public Rectangle screenRc = new Rectangle();
+
+        public CommonViewObjectEx(ModelObject model1, Vector2 orgpointinscreen, float defscaleinscreen)
+        {
+
+        }
+
+        public CommonViewObjectEx()
+        {
+
+        }
+
+        Dictionary<ModelType, ObjectTexturesItem> _resLst;
+
+
+
+        public override void Init(Vector2 orgpointinscreen, float defscaleinscreen, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle spaceInLogic)
+        {
+            if (model == null || (model.Type() != ModelType.KEYBORD && model.Type() != ModelType.KEYITEM))
+            {
+                _orgpointinscreen = orgpointinscreen;
+                _defscaleinscreen = defscaleinscreen;
+            }
+            //screenRc = spaceInLogic;
+
+            model = model1;
+            List<ModelObject> childobjlst = model.GetChildrenObjects();
+            if (childobjlst != null)
+            {
+                childViewObjectList = new List<ViewObject>();
+                foreach (ModelObject obj in childobjlst)
+                {
+                    ViewObject viewobj = ViewObjectFactory.CreateViewObject(obj);
+
+                    childViewObjectList.Add(viewobj);
+                }
+            }
+
+            _orgpointinscreen = orgpointinscreen;
+            _defscaleinscreen = defscaleinscreen;
+
+            _resLst = objTextureLst;
+            // try to calculate how may textures are needed by children
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+            viewItm = new AnimationEx();
+            AnimationInfo animationInfo = model.GetAnimationInfoList()[0];
+
+            {
+                if (animationInfo.frameHeight == 0)
+                {
+                    viewItm.Initialize(
+                        texturesList,
+                        Vector2.Zero, (int)(texturesList[0].Width/*animationInfo.frameWidth*/),
+                        (int)(texturesList[0].Height/*animationInfo.frameHeight*/),
+                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
+                        model.GetSacle(), true);
+
+
+                    float scale = 1.0f;
+                    if (texturesList[0].Width * 1.0f / texturesList[0].Height > screenRc.Width * 1.0 / screenRc.Height)
+                    {
+                        // the text wider, should extend according height
+                        scale = screenRc.Height * 1.0f / texturesList[0].Height;
+
+                        int offx = (int)((texturesList[0].Width * scale - screenRc.Width) / 2 / scale);
+                        offx = (int)(offx * scale);
+                        offx = -offx;
+                        int centerx = (int)(offx + texturesList[0].Width * scale / 2);
+                        int centery = screenRc.Height / 2;
+                        viewItm.Position.X = centerx;
+                        viewItm.Position.Y = centery;
+                        viewItm.scale = scale;
+
+                    }
+                    else
+                    {
+                        // the texture is higher, should extend according width
+                        scale = screenRc.Width * 1.0f / texturesList[0].Width;
+
+                        int offy = (int)((texturesList[0].Height * scale - screenRc.Height) / scale);
+                        offy = (int)(offy * scale);
+                        offy = -offy;
+                        int centerx = screenRc.Width / 2;
+                        int centery = (int)(offy + texturesList[0].Height * scale / 2);
+                        viewItm.Position.X = centerx;
+                        viewItm.Position.Y = centery;
+                        viewItm.scale = scale;
+
+                    }
+                }
+            }
+            /*
+            viewItm.Initialize(texturesList, Vector2.Zero, animationInfo.frameWidth,
+                animationInfo.frameHeight, animationInfo.frameCount, animationInfo.frameTime,
+                animationInfo.backColor, model.GetSacle(), true);
+            */
+
+            // left textures are for children
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject childviewobj in childViewObjectList)
+                {
+                    Rectangle rc = new Rectangle();
+                    childviewobj.Init(_orgpointinscreen, _defscaleinscreen, null, objTextureLst, rc);
+                }
+            }
+        }
+
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
+        public override void Update(GameTime gameTime)
+        {
+            viewItm.Update(gameTime);
+
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject viewObj in childViewObjectList)
+                {
+                    viewObj.Update(gameTime);
+                }
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            viewItm.Draw(spriteBatch, model.GetAnimationDepth());
+
+            if (childViewObjectList != null)
+            {
+                foreach (ViewObject viewObj in childViewObjectList)
+                {
+                    viewObj.Draw(spriteBatch);
+                }
+            }
+        }
+
+        public override void PlaySound()
+        {
+            // check need to play audio
+            //play init sound
+            if (_resLst[model.Type()].soundList.Count > 0)
+            {
+                int soundindex = model.GetSoundIndex();
+                if (soundindex >= 0 && soundindex < _resLst[model.Type()].soundList.Count)
+                {
+                    float mastvol = SoundEffect.MasterVolume;
+                    _resLst[model.Type()].soundList[0].Play(1, 0, 0);
+                }
+
+            }
+        }
+    }
+
+
 
     class FireworkViewObject : DefViewObject
     {

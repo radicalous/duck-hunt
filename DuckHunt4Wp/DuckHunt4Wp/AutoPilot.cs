@@ -13,9 +13,9 @@ namespace GameCommon
         DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD, DUCKFLYAWAY,
         DUCKEIGHT, DUCKEIGHTDEPTH, DUCKCIRCLE, DUCKCIRCLEDEPTH,
         DUCKELLIPSE, DUCKELLIPSEDEPTH, DUCKSIN, DUCKSINDEPTH,
-        DUCKLINE, DUCKREN, DUCKILOVEU,
+        DUCKLINE, DUCKREN, DUCKILOVEU_I, DUCKILOVEU_L, DUCKILOVEU_U,
         DOGSEEK, DOGJUMP, DOGSHOW,
-        CLOUD,
+        CLOUD,PARROT,
     };
 
     abstract class AiPilot
@@ -51,6 +51,7 @@ namespace GameCommon
     {
         public int idx;
         public Point endpoint;
+        public float speed_ratio;
     }
 
     class PilotManager
@@ -106,6 +107,8 @@ namespace GameCommon
             pgi.endpoint.X = rdm.Next(-50, 50);
             pgi.endpoint.Y = rdm.Next(-50, 50);
 
+            pgi.speed_ratio = (float)(rdm.Next(50, 200)) / 100;
+
             return pgi;
         }
 
@@ -138,7 +141,7 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckEightPilotGroup[clustername];
                             pgi.idx++;
                             duckEightPilotGroup[clustername] = pgi;
-                            pilot = new DuckEightPilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEightPilot(pos, pgi);
 
                         }
                         else
@@ -146,7 +149,7 @@ namespace GameCommon
                             pilotGroupInfo pgi = GenPGI();
 
                             duckEightPilotGroup.Add(clustername, pgi);
-                            pilot = new DuckEightPilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEightPilot(pos, pgi);
 
                         }
                     }
@@ -159,14 +162,14 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckEightPilotGroup[clustername];
                             pgi.idx++;
                             duckEightPilotGroup[clustername] = pgi;
-                            pilot = new DuckEightPilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEightPilotWithDepth(pos, pgi);
                         }
                         else
                         {
                             pilotGroupInfo pgi = GenPGI();
 
                             duckEightPilotGroup.Add(clustername, pgi);
-                            pilot = new DuckEightPilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEightPilotWithDepth(pos, pgi);
                         }
                     }
                     break;
@@ -178,14 +181,14 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckCirclePilotGroup[clustername];
                             pgi.idx++;
                             duckCirclePilotGroup[clustername] = pgi;
-                            pilot = new DuckCirclePilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckCirclePilot(pos, pgi);
                         }
                         else
                         {
                             pilotGroupInfo pgi = GenPGI();
 
                             duckCirclePilotGroup.Add(clustername, pgi);
-                            pilot = new DuckCirclePilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckCirclePilot(pos, pgi);
                         }
 
                     }
@@ -197,14 +200,14 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckCirclePilotGroup[clustername];
                             pgi.idx++;
                             duckCirclePilotGroup[clustername] = pgi;
-                            pilot = new DuckCirclePilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckCirclePilotWithDepth(pos, pgi);
                         }
                         else
                         {
                             pilotGroupInfo pgi = GenPGI();
 
                             duckCirclePilotGroup.Add(clustername, pgi);
-                            pilot = new DuckCirclePilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckCirclePilotWithDepth(pos, pgi);
                         }
                     }
                     break;
@@ -216,14 +219,14 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckEllipsePilotGroup[clustername];
                             pgi.idx++;
                             duckEllipsePilotGroup[clustername] = pgi;
-                            pilot = new DuckEllipsePilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEllipsePilot(pos, pgi);
                         }
                         else
                         {
                             pilotGroupInfo pgi = GenPGI();
 
                             duckEllipsePilotGroup.Add(clustername, pgi);
-                            pilot = new DuckEllipsePilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEllipsePilot(pos, pgi);
                         }
                       
                     }
@@ -236,14 +239,14 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckEllipsePilotGroup[clustername];
                             pgi.idx++;
                             duckEllipsePilotGroup[clustername] = pgi;
-                            pilot = new DuckEllipsePilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEllipsePilotWithDepth(pos, pgi);
                         }
                         else
                         {
                             pilotGroupInfo pgi = GenPGI();
 
                             duckEllipsePilotGroup.Add(clustername, pgi);
-                            pilot = new DuckEllipsePilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckEllipsePilotWithDepth(pos, pgi);
                         }
                     }
                     break;
@@ -254,14 +257,14 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckSinPilotGroup[clustername];
                             pgi.idx++;
                             duckSinPilotGroup[clustername] = pgi;
-                            pilot = new DuckSinPilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckSinPilot(pos, pgi);
                         }
                         else
                         {
                             pilotGroupInfo pgi = GenPGI();
 
                             duckSinPilotGroup.Add(clustername, pgi);
-                            pilot = new DuckSinPilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckSinPilot(pos, pgi);
                         }
                     }
                     break;
@@ -273,14 +276,14 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckSinPilotGroup[clustername];
                             pgi.idx++;
                             duckSinPilotGroup[clustername] = pgi;
-                            pilot = new DuckSinPilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckSinPilotWithDepth(pos, pgi);
                         }
                         else
                         {
                             pilotGroupInfo pgi = GenPGI();
 
                             duckSinPilotGroup.Add(clustername, pgi);
-                            pilot = new DuckSinPilotWithDepth(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckSinPilotWithDepth(pos, pgi);
                         }
                     }
                     break;
@@ -291,7 +294,7 @@ namespace GameCommon
                             pilotGroupInfo pgi = duckLinePilotGroup[clustername];
                             pgi.idx++;
                             duckLinePilotGroup[clustername] = pgi;
-                            pilot = new DuckLinePilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckLinePilot(pos, pgi);
 
                         }
                         else
@@ -299,7 +302,7 @@ namespace GameCommon
                             pilotGroupInfo pgi = GenPGI();
 
                             duckLinePilotGroup.Add(clustername, pgi);
-                            pilot = new DuckLinePilot(pos, pgi.idx, pgi.endpoint);
+                            pilot = new DuckLinePilot(pos, pgi);
 
                         }
 
@@ -310,7 +313,17 @@ namespace GameCommon
                         //not done yet
                     }
                     break;
-                case PilotType.DUCKILOVEU:
+                case PilotType.DUCKILOVEU_I:
+                    {
+                        //not done yet
+                    }
+                    break;
+                case PilotType.DUCKILOVEU_L:
+                    {
+                        //not done yet
+                    }
+                    break;
+                case PilotType.DUCKILOVEU_U:
                     {
                         //not done yet
                     }
@@ -335,6 +348,11 @@ namespace GameCommon
                         pilot = new CloudPilot();
                     }
                     break;
+                case PilotType.PARROT:
+                    {
+                        pilot = new ParrotPilot();
+                    }
+                    break;
                 default:
                     break;
             }
@@ -344,6 +362,193 @@ namespace GameCommon
 
         public void ReturnPilot(AiPilot pilot)
         {
+        }
+    }
+
+
+    class ParrotPilot : BasePilot
+    {
+
+        // The boundary
+        public Rectangle boundaryRect = new Rectangle();
+
+        override public Direction GetHorizationDirection()
+        {
+            if (deltax > 0)
+            {
+                return Direction.RIGHT;
+            }
+            else
+            {
+                return Direction.LEFT;
+            }
+        }
+        override public Direction GetZDirection()
+        {
+            if (detalz > 0)
+            {
+                return Direction.IN;
+            }
+            else
+            {
+                return Direction.OUT;
+            }
+        }
+
+        // current position
+        Vector2 prePos;
+        Vector2 Position;
+        //public float scale = 1.0f;
+
+        public float depthpos = 0;
+
+        int deltax = 1;
+        int deltay = 1;
+        int factorx = 1;
+        int factory = 1;
+        float detalz = 1;
+
+        Random radom;
+        int maxRatio = 8;
+        override public void Initialize(Rectangle boundary, int seed)
+        {
+            radom = new Random(seed);
+            boundaryRect = boundary;
+
+            // radom a intial position
+            Position.X = boundary.Width / 2;
+            Position.Y = boundary.Height / 2;
+
+            Rectangle startSpace = new Rectangle(0, 0 + (int)(0.1 * boundaryRect.Height),
+                boundaryRect.Width, (int)(boundaryRect.Height * 0.4));
+
+            LeadDirection(Direction.RANDOM, Direction.UP);
+            RadomStartPos(startSpace);
+
+        }
+
+        override public Vector2 GetPosition()
+        {
+            return Position;
+        }
+
+        override public float GetDepth()
+        {
+            return depthpos;
+        }
+        override public PilotType GetType()
+        {
+            return PilotType.DUCKNORMAL;
+        }
+
+        void LeadDirection(Direction hor, Direction ver)
+        {
+            if (hor == Direction.RANDOM)
+            {
+                if (radom.Next(10) > 5)
+                {
+                    deltax = -deltax;
+                }
+            }
+            else if (hor == Direction.LEFT)
+            {
+                if (deltax < 0)
+                {
+                    deltax = -deltax;
+                }
+            }
+            else
+            {
+                if (deltax > 0)
+                {
+                    deltax = -deltax;
+                }
+            }
+
+            if (ver == Direction.RANDOM)
+            {
+                if (radom.Next(10) > 5)
+                {
+                    deltay = -deltay;
+                }
+            }
+            else if (ver == Direction.UP)
+            {
+                if (deltay > 0)
+                {
+                    deltay = -deltay;
+                }
+            }
+            else
+            {
+                if (deltay < 0)
+                {
+                    deltay = -deltay;
+                }
+            }
+        }
+
+        void RadomStartPos(Rectangle startSpace)
+        {
+            //
+            if (deltax > 0)
+            {
+                // flying right
+                Position.X = startSpace.Left;
+            }
+            else
+            {
+                // flying left
+                Position.X = startSpace.Right;
+            }
+            Position.Y = startSpace.Y + radom.Next(startSpace.Height);
+            prePos = Position;
+            boundaryRect = startSpace;
+        }
+
+        override public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            if (deltax < 0 && Position.X <= boundaryRect.X )
+            {
+            }
+            if (deltax > 0 && Position.X >= boundaryRect.Right)
+            {
+            }
+
+            if (deltay > 0 && Position.Y >= boundaryRect.Bottom - 10)
+            {
+                deltay = -deltay;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+
+            if (deltay < 0 && Position.Y <= boundaryRect.Y + 10)
+            {
+                deltay = -deltay;
+                factorx = radom.Next(maxRatio);
+                if (factorx < 1)
+                {
+                    factorx = 1;
+                }
+                factory = radom.Next(maxRatio);
+                if (factory < 1)
+                {
+                    factory = 1;
+                }
+            }
+            prePos = Position;
+            Position.X += ((float)deltax) * factorx;
+            Position.Y += ((float)deltay) * factory;
+
         }
     }
 
@@ -872,9 +1077,62 @@ namespace GameCommon
     {
         public const double Pi = 3.14159;
         public const int Ratio = 2;
-        public const int MaxLineSteps = 80;
+        public const int Groupfactor = 12;
+        public const int MaxLineSteps = 160;
         public const int MaxCurveSteps = 400;
     }
+
+    interface DepthCom
+    {
+        float update_depth(float cur_dp);
+    }
+
+    class DepthCosCom : DepthCom
+    {
+        double z = 0.0;
+        double z_delta = 2 * Constants.Pi / Constants.MaxCurveSteps;
+
+        public void setStartZ(int seed)
+        {
+            Random rdm = new Random(seed);
+
+            z = 0.0 + (double)(rdm.Next(0, Constants.MaxCurveSteps)) / (double)Constants.MaxCurveSteps * 2 * Constants.Pi;
+        }
+        public float update_depth(float cur_dp)
+        {
+            z += z_delta;
+            if (z > 2 * Constants.Pi)
+                z = 0.0;
+
+            float depthpos = (float)(Math.Cos(z) * 100.0 + 100.0) / 2;
+            if (depthpos < 0)
+                depthpos = 0;
+            else if (depthpos > 60)
+                depthpos = 60;
+
+            return depthpos;
+        }
+    }
+
+    class DepthLinearCom : DepthCom
+    {
+        double z = 0.0;
+        double z_delta = 100.0 / Constants.MaxCurveSteps;
+
+        public float update_depth(float cur_dp)
+        {
+            z += z_delta;
+
+            float depthpos = (float)(z);
+            if (depthpos < 0)
+                depthpos = 0;
+            else if (depthpos > 60)
+                depthpos = 60;
+
+            return depthpos;
+        }
+    }
+
 
     class DuckPilot : BasePilot
     {
@@ -882,24 +1140,24 @@ namespace GameCommon
 
         protected Vector2 start_pos; //random start position
         protected Vector2 end_pos; //different end position
-        protected Point endpoint; //record the percent of the end position according the boundary
+        protected Vector2 center_pos; //
 
-        protected int lineStep;
-        protected int max_lineSteps;
+        protected int lineStep = 0;
+        protected int max_lineSteps = Constants.MaxLineSteps;
 
         // current position
         protected Vector2 Position;
         protected float depthpos = 0;
         protected int depth_seed = 0;
 
-        public DuckPilot(Vector2 pos, int idx, Point ep)
+        //group info
+        protected pilotGroupInfo group_info;
+
+        public DuckPilot(Vector2 pos, pilotGroupInfo pgi)
         {
             Position = pos;
 
-            endpoint = ep;
-
-            lineStep = 0;
-            max_lineSteps = Constants.MaxLineSteps + idx * 10;
+            group_info = pgi;
         }
 
         override public void Initialize(Rectangle space, int seed)
@@ -912,11 +1170,15 @@ namespace GameCommon
             int r = Math.Min(boundaryRect.Height, boundaryRect.Width);
             r /= (Constants.Ratio * 2);
 
-            end_pos.X = boundaryRect.Center.X + (endpoint.X) * r / 50;
-            end_pos.Y = boundaryRect.Center.Y + (endpoint.Y) * r / 50;
+            end_pos.X = boundaryRect.Center.X + (group_info.endpoint.X) * r / 50;
+            end_pos.Y = boundaryRect.Center.Y + (group_info.endpoint.Y) * r / 50;
+
+            center_pos = end_pos;
 
             start_pos.X = rdm.Next(boundaryRect.Left, boundaryRect.Right);
             start_pos.Y = boundaryRect.Bottom;
+
+            max_lineSteps = (int)(max_lineSteps / group_info.speed_ratio);
 
             Position = start_pos;
         }
@@ -924,6 +1186,19 @@ namespace GameCommon
         override public void SetStartPos(Vector2 pos)
         {
             start_pos = pos;
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            end_pos = pos;
+            center_pos = end_pos;
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            group_info.speed_ratio = speedRatio;
+
+            max_lineSteps = (int)(max_lineSteps / group_info.speed_ratio);
         }
 
         override public Vector2 GetPosition()
@@ -973,65 +1248,49 @@ namespace GameCommon
         }
     }
 
-    interface DepthCom
-    {
-        float update_depth(float cur_dp);
-    }
-
-    class DepthCosCom : DepthCom
-    {
-        double z = 0.0;
-        double z_delta = 2 * Constants.Pi / Constants.MaxCurveSteps;
-
-        public void setStartZ(int seed)
-        {
-            Random rdm = new Random(seed);
-
-            z = 0.0 + (double)(rdm.Next(0, Constants.MaxCurveSteps)) / (double)Constants.MaxCurveSteps * 2 * Constants.Pi;
-        }
-        public float update_depth(float cur_dp)
-        {
-            z += z_delta;
-            if (z > 2 * Constants.Pi)
-                z = 0.0;
-
-            float depthpos = (float)(Math.Cos(z) * 100.0 + 100.0) / 2;
-            if (depthpos < 20)
-                depthpos = 20;
-            else if (depthpos > 80)
-                depthpos = 80;
-
-            return depthpos;
-        }
-    }
-
-    class DepthLinearCom : DepthCom
-    {
-        double z = 0.0;
-        double z_delta = 100.0 / Constants.MaxCurveSteps;
-
-        public float update_depth(float cur_dp)
-        {
-            z += z_delta;
-
-            float depthpos = (float)(z);
-            if (depthpos < 0)
-                depthpos = 0;
-            else if (depthpos > 80)
-                depthpos = 80;
-
-            return depthpos;
-        }
-    }
-
     class DuckEightPilot : DuckPilot
     {
         double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckEightPilot(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckEightPilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
+
+        }
+
+        private void adjustEndPos()
+        {
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            if (cur_angle > 2 * Constants.Pi)
+                cur_angle = 0.0;
+
+            float a = Math.Min(boundaryRect.Width, boundaryRect.Height);
+            a /= Constants.Ratio;
+
+            end_pos.X = center_pos.X + (float)(a * Math.Sin(cur_angle));
+            end_pos.Y = center_pos.Y + (float)(a * Math.Cos(cur_angle) * Math.Sin(cur_angle));
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            delta_angle = delta_angle * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
@@ -1078,8 +1337,8 @@ namespace GameCommon
                 float a = Math.Min(boundaryRect.Width, boundaryRect.Height);
                 a /= Constants.Ratio;
 
-                Position.X = end_pos.X + (float)(a * Math.Sin(cur_angle));
-                Position.Y = end_pos.Y + (float)(a * Math.Cos(cur_angle) * Math.Sin(cur_angle));
+                Position.X = center_pos.X + (float)(a * Math.Sin(cur_angle));
+                Position.Y = center_pos.Y + (float)(a * Math.Cos(cur_angle) * Math.Sin(cur_angle));
             }
             else
             {
@@ -1093,8 +1352,8 @@ namespace GameCommon
         DepthCosCom d = new DepthCosCom();
         int set_start_z = 0;
 
-        public DuckEightPilotWithDepth(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckEightPilotWithDepth(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
         }
 
@@ -1117,15 +1376,47 @@ namespace GameCommon
 
     class DuckCirclePilot : DuckPilot
     {
-        static int max_hor_steps = 20;
-        int hor_steps = 0;
         double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckCirclePilot(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckCirclePilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
 
+        }
+
+        private void adjustEndPos()
+        {
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            if (cur_angle > 2 * Constants.Pi)
+                cur_angle = 0.0;
+
+            float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
+            r /= (3 * Constants.Ratio / 2);
+
+            end_pos.X = center_pos.X + (float)(r * Math.Cos(cur_angle));
+            end_pos.Y = center_pos.Y + (float)(r * Math.Sin(cur_angle));
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            delta_angle = delta_angle * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
@@ -1163,26 +1454,18 @@ namespace GameCommon
 
         public override void Update(GameTime gameTime)
         {
-            float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
-            r /= (3 * Constants.Ratio / 2);
-
             if (InCurve())
             {
-                if (hor_steps <= max_hor_steps)
-                {
-                    Position.X = end_pos.X + hor_steps * r / max_hor_steps;
+                cur_angle += delta_angle;
+                if (cur_angle > 2 * Constants.Pi)
+                    cur_angle = 0.0;
 
-                    hor_steps++;
-                }
-                else
-                {
-                    cur_angle += delta_angle;
-                    if (cur_angle > 2 * Constants.Pi)
-                        cur_angle = 0.0;
+                float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
+                r /= (3 * Constants.Ratio / 2);
 
-                    Position.X = end_pos.X + (float)(r * Math.Cos(cur_angle));
-                    Position.Y = end_pos.Y + (float)(r * Math.Sin(cur_angle));
-                }
+                Position.X = center_pos.X + (float)(r * Math.Cos(cur_angle));
+                Position.Y = center_pos.Y + (float)(r * Math.Sin(cur_angle));
+
             }
             else
                 base.Update(gameTime);
@@ -1194,8 +1477,8 @@ namespace GameCommon
         DepthCosCom d = new DepthCosCom();
         int set_start_z = 0;
 
-        public DuckCirclePilotWithDepth(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckCirclePilotWithDepth(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
         }
 
@@ -1218,15 +1501,48 @@ namespace GameCommon
 
     class DuckEllipsePilot : DuckPilot
     {
-        static int max_hor_steps = 20;
-        int hor_steps = 0;
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckEllipsePilot(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckEllipsePilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
 
+        }
+
+        private void adjustEndPos()
+        {
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+    
+            if (cur_angle > 2 * Constants.Pi)
+                cur_angle = 0;
+
+            float a = boundaryRect.Width / (2 * Constants.Ratio);
+            float b = boundaryRect.Height / (2 * Constants.Ratio);
+
+            end_pos.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
+            end_pos.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            delta_angle = delta_angle * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
@@ -1269,20 +1585,12 @@ namespace GameCommon
                 float a = boundaryRect.Width / (2 * Constants.Ratio);
                 float b = boundaryRect.Height / (2 * Constants.Ratio);
 
-                if (hor_steps <= max_hor_steps)
-                {
-                    Position.X = end_pos.X + hor_steps * a / max_hor_steps;
-                    hor_steps++;
-                }
-                else
-                {
-                    cur_angle += delta_angle;
-                    if (cur_angle > 2 * Constants.Pi)
-                        cur_angle = 0;
+                cur_angle += delta_angle;
+                if (cur_angle > 2 * Constants.Pi)
+                    cur_angle = 0;
 
-                    Position.X = end_pos.X + (float)(a * Math.Cos(cur_angle));
-                    Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
-                }
+                Position.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
+                Position.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
             }
             else
             {
@@ -1296,8 +1604,8 @@ namespace GameCommon
         DepthCosCom d = new DepthCosCom();
         int set_start_z = 0;
 
-        public DuckEllipsePilotWithDepth(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckEllipsePilotWithDepth(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
         }
 
@@ -1322,13 +1630,66 @@ namespace GameCommon
     {
         int left2right = 1;
         int hor_steps = 0;
+        int max_curveSteps = Constants.MaxCurveSteps;
         double cur_angle = 0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
-        public DuckSinPilot(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckSinPilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
 
+        }
+
+        private void adjustEndPos()
+        {
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            if (left2right == 1)
+            {
+                hor_steps += group_info.idx * Constants.Groupfactor;
+            }
+            else
+            {
+                hor_steps -= group_info.idx * Constants.Groupfactor;
+            }
+            float a = boundaryRect.Width / Constants.Ratio;
+            float b = boundaryRect.Height / (3 * Constants.Ratio / 2);
+
+            end_pos.X = center_pos.X + (float)hor_steps * a / max_curveSteps;
+            if (end_pos.X >= boundaryRect.Right)
+            {
+                end_pos.X = boundaryRect.Right;
+                left2right = 0;
+            }
+            else if (end_pos.X <= boundaryRect.Left)
+            {
+                end_pos.X = boundaryRect.Left;
+                left2right = 1;
+            }
+            end_pos.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+            
+            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            delta_angle = delta_angle * group_info.speed_ratio;
+            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
         }
 
         public override PilotType GetType()
@@ -1367,7 +1728,7 @@ namespace GameCommon
                 float a = boundaryRect.Width / Constants.Ratio;
                 float b = boundaryRect.Height / (3 * Constants.Ratio / 2);
 
-                Position.X = end_pos.X + (float)hor_steps * a / Constants.MaxCurveSteps;
+                Position.X = center_pos.X + (float)hor_steps * a / Constants.MaxCurveSteps;
                 if (Position.X >= boundaryRect.Right)
                 {
                     Position.X = boundaryRect.Right;
@@ -1378,7 +1739,7 @@ namespace GameCommon
                     Position.X = boundaryRect.Left;
                     left2right = 1;
                 }
-                Position.Y = end_pos.Y + (float)(b * Math.Sin(cur_angle));
+                Position.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
             }
             else
             {
@@ -1392,8 +1753,8 @@ namespace GameCommon
         DepthCosCom d = new DepthCosCom();
         int set_start_z = 0;
 
-        public DuckSinPilotWithDepth(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckSinPilotWithDepth(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
         }
 
@@ -1417,11 +1778,48 @@ namespace GameCommon
     class DuckLinePilot : DuckPilot
     {
         DepthLinearCom d = new DepthLinearCom();
+        int max_curveSteps = Constants.MaxCurveSteps;
         int x_steps = 0;
 
-        public DuckLinePilot(Vector2 pos, int idx, Point ep)
-            : base(pos, idx, ep)
+        public DuckLinePilot(Vector2 pos, pilotGroupInfo pgi)
+            : base(pos, pgi)
         {
+        }
+
+        private void adjustEndPos()
+        {
+            if ( center_pos.X > boundaryRect.Center.X )
+                center_pos.X -= boundaryRect.Width / 2;
+
+            x_steps += group_info.idx * Constants.Groupfactor*2;
+
+            double dx = (double)(boundaryRect.Right - center_pos.X) / max_curveSteps;
+
+            end_pos.X = (float)(center_pos.X + dx * x_steps);
+            end_pos.Y = (float)(center_pos.Y + -0.35 * dx * x_steps);
+        }
+
+        public override void Initialize(Rectangle space, int seed)
+        {
+            base.Initialize(space, seed);
+
+            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
+
+            adjustEndPos();
+        }
+
+        public override void SetEndPos(Vector2 pos)
+        {
+            base.SetEndPos(pos);
+
+            adjustEndPos();
+        }
+
+        public override void SetSpeedRatio(float speedRatio)
+        {
+            base.SetSpeedRatio(speedRatio);
+
+            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
         }
 
         public override PilotType GetType()
@@ -1453,10 +1851,10 @@ namespace GameCommon
                 depthpos = d.update_depth(depthpos);
 
                 x_steps++;
-                double dx = (double)(boundaryRect.Right - end_pos.X) / Constants.MaxCurveSteps;
+                double dx = (double)(boundaryRect.Right - center_pos.X) / max_curveSteps;
 
-                Position.X = (float)(end_pos.X + dx * x_steps);
-                Position.Y = (float)(end_pos.Y + -0.35 * dx * x_steps);
+                Position.X = (float)(center_pos.X + dx * x_steps);
+                Position.Y = (float)(center_pos.Y + -0.35 * dx * x_steps);
             }
             else
             {
