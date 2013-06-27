@@ -1442,7 +1442,10 @@ namespace DuckHuntCommon
             pos1.Y += 10 * DefScaleInScreen;
             pos1.X += 10 * DefScaleInScreen;
 
-            color1.A = 100;
+//            color1.A = 100;
+            color1.B -= 5;
+            color1.R = 0;
+            color1.G += 5;
             spriteBatch.DrawString(base.ObjFontList[0], "Level Up", pos1, color1, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
@@ -1641,6 +1644,14 @@ namespace DuckHuntCommon
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
             spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            value = "Level: " + model.GetLevel().ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            pos1.Y += 35 * DefScaleInScreen;
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
         }
 
     }
@@ -1756,6 +1767,30 @@ namespace DuckHuntCommon
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos1.Y += 30 * DefScaleInScreen;
             }
+
+            pos1.Y += 30 * DefScaleInScreen;
+            pos2 = pos1;
+            pos2.X += 150 * DefScaleInScreen;
+            spriteBatch.DrawString(base.ObjFontList[0], "Top 10 Level List",
+                pos2, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            pos1.Y += 60 * DefScaleInScreen;
+
+            result = model.LevelList.OrderByDescending(c => c.Key);
+            foreach (KeyValuePair<int, string> pair in result)
+            {
+                spriteBatch.DrawString(base.ObjFontList[1], pair.Value,
+                    pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                    SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+                pos2 = pos1;
+                pos2.X += 500 * DefScaleInScreen;
+                spriteBatch.DrawString(base.ObjFontList[1], pair.Key.ToString(),
+                    pos2, Color.Yellow, 0, Vector2.Zero, 1,
+                    SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+                pos1.Y += 30 * DefScaleInScreen;
+            }
+
         }
     }
 }

@@ -1392,6 +1392,18 @@ namespace DuckHuntCommon
 
         int duckstyle = 0;
 
+        public void SetSpeedRatio(float ratio)
+        {
+            if (ratio < 1)
+            {
+                ratio = 1 ;
+            }
+            if (flyduckPilot != null)
+            {
+                flyduckPilot.SetSpeedRatio(ratio);
+            }
+        }
+
         public DuckModel(PilotType type, string groupname)
         {
             //
@@ -2711,6 +2723,7 @@ namespace DuckHuntCommon
         List<AnimationInfo> anationInfoList;
         List<DuckIconModel> duckIcons;
         int hitcount = 0;
+        int level = 1;
 
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
@@ -2855,7 +2868,18 @@ namespace DuckHuntCommon
         {
             hitcount += hitCount;
         }
+
+        public int GetLevel()
+        {
+            return level;
+        }
+
+        public void IncreaseLevel()
+        {
+            level++;
+        }
     }
+
 
 
     class BulletIconModel : BaseModel
@@ -3257,6 +3281,7 @@ namespace DuckHuntCommon
         Vector2 relativePosition = Vector2.Zero; // no use
 
         Dictionary<int, string> scorelist;
+        Dictionary<int, string> levellist;
 
         // score list
         public ScroeListBoardModel()
@@ -3278,6 +3303,7 @@ namespace DuckHuntCommon
             space.Height = 644;
 
             scorelist = new Dictionary<int, string>();
+            levellist = new Dictionary<int, string>();
 
             this.AddScore("Penner", 3565);
             this.AddScore("Fallson", 5000);
@@ -3301,6 +3327,8 @@ namespace DuckHuntCommon
             space.Height = 644;
 
             scorelist = new Dictionary<int, string>();
+            levellist = new Dictionary<int, string>();
+
         }
 
 
@@ -3397,6 +3425,10 @@ namespace DuckHuntCommon
         {
             scorelist[score] = name;
         }
+        public void AddLevel(string name, int level)
+        {
+            levellist[level] = name;
+        }
 
         public Dictionary<int, string> ScoreList
         {
@@ -3407,6 +3439,18 @@ namespace DuckHuntCommon
             set
             {
                 scorelist = value;
+            }
+        }
+
+        public Dictionary<int, string> LevelList
+        {
+            get
+            {
+                return levellist;
+            }
+            set
+            {
+                levellist = value;
             }
         }
     }

@@ -388,11 +388,12 @@ namespace DuckHuntCommon
             ViewObjectFactory.SetLocalViewInfo(screenRect, orgpoint, defscale, bgorgpoint, bgdefscale);
         }
 
-        public void SaveNewScore(int score)
+        public void SaveNewScore(int score, int level)
         {
             // 
             DateTime now = DateTime.Now;
             gameData.AddScore(now.ToString(), score);
+            gameData.AddLevel(now.ToString(), level);
             gameData.Save("duckhunt.xml");
         }
 
@@ -791,6 +792,7 @@ namespace DuckHuntCommon
             {
                 name = "chapter8_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilotTypeIndex], name);
+                duck.SetSpeedRatio(1.2f);
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -844,6 +846,7 @@ namespace DuckHuntCommon
             {
                 name = "chapter9_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
+                duck.SetSpeedRatio(1.3f);
                 ducks.Add(duck);
                 duckcount++;
                 pilottypeindex++;
@@ -899,6 +902,7 @@ namespace DuckHuntCommon
             {
                 name = "chapter10_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
+                duck.SetSpeedRatio(1.5f);
                 ducks.Add(duck);
                 duckcount++;
                 pilottypeindex++;
@@ -972,6 +976,7 @@ namespace DuckHuntCommon
         //int concurrentduck = 100;
         //int duckstyle = 8;
         int duckstyle = 1;
+        float speedratio = 1f;
         public GameChapterForever()
         {
             pilotypelist = new List<PilotType>();
@@ -998,11 +1003,13 @@ namespace DuckHuntCommon
                 int pilottypeindex = i % duckstyle;
                
                 duck = new DuckModel(pilotypelist[pilottypeindex], name);
+                duck.SetSpeedRatio(speedratio);
                 ducks.Add(duck);
                 duckcount++;
             }
 
             concurrentduck++;
+            speedratio += 0.1f;
 
             return true;
         }
@@ -1041,8 +1048,8 @@ namespace DuckHuntCommon
                 chapter = new GameChapter5();
                 chapters.Add(chapter);
 
-                chapter = new GameChapterFunShowCurve();
-                chapters.Add(chapter);
+                //chapter = new GameChapterFunShowCurve();
+                //chapters.Add(chapter);
 
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
@@ -1472,7 +1479,8 @@ namespace DuckHuntCommon
                         // save new score
 
                         int score = scoreBoard.TotalScore;
-                        duckHuntGame.SaveNewScore(score);
+                        int level = hitBoard.GetLevel();
+                        duckHuntGame.SaveNewScore(score, level);
 
                         duckHuntGame.GotoMainMenuPage();
                     }
@@ -1482,7 +1490,9 @@ namespace DuckHuntCommon
 
         int previousTotalScore = 0;
         int previousHitCount = 0;
+        int showbaloonCount = 0;
         int showplanescore = 1000;
+        int showplanecount = 0;
         void ShowEastEgg()
         {
             // 
@@ -1495,11 +1505,12 @@ namespace DuckHuntCommon
                 {
                     plane = new PlaneModel();
                     plane.Initialize(null, this.baloonSpace, 0);
-
+                    showplanescore += 1000 + 50 * showplanecount;
+                    showplanecount++;
                 }
             }
 
-            if (hitBoard.HitCount - previousHitCount > 20)
+            if (hitBoard.HitCount - previousHitCount > 20 + showbaloonCount * 2)
             {
                 // show baloon
                 previousHitCount = hitBoard.HitCount;
@@ -1616,6 +1627,7 @@ namespace DuckHuntCommon
                 {
                     // show award
                     //AddBonusDuck(clickpos);
+                    scoreBoard.AddScore(-500 - showbaloonCount*10);
                 }
 
             }
@@ -1675,6 +1687,7 @@ namespace DuckHuntCommon
         void ShowLevelUp()
         {
             levelUp.Reset();
+            hitBoard.IncreaseLevel();
         }
 
         int flycount = 0;
@@ -2070,6 +2083,7 @@ namespace DuckHuntCommon
 
             scoreListBoard.Initialize(null, scoreListBoardSpace, 0);
             scoreListBoard.ScoreList = game.DuckHuntGameData.ScoreList;
+            scoreListBoard.LevelList = game.DuckHuntGameData.LevelList;
 
             returnMenuItem.Initialize(null, returnMenuSpace, 0);
 
@@ -2472,11 +2486,20 @@ namespace DuckHuntCommon
 
         // score list
         Dictionary<int, string> scorelist;
+        Dictionary<int, string> levellist;
         public Dictionary<int, string> ScoreList
         {
             get
             {
                 return scorelist;
+            }
+        }
+        
+        public Dictionary<int, string> LevelList
+        {
+            get
+            {
+                return levellist;
             }
         }
 
@@ -2503,10 +2526,36 @@ namespace DuckHuntCommon
             }
         }
 
+
+        public void AddLevel(string name, int level)
+        {
+            levellist[level] = name;
+
+            var result = levellist.OrderByDescending(c => c.Key);
+            Dictionary<int, string> tmp = new Dictionary<int, string>();
+            int i = 0;
+            foreach (var item in result)
+            {
+                i++;
+                if (i > 10)
+                {
+                    break;
+                }
+                tmp[item.Key] = item.Value;
+            }
+            levellist.Clear();
+            foreach (var item in tmp)
+            {
+                levellist[item.Key] = item.Value;
+            }
+        }
+
         public GameData()
         {
             scorelist = new Dictionary<int, string>();
+            levellist = new Dictionary<int, string>();
             var key = scorelist.OrderByDescending(c => c.Key);
+            var key1 = levellist.OrderByDescending(c => c.Key);
         }
 
 #if !WINDOWS_PHONE
@@ -2683,11 +2732,19 @@ namespace DuckHuntCommon
             //              <score></score>
             //          </record>
             //      </scorelist>
+            //      <levellist>
+            //          <count> </count>
+            //          <record>
+            //              <name></name>
+            //              <level></level>
+            //          </record>
+            //      </levellist>
             // </DuckHunt>
 
             content += "<?xml version='1.0'?>";
             content += "<DuckHunt>";
             SaveScoreList(ref content);
+            SaveLevelList(ref content);
 
             // could save other configuration
             SaveGameConfig(ref content);
@@ -2710,6 +2767,14 @@ namespace DuckHuntCommon
             content += "</record>";
         }
 
+        private void SaveLevelRecord(ref string content, string name, int score)
+        {
+            content += "<record>";
+            content += "<name>" + name + "</name>";
+            content += "<level>" + score.ToString() + "</level>";
+            content += "</record>";
+        }
+
         private void SaveScoreList(ref string content)
         {
             content += "<scorelist>";
@@ -2722,7 +2787,17 @@ namespace DuckHuntCommon
             content += "</scorelist>";
         }
 
+        private void SaveLevelList(ref string content)
+        {
+            content += "<levellist>";
+            SaveCount(ref content, levellist.Count);
+            foreach (KeyValuePair<int, string> pair in levellist)
+            {
+                SaveLevelRecord(ref content, pair.Value, pair.Key);
 
+            }
+            content += "</levellist>";
+        }
 
         private void SaveGameConfig(ref string content)
         {
@@ -2751,6 +2826,27 @@ namespace DuckHuntCommon
                     score = Convert.ToInt32(reader.Value);
                 }
                 if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "score")
+                {
+                    return;
+                }
+            }
+        }
+
+
+        private void LoadPlayerLevel(XmlReader reader, ref int level)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "level")
+            {
+                // error
+                return;
+            }
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Text)
+                {
+                    level = Convert.ToInt32(reader.Value);
+                }
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "level")
                 {
                     return;
                 }
@@ -2804,6 +2900,36 @@ namespace DuckHuntCommon
             }
 
         }
+
+
+        private void LoadOneLevelRecord(XmlReader reader, ref string name, ref int level)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "record")
+            {
+                // error
+                return;
+            }
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "name")
+                    {
+                        LoadPlayerName(reader, ref name);
+                    }
+                    if (reader.Name == "level")
+                    {
+                        LoadPlayerLevel(reader, ref level);
+                    }
+                }
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "record")
+                {
+                    return;
+                }
+            }
+
+        }
+
         private void LoadCount(XmlReader reader, ref int count)
         {
             if (reader.NodeType != XmlNodeType.Element || reader.Name != "count")
@@ -2951,6 +3077,45 @@ namespace DuckHuntCommon
             }
         }
 
+
+        private void LoadLevelList(XmlReader reader)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "levellist")
+            {
+                // error
+                return;
+            }
+
+            // next item should be scorelist
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "count")
+                    {
+                        // find score list element
+                        int count = 0;
+                        LoadCount(reader, ref count);
+                    }
+                    if (reader.Name == "record")
+                    {
+                        string name = "";
+                        int level = 0;
+                        LoadOneLevelRecord(reader, ref name, ref level);
+                        levellist[level] = name;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    // end of element
+                    if (reader.Name == "levellist")
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
         private void LoadGameData(string content)
         {
             //
@@ -2993,6 +3158,11 @@ namespace DuckHuntCommon
                                 LoadScoreList(reader);
                             }
 
+                            if (reader.Name == "levellist")
+                            {
+                                // find score list element
+                                LoadLevelList(reader);
+                            }
                             // could add other data
 
                         }

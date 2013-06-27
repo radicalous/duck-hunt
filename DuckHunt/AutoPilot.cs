@@ -468,7 +468,7 @@ namespace GameCommon
             Position.Y = boundary.Height / 2;
 
             Rectangle startSpace = new Rectangle(0, 0 + (int)(0.1 * boundaryRect.Height),
-                boundaryRect.Width, (int)(boundaryRect.Height * 0.4));
+                boundaryRect.Width, (int)(boundaryRect.Height * 0.8));
 
             LeadDirection(Direction.RANDOM, Direction.UP);
             RadomStartPos(startSpace);
