@@ -1134,6 +1134,7 @@ namespace DuckHuntCommon
             scoreposition.X += 20 * DefScaleInScreen;
             scoreposition.Y += 25 * DefScaleInScreen;
 
+
         }
 
         public override void Update(GameTime gameTime)
@@ -1174,6 +1175,14 @@ namespace DuckHuntCommon
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
             spriteBatch.DrawString(ObjFontList[0], "SCORE: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            value = "Level: " + model.GetLevel().ToString();
+            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
+            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
+            pos1.Y += 50 * DefScaleInScreen;
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
         }
 
         public override void PlaySound()
@@ -1523,7 +1532,7 @@ namespace DuckHuntCommon
             pos1.X += 10 * DefScaleInScreen;
             string value = this.model.LostDuckCount.ToString();
 
-            spriteBatch.DrawString(this.ObjFontList[0], "Lost Duck Count: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(this.ObjFontList[0], "Lost Duck: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
 
@@ -1639,16 +1648,9 @@ namespace DuckHuntCommon
             Vector2 pos1 = scoreposition;
             pos1.Y += 10 * DefScaleInScreen;
             pos1.X += 10 * DefScaleInScreen;
-            string value = "Hit Count: " + model.GetHitCount().ToString();
+            string value = "Hit Duck: " + model.GetHitCount().ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
-                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
-
-            value = "Level: " + model.GetLevel().ToString();
-            //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
-            //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            pos1.Y += 35 * DefScaleInScreen;
             spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
@@ -1668,6 +1670,7 @@ namespace DuckHuntCommon
             model = (MenuItemModel)model1;
         }
 
+        int fontindex = 0;
         public override void Init(Vector2 orgpoint, float defscale, ModelObject model1,
             Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
         {
@@ -1676,6 +1679,23 @@ namespace DuckHuntCommon
 
             menuContentPos.X += (120 - model.Conent.Length * 10 ) * DefScaleInScreen;
             menuContentPos.Y += 60 * DefScaleInScreen;
+
+
+            
+            float fontindexcheck = 0;
+            fontindexcheck += 1/DefScaleInScreen - 1;
+            if(fontindexcheck > 0 && fontindexcheck <= 1.0)
+            {
+                fontindex = 1;
+            }
+            if(fontindexcheck > 1.0 && fontindexcheck <= 2.0)
+            {
+                fontindex = 2;
+            }
+            if (fontindex >= base.ObjFontList.Count)
+            {
+                fontindex = base.ObjFontList.Count - 1;
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -1692,7 +1712,7 @@ namespace DuckHuntCommon
             //.Y += (space.Height/2 - 60) * _defscale;
             //pos1.X += 0 * _defscale;
             string value = this.model.Conent.ToString();
-            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Blue, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(base.ObjFontList[fontindex], value, pos1, Color.Blue, 0, Vector2.Zero, 1,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
 

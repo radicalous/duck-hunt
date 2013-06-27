@@ -968,6 +968,65 @@ namespace DuckHuntCommon
     }
 
 
+
+    class GameChapterILoveU : GameChapter
+    {
+        int duckcount = 0;
+        List<PilotType> pilotypelist;
+        int pilottypeindex = 0;
+
+        public GameChapterILoveU()
+        {
+            pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKILOVEU_I);
+            pilotypelist.Add(PilotType.DUCKILOVEU_L);
+            pilotypelist.Add(PilotType.DUCKILOVEU_U);
+        }
+        override public bool GetDuckList(out List<DuckModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<DuckModel>();
+
+            DuckModel duck;
+            pilottypeindex = pilottypeindex % pilotypelist.Count;
+
+
+            string name = "chapteriloveui" + duckcount.ToString();
+
+            for (int i = 0; i < 5; i++)
+            {
+                duck = new DuckModel(pilotypelist[0], name);
+                ducks.Add(duck);
+                duckcount++;
+            }
+            name = "chapteriloveul" + duckcount.ToString();
+            for (int i = 0; i < 20; i++)
+            {
+                duck = new DuckModel(pilotypelist[1], name);
+                ducks.Add(duck);
+                duckcount++;
+            }
+            name = "chapteriloveuu" + duckcount.ToString();
+            for (int i = 0; i < 20; i++)
+            {
+                duck = new DuckModel(pilotypelist[2], name);
+                ducks.Add(duck);
+                duckcount++;
+            }
+
+            return true;
+        }
+
+        public override bool CanBeRemoved()
+        {
+            if (pilottypeindex >= pilotypelist.Count)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
     class GameChapterForever : GameChapter
     {
         int duckcount = 0;
@@ -1024,7 +1083,7 @@ namespace DuckHuntCommon
     class GameChapterManager
     {
         List<GameChapter> chapters;
-        GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
+        List<GameChapter> bonousChapter;
 
         public GameChapterManager()
         {
@@ -1064,6 +1123,13 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
+
+                bonousChapter = new List<GameChapter>();
+                GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
+                GameChapterILoveU loveuChapter = new GameChapterILoveU();
+                bonousChapter.Add(loveuChapter);
+
+
             }
             else
             {
@@ -1097,7 +1163,8 @@ namespace DuckHuntCommon
 
         public bool GetBonusChapter(out GameChapter bounusChapter)
         {
-            bounusChapter = curveChapter;
+
+            bounusChapter = bonousChapter[0];
             return true;
         }
 
@@ -1223,37 +1290,11 @@ namespace DuckHuntCommon
             baloonSpace.Y = 100;
             baloonSpace.Height = 150;
 
-            HitBoardModel hitBoard1 = new HitBoardModel();
-            if (rectBackground.Width < rectBackground.Height)
-            {
-                hitBoardSpace.X = rectBackground.Top + 20;
-                hitBoardSpace.Y = rectBackground.Left + 10;
-                hitBoardSpace.Width = hitBoard1.GetSpace().Width;
-                hitBoardSpace.Height = hitBoard1.GetSpace().Height;
-            }
-            else
-            {
-                hitBoardSpace.X = rectBackground.Left + 20;
-                hitBoardSpace.Y = rectBackground.Top + 10;
-                hitBoardSpace.Width = hitBoard1.GetSpace().Width;
-                hitBoardSpace.Height = hitBoard1.GetSpace().Height;
-            }
-
             ScroeBoardModel scoreBoard1 = new ScroeBoardModel();
-            if (rectBackground.Width < rectBackground.Height)
-            {
-                scoreBoardSpace.X = rectBackground.Top + 20;
-                scoreBoardSpace.Y = rectBackground.Left + 80;
-                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
-                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
-            }
-            else
-            {
-                scoreBoardSpace.X = rectBackground.Left + 20;
-                scoreBoardSpace.Y = rectBackground.Top + 80;
-                scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
-                scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
-            }
+            scoreBoardSpace.X = rectBackground.Left + 20;
+            scoreBoardSpace.Y = rectBackground.Top + 10;
+            scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
+            scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
 
 
             TimeBoardModel timeBoard = new TimeBoardModel();
@@ -1272,6 +1313,13 @@ namespace DuckHuntCommon
                 leftTimeBoardSpace.Width = timeBoard.GetSpace().Width;
                 leftTimeBoardSpace.Height = timeBoard.GetSpace().Height;
             }
+
+            HitBoardModel hitBoard1 = new HitBoardModel();
+            hitBoardSpace = leftTimeBoardSpace;
+            hitBoardSpace.Y = 70;
+            hitBoardSpace.Width = hitBoard1.GetSpace().Width;
+            hitBoardSpace.Height = hitBoard1.GetSpace().Height;
+
 
 
             ButtonModel button = new ButtonModel();
@@ -1417,7 +1465,7 @@ namespace DuckHuntCommon
             {
                 //
                 dog.Update(gametime);
-                if (dog.Gone || true)
+                if (dog.Gone/* || true*/)
                 {
                     // show duck
                     phase = GAME_PHASE.DUCK_FLY;
@@ -1479,7 +1527,7 @@ namespace DuckHuntCommon
                         // save new score
 
                         int score = scoreBoard.TotalScore;
-                        int level = hitBoard.GetLevel();
+                        int level = scoreBoard.GetLevel();
                         duckHuntGame.SaveNewScore(score, level);
 
                         duckHuntGame.GotoMainMenuPage();
@@ -1493,48 +1541,63 @@ namespace DuckHuntCommon
         int showbaloonCount = 0;
         int showplanescore = 1000;
         int showplanecount = 0;
+
+        void ShowBalloon()
+        {
+            if (baloon == null)
+            {
+                baloon = new BaloonModel();
+                baloon.Initialize(null, baloonSpace, 0);
+            }
+        }
+
+        void ShowBomb()
+        {
+            // show plane
+            if (parrot == null)
+            {
+                parrot = new ParrotModel();
+
+                parrot.Initialize(null, this.duckFlySpace, 0);
+                parrot.StartPilot();
+            }
+        }
+
+        void ShowPlane()
+        {
+            if (plane == null)
+            {
+                plane = new PlaneModel();
+                plane.Initialize(null, this.baloonSpace, 0);
+            }
+        }
+
         void ShowEastEgg()
         {
             // 
             // show bounous
 
-
             if (scoreBoard.TotalScore > showplanescore)
             {
-                if (plane == null)
-                {
-                    plane = new PlaneModel();
-                    plane.Initialize(null, this.baloonSpace, 0);
-                    showplanescore += 1000 + 50 * showplanecount;
-                    showplanecount++;
-                }
-            }
 
+                ShowPlane();
+                showplanescore += 1000 + 50 * showplanecount;
+                showplanecount++;
+            }
+            /*
             if (hitBoard.HitCount - previousHitCount > 20 + showbaloonCount * 2)
             {
                 // show baloon
                 previousHitCount = hitBoard.HitCount;
-                if (baloon == null)
-                {
-                    baloon = new BaloonModel();
-                    baloon.Initialize(null, baloonSpace, 0);
-                }
+                ShowBalloon();
 
             }
-
-
+            */
 
             // show bomb
             if (scoreBoard.TotalScore - previousTotalScore > 1000)
             {
-                // show plane
-                if (parrot == null)
-                {
-                    parrot = new ParrotModel();
-
-                    parrot.Initialize(null, this.duckFlySpace, 0);
-                    parrot.StartPilot();
-                }
+                ShowBomb();
                 previousTotalScore = scoreBoard.TotalScore;
 
             }
@@ -1613,6 +1676,11 @@ namespace DuckHuntCommon
                         ii++;
                     }
 
+                    if (bullet.GetShootDucks().Count > 1)
+                    {
+                        ShowBalloon();
+                    }
+
                     ShowEastEgg();
                 }
 
@@ -1687,7 +1755,7 @@ namespace DuckHuntCommon
         void ShowLevelUp()
         {
             levelUp.Reset();
-            hitBoard.IncreaseLevel();
+            scoreBoard.IncreaseLevel();
         }
 
         int flycount = 0;
@@ -2069,7 +2137,7 @@ namespace DuckHuntCommon
             {
                 scoreListBoardSpace.X = rectBackground.Left +
                     (rectBackground.Width - scoreListBoard1.GetSpace().Width) / 2;
-                scoreListBoardSpace.Y = rectBackground.Top + 100;
+                scoreListBoardSpace.Y = rectBackground.Top + 50;
                 scoreListBoardSpace.Width = scoreListBoard1.GetSpace().Width;
                 scoreListBoardSpace.Height = scoreListBoard1.GetSpace().Height;
 
