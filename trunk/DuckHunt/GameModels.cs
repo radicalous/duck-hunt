@@ -582,15 +582,29 @@ namespace DuckHuntCommon
             resourceItm.path = "Graphics\\Cloud";
             resourceList.Add(resourceItm);
 
+#if  WINDOWS_PHONE
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
             resourceItm.path = "Graphics\\font_15";
-#else
-            resourceItm.path = "Graphics\\font_30";
-            //resourceItm.path = "Graphics\\test_font";
-#endif
             resourceList.Add(resourceItm);
+#else
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\font_30";
+            resourceList.Add(resourceItm);
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\font_25";
+            resourceList.Add(resourceItm);
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\font_20";
+            resourceList.Add(resourceItm);
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\font_15";
+            resourceList.Add(resourceItm);
+#endif
 
             return resourceList;
         }
@@ -1903,6 +1917,7 @@ namespace DuckHuntCommon
             // Set the starting position of the player around the middle of the screen and to the back
 
             flyduckPilot.Initialize(duckspace, randomseed);
+            flyduckPilot.SetStartPos(pos);
         }
 
 
@@ -2723,7 +2738,6 @@ namespace DuckHuntCommon
         List<AnimationInfo> anationInfoList;
         List<DuckIconModel> duckIcons;
         int hitcount = 0;
-        int level = 1;
 
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
@@ -2867,16 +2881,6 @@ namespace DuckHuntCommon
         public void AddHitCount(int hitCount)
         {
             hitcount += hitCount;
-        }
-
-        public int GetLevel()
-        {
-            return level;
-        }
-
-        public void IncreaseLevel()
-        {
-            level++;
         }
     }
 
@@ -3140,6 +3144,7 @@ namespace DuckHuntCommon
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
 
+
         public ScroeBoardModel()
         {
             //
@@ -3270,6 +3275,17 @@ namespace DuckHuntCommon
             {
                 return totalscore;
             }
+        }
+
+        int level = 1;
+        public int GetLevel()
+        {
+            return level;
+        }
+
+        public void IncreaseLevel()
+        {
+            level++;
         }
     }
 
@@ -3464,7 +3480,7 @@ namespace DuckHuntCommon
         public TimeBoardModel()
         {
 
-            space.Width = 300;
+            space.Width = 380;
             space.Height = 63;
 
         }
@@ -3473,7 +3489,7 @@ namespace DuckHuntCommon
         {
             // get least of duck icon
 
-            space.Width = 300;
+            space.Width = 380;
             space.Height = 63;
         }
 
