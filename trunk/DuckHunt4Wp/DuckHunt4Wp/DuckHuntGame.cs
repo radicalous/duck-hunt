@@ -464,7 +464,7 @@ namespace DuckHuntCommon
         public GameChapter()
         {
         }
-        abstract public bool GetDuckList(out List<DuckModel> ducks);
+        abstract public bool GetDuckList(out List<AnimalModel> ducks);
         abstract public bool CanBeRemoved();
     }
 
@@ -472,10 +472,10 @@ namespace DuckHuntCommon
     class GameChapter1 : GameChapter
     {
         int duckcount = 0;
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
             DuckModel duck;
             if (duckcount >= 5)
@@ -503,10 +503,10 @@ namespace DuckHuntCommon
     class GameChapter2 : GameChapter
     {
         int duckcount = 0;
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
             DuckModel duck;
             if (duckcount >= 6)
@@ -538,13 +538,14 @@ namespace DuckHuntCommon
     class GameChapter3 : GameChapter
     {
         int duckcount = 0;
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        int totalcount = 12;
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
-            if (duckcount >= 8)
+            AnimalModel duck;
+            if (duckcount >= totalcount)
             {
                 ducks = null;
                 return false;
@@ -561,11 +562,17 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter3_parrot" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKEIGHT, name);
+            ducks.Add(duck);
+            duckcount++;
+
+
             return true;
         }
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 8)
+            if (duckcount >= totalcount)
             {
                 return true;
             }
@@ -576,13 +583,14 @@ namespace DuckHuntCommon
     class GameChapter4 : GameChapter
     {
         int duckcount = 0;
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        int totalcount = 12;
+
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
-
-            DuckModel duck;
-            if (duckcount >= 8)
+            ducks = new List<AnimalModel>();
+            AnimalModel duck;
+            if (duckcount >= totalcount)
             {
                 ducks = null;
                 return false;
@@ -599,11 +607,17 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter4_parrot" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKELLIPSEDEPTH, name);
+            ducks.Add(duck);
+            duckcount++;
+
+
             return true;
         }
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 8)
+            if (duckcount >= totalcount)
             {
                 return true;
             }
@@ -614,13 +628,14 @@ namespace DuckHuntCommon
     class GameChapter5 : GameChapter
     {
         int duckcount = 0;
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        int totalcount = 12;
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
-            if (duckcount >= 9)
+            AnimalModel duck;
+            if (duckcount >= totalcount)
             {
                 ducks = null;
                 return false;
@@ -643,12 +658,18 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter5_parrot" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKNORMAL, name);
+            ducks.Add(duck);
+            duckcount++;
+
+
             return true;
         }
 
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 9)
+            if (duckcount >= totalcount)
             {
                 return true;
             }
@@ -659,13 +680,14 @@ namespace DuckHuntCommon
     class GameChapter6 : GameChapter
     {
         int duckcount = 0;
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        int totalcount = 15;
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
-            if (duckcount >= 12)
+            AnimalModel duck;
+            if (duckcount >= totalcount)
             {
                 ducks = null;
                 return false;
@@ -693,12 +715,19 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter6_parrot" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKNORMAL, name);
+            ducks.Add(duck);
+            duckcount++;
+
+
+
             return true;
         }
 
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 12)
+            if (duckcount >= totalcount)
             {
                 return true;
             }
@@ -709,13 +738,14 @@ namespace DuckHuntCommon
     class GameChapter7 : GameChapter
     {
         int duckcount = 0;
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        int totalcount = 18;
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
-            if (duckcount >= 15)
+            AnimalModel duck;
+            if (duckcount >= totalcount)
             {
                 ducks = null;
                 return false;
@@ -747,6 +777,12 @@ namespace DuckHuntCommon
             ducks.Add(duck);
             duckcount++;
 
+            name = "chapter7_parrot" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKCIRCLE, name);
+            ducks.Add(duck);
+            duckcount++;
+
+
             return true;
         }
 
@@ -766,6 +802,7 @@ namespace DuckHuntCommon
         int duckcount = 0;
         List<PilotType> pilotypelist;
         int pilotTypeIndex = 0;
+
         public GameChapter8()
         {
             pilotypelist = new List<PilotType>();
@@ -774,12 +811,12 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKEIGHT);
             pilotypelist.Add(PilotType.DUCKSIN);
         }
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
+            AnimalModel duck;
             if (pilotTypeIndex >= pilotypelist.Count)
             {
                 ducks = null;
@@ -796,6 +833,13 @@ namespace DuckHuntCommon
                 ducks.Add(duck);
                 duckcount++;
             }
+            name = "chapter8_parrot_i" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+            name = "chapter8_parrot_l" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+
             pilotTypeIndex++;
 
             return true;
@@ -827,12 +871,12 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKNORMAL);
 
         }
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
+            AnimalModel duck;
             if (duckcount >= 3 * pilotypelist.Count)
             {
                 ducks = null;
@@ -851,6 +895,18 @@ namespace DuckHuntCommon
                 duckcount++;
                 pilottypeindex++;
             }
+
+            name = "chapter9_parrot_i" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+            name = "chapter9_parrot_l" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+
+            name = "chapter9_parrot_u" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+
 
             return true;
         }
@@ -883,12 +939,12 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKNORMAL);
 
         }
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
+            AnimalModel duck;
             if (duckcount >= 3 * pilotypelist.Count)
             {
                 ducks = null;
@@ -907,6 +963,18 @@ namespace DuckHuntCommon
                 duckcount++;
                 pilottypeindex++;
             }
+
+            name = "chapter10_parrot_i" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+            name = "chapter10_parrot_l" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+
+            name = "chapter10_parrot_u" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+
 
             return true;
         }
@@ -935,10 +1003,10 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKELLIPSE);
             pilotypelist.Add(PilotType.DUCKEIGHT);
         }
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
             DuckModel duck;
             pilottypeindex = pilottypeindex % pilotypelist.Count;
@@ -982,10 +1050,10 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKILOVEU_L);
             pilotypelist.Add(PilotType.DUCKILOVEU_U);
         }
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
             DuckModel duck;
             pilottypeindex = pilottypeindex % pilotypelist.Count;
@@ -1048,12 +1116,12 @@ namespace DuckHuntCommon
             pilotypelist.Add(PilotType.DUCKLINE);
 
         }
-        override public bool GetDuckList(out List<DuckModel> ducks)
+        override public bool GetDuckList(out List<AnimalModel> ducks)
         {
             ducks = null;
-            ducks = new List<DuckModel>();
+            ducks = new List<AnimalModel>();
 
-            DuckModel duck;
+            AnimalModel duck;
 
             string name = "chapterforever_" + concurrentduck.ToString();
             for (int i = 0; i < concurrentduck; i++)
@@ -1066,6 +1134,18 @@ namespace DuckHuntCommon
                 ducks.Add(duck);
                 duckcount++;
             }
+
+            name = "chapterlast_parrot_i" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+            name = "chapterlast_parrot_l" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+
+            name = "chapterlast_parrot_u" + duckcount.ToString();
+            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            ducks.Add(duck);
+
 
             concurrentduck++;
             speedratio += 0.1f;
@@ -1219,7 +1299,7 @@ namespace DuckHuntCommon
 
 
         List<BulletModel> bulletsList;
-        List<DuckModel> duckList;
+        List<AnimalModel> duckList;
         Rectangle duckFlySpace;
 
         DogModel dog;
@@ -1394,7 +1474,7 @@ namespace DuckHuntCommon
                     objlst.Add(plane);
                 }
                 //objlst.Add(plane);
-                foreach (DuckModel duck in duckList)
+                foreach (AnimalModel duck in duckList)
                 {
                     objlst.Add(duck);
                 }
@@ -1435,7 +1515,7 @@ namespace DuckHuntCommon
             if (parrot != null)
             {
                 parrot.Update(gametime);
-                if (parrot.Gone)
+                if (parrot.Gone())
                 {
                     parrot = null;
                 }
@@ -1485,14 +1565,14 @@ namespace DuckHuntCommon
 
                 bool finished = true;
                 int deadcount = 0;
-                foreach (DuckModel duck in duckList)
+                foreach (AnimalModel duck in duckList)
                 {
                     duck.Update(gametime);
-                    if (!duck.Gone)
+                    if (duck.Type() == ModelType.DUCK && !duck.Gone())
                     {
                         finished = false;
                     }
-                    if (duck.dead)
+                    if (duck.Dead())
                     {
                         deadcount++;
                     }
@@ -1595,12 +1675,14 @@ namespace DuckHuntCommon
             */
 
             // show bomb
+            /*
             if (scoreBoard.TotalScore - previousTotalScore > 1000)
             {
                 ShowBomb();
                 previousTotalScore = scoreBoard.TotalScore;
 
             }
+             */
         }
 
         public void Click(List<Vector2> clickpositionlist)
@@ -1636,7 +1718,7 @@ namespace DuckHuntCommon
                 }
 
                 BulletModel bullet = new BulletModel(clickpos);
-                foreach (DuckModel duck in duckList)
+                foreach (AnimalModel duck in duckList)
                 {
                     duck.Shoot(bullet);
                 }
@@ -1657,26 +1739,27 @@ namespace DuckHuntCommon
                     //
                     float score = 100;
                     bool showplane = false;
-                    for (int i = 0; i < bullet.GetShootDucks().Count; i++)
+                    int shootduckcount = 0;
+                    foreach (AnimalModel animal in bullet.GetShootDucks())
                     {
-                        score = 100;
-                        score *= (i + 1);
-                        score /= bullet.GetShootDucks()[i].GetSacle();
-                        scoreBoard.AddScore((int)score);
-
-                    }
-
-                    int ii = 0;
-                    foreach (DuckModel duck2 in duckList)
-                    {
-                        if (duck2.dead)
+                        if (animal.Type() == ModelType.DUCK)
                         {
+                            shootduckcount++;
+                            score = 100;
+                            score *= shootduckcount;
+                            score /= animal.GetSacle();
+                            scoreBoard.AddScore((int)score);
                             hitBoard.AddHitCount(1);
                         }
-                        ii++;
+                        else if (animal.Type() == ModelType.PARROT)
+                        {
+                            // shot a parrot
+                            scoreBoard.AddScore(-500 - showbaloonCount * 10);
+                        }
                     }
 
-                    if (bullet.GetShootDucks().Count > 1)
+
+                    if (shootduckcount > 1)
                     {
                         ShowBalloon();
                     }
@@ -1691,12 +1774,14 @@ namespace DuckHuntCommon
                     baloon = null;
                 }
 
+                /*
                 if (bullet.GetParrot() != null)
                 {
                     // show award
                     //AddBonusDuck(clickpos);
                     scoreBoard.AddScore(-500 - showbaloonCount*10);
                 }
+                 */
 
             }
         }
@@ -1761,11 +1846,13 @@ namespace DuckHuntCommon
         int flycount = 0;
 
         GameMode gameMode = GameMode.GAME_TIME_LIMIT;
+        List<AnimalModel> tmplist = null;
         void NewDuck()
         {
             if (duckList == null)
             {
-                duckList = new List<DuckModel>();
+                duckList = new List<AnimalModel>();
+                tmplist = new List<AnimalModel>();
             }
             else
             {
@@ -1774,12 +1861,16 @@ namespace DuckHuntCommon
 
                 if (gameMode != GameMode.GAME_TIME_LIMIT)
                 {
-                    foreach (DuckModel duck2 in duckList)
+                    foreach (AnimalModel duck2 in duckList)
                     {
-                        if (!duck2.dead)
+                        if (!duck2.Dead() && duck2.Type() == ModelType.DUCK)
                         {
                             //flycount++;
                             lostDuck.AddDuck(1);
+                        }
+                        if (!duck2.Gone() && duck2.Type() == ModelType.PARROT)
+                        {
+                            tmplist.Add(duck2);
                         }
                     }
                     if (lostDuck.LostDuckCount >= 3)
@@ -1790,6 +1881,14 @@ namespace DuckHuntCommon
                 }
                 else
                 {
+                    foreach (AnimalModel duck2 in duckList)
+                    {
+                        if (!duck2.Gone() && duck2.Type() == ModelType.PARROT)
+                        {
+                            tmplist.Add(duck2);
+                        }
+                    }
+
                     if (leftTime.LeftTime <= 0)
                     {
                         duckList.Clear();
@@ -1799,7 +1898,7 @@ namespace DuckHuntCommon
                 duckList.Clear();
             }
 
-            List<DuckModel> ducks = null;
+            List<AnimalModel> ducks = null;
 
             do
             {
@@ -1818,14 +1917,15 @@ namespace DuckHuntCommon
 
             int i = 0;
             DateTime now = System.DateTime.Now;
-            foreach (DuckModel duck in ducks)
+            foreach (AnimalModel duck in ducks)
             {
                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                 duck.Initialize(null, duckFlySpace, s + (i++) * 7);
                 duck.StartPilot();
                 duckList.Add(duck);
-
             }
+            duckList.AddRange(tmplist);
+            tmplist.Clear();
         }
 
 
@@ -1851,7 +1951,7 @@ namespace DuckHuntCommon
                 }
             }
 
-            List<DuckModel> ducks = null;
+            List<AnimalModel> ducks = null;
             GameChapter bonousChapter = null;
             gameChapterMgr.GetBonusChapter(out bonousChapter);
             bonousChapter.GetDuckList(out ducks);
@@ -1864,7 +1964,7 @@ namespace DuckHuntCommon
 
             int i = 0;
             DateTime now = System.DateTime.Now;
-            foreach (DuckModel duck in ducks)
+            foreach (AnimalModel duck in ducks)
             {
                 int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                 duck.Initialize(null, duckFlySpace, s + (i++) * 7);

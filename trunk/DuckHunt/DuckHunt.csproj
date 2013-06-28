@@ -309,6 +309,9 @@
     <Content Include="Content\Graphics\sky_a_3.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Graphics\sky_a_4.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\MenuItem.xnb" />
     <Content Include="Content\Graphics\red_bird.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
