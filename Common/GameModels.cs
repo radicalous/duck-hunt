@@ -198,9 +198,9 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
             AnimationInfo animationInfo = new AnimationInfo();
             animationInfo.animation = false;
-            animationInfo.frameCount = 3;
+            animationInfo.frameCount = 4;
             animationInfo.frameWidth = animationInfo.frameHeight = 0;
-            animationInfo.frameTime = 330;
+            animationInfo.frameTime = 400;
             anationInfoList.Add(animationInfo);
         }
 
@@ -245,6 +245,11 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\sky_a_3";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\sky_a_4";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -1306,7 +1311,18 @@ namespace DuckHuntCommon
         }
     }
 
-    class DuckModel : BaseModel
+    abstract class AnimalModel : BaseModel
+    {
+        public abstract void StartPilot();
+        public abstract void StartPilot(Vector2 pos);
+        public abstract void Shoot(BulletModel bullet);
+        public abstract void SetSpeedRatio(float ratio);
+        public abstract bool Gone();
+        public abstract bool Dead();
+
+    }
+
+    class DuckModel : AnimalModel
     {
         AiPilot flyduckPilot;
         AiPilot goneduckPilot;
@@ -1314,7 +1330,7 @@ namespace DuckHuntCommon
         public bool Active = true;
         public bool dead = false;
 
-        public bool Gone = false;
+        public bool gone = false;
 
         // Amount of hit points that player has
         public int Health;
@@ -1406,7 +1422,7 @@ namespace DuckHuntCommon
 
         int duckstyle = 0;
 
-        public void SetSpeedRatio(float ratio)
+        override public void SetSpeedRatio(float ratio)
         {
             if (ratio < 1)
             {
@@ -1831,7 +1847,7 @@ namespace DuckHuntCommon
                 if (goneduckPilot.GetPosition().Y > duckspace.Height ||
                     goneduckPilot.GetPosition().Y < 0 - anationInfoList[GetCurrentAnimationIndex()].frameHeight)
                 {
-                    Gone = true;
+                    gone = true;
                 }
             }
 
@@ -1905,14 +1921,14 @@ namespace DuckHuntCommon
         ///  specific functions
         /// </summary>
 
-        public void StartPilot()
+        override public void StartPilot()
         {
             // Set the starting position of the player around the middle of the screen and to the back
 
             flyduckPilot.Initialize(duckspace, randomseed);
         }
 
-        public void StartPilot(Vector2 pos)
+        override public void StartPilot(Vector2 pos)
         {
             // Set the starting position of the player around the middle of the screen and to the back
 
@@ -1921,7 +1937,7 @@ namespace DuckHuntCommon
         }
 
 
-        public void Shoot(BulletModel bullet)
+        override public void Shoot(BulletModel bullet)
         {
             // check if it's shoot
             if (Active == false)
@@ -1955,7 +1971,15 @@ namespace DuckHuntCommon
                 // new a bullet  
                 bullet.SetTarget(this);
             }
+        }
 
+        override public bool Gone()
+        {
+            return gone;
+        }
+        override public bool Dead()
+        {
+            return dead;
         }
 
     }
@@ -2322,7 +2346,7 @@ namespace DuckHuntCommon
        ModelObject parent = null;
         Vector2 relativePositionInParent = Vector2.Zero;
         Vector2 targetposition = Vector2.Zero;
-        List<DuckModel> shootduckList;
+        List<AnimalModel> shootduckList;
 
         ParrotModel parrot;
         BaloonModel baloon;
@@ -2362,7 +2386,7 @@ namespace DuckHuntCommon
             bulletspace.Width = animationInfo.frameWidth;
             bulletspace.Height = animationInfo.frameHeight;
 
-            shootduckList = new List<DuckModel>();
+            shootduckList = new List<AnimalModel>();
         }
 
         public BulletModel(Vector2 position1)
@@ -2386,7 +2410,7 @@ namespace DuckHuntCommon
             bulletspace.Width = animationInfo.frameWidth;
             bulletspace.Height = animationInfo.frameHeight;
 
-            shootduckList = new List<DuckModel>();
+            shootduckList = new List<AnimalModel>();
         }
 
         float deltax = 48f; //40f;
@@ -2522,7 +2546,7 @@ namespace DuckHuntCommon
 
 
         // specific functions
-        public List<DuckModel> GetShootDucks()
+        public List<AnimalModel> GetShootDucks()
         {
             if (shootduckList.Count > 0)
             {
@@ -2560,7 +2584,7 @@ namespace DuckHuntCommon
             }
         }
 
-        public void SetTarget(DuckModel duck)
+        public void SetTarget(AnimalModel duck)
         {
             if (duck != null)
             {
@@ -4678,7 +4702,7 @@ namespace DuckHuntCommon
     }
 
  
-    class ParrotModel : BaseModel
+    class ParrotModel : AnimalModel
     {
         DuckModel internalModel;
 
@@ -4687,6 +4711,7 @@ namespace DuckHuntCommon
 
         public bool Active = true;
         public bool dead = false;
+        bool gone = false;
 
         int deadstopcount = 0;
         Rectangle flyspace;
@@ -4740,6 +4765,49 @@ namespace DuckHuntCommon
             anationInfoList.Add(animationInfo);
         }
 
+
+        
+        public ParrotModel(PilotType type, string groupname)
+        {
+            anationInfoList = new List<AnimationInfo>();
+            //
+            flyPilot = PilotManager.GetInstance().CreatePilot(type, groupname);
+            // d. red bird
+
+
+            // 0. flying duck
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 6;
+            animationInfo.frameTime = 100;
+            anationInfoList.Add(animationInfo);
+
+            //1. dying duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 1;
+            animationInfo.frameTime = 3000;
+            anationInfoList.Add(animationInfo);
+
+            // 2. dead duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 2;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+            // 3. reverse fly duck
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 160;
+            animationInfo.frameHeight = 172;
+            animationInfo.frameCount = 6;
+            animationInfo.frameTime = 200;
+            anationInfoList.Add(animationInfo);
+
+        }
 
         override public ModelType Type()
         {
@@ -4841,15 +4909,24 @@ namespace DuckHuntCommon
             return scale;
         }
 
+        override public void SetSpeedRatio(float ratio)
+        {
+        }
+
+
         override public void Update(GameTime gameTime)
         {
             if (Active)
             {
                 flyPilot.Update(gameTime);
-                if (flyPilot.GetPosition().X < flyspace.Left ||
-                    flyPilot.GetPosition().Y > flyspace.Right)
+
+                // check if it need to go
+                elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+                if (elapsedTime > 1000 * 15)
                 {
-                    Gone = true;
+                    Active = false;
+                    deadPilot = PilotManager.GetInstance().CreatePilot(PilotType.PARROT, flyPilot.GetPosition());
+                    deadPilot.Initialize(this.flyspace, 0);
                 }
             }
             else
@@ -4862,7 +4939,7 @@ namespace DuckHuntCommon
                 if (deadPilot.GetPosition().Y > flyspace.Height ||
                     deadPilot.GetPosition().Y < 0 - anationInfoList[GetCurrentAnimationIndex()].frameHeight)
                 {
-                    Gone = true;
+                    gone = true;
                 }
             }
 
@@ -4914,15 +4991,19 @@ namespace DuckHuntCommon
         ///  specific functions
         /// </summary>
 
-        public void StartPilot()
+        override public void StartPilot()
         {
             // Set the starting position of the player around the middle of the screen and to the back
 
             flyPilot.Initialize(flyspace, randomseed);
         }
 
+        override public void StartPilot(Vector2 pos)
+        {
+            flyPilot.Initialize(flyspace, randomseed);
+        }
 
-        public void Shoot(BulletModel bullet)
+        override public void Shoot(BulletModel bullet)
         {
             // check if it's shoot
             if (Active == false)
@@ -4959,7 +5040,15 @@ namespace DuckHuntCommon
 
         }
 
-        public bool Gone = false;
+
+        override public bool Gone()
+        {
+            return gone;
+        }
+        override public bool Dead()
+        {
+            return dead;
+        }
 
     }
 
