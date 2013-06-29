@@ -1925,7 +1925,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
     
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0;
@@ -2019,7 +2019,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
 
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0;
@@ -2131,11 +2131,11 @@ namespace GameCommon
         {
             if (left2right == 1)
             {
-                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor; ;
+                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2 ;
             }
             else
             {
-                cur_angle -= delta_angle * group_info.idx * Constants.Groupfactor; ;
+                cur_angle -= delta_angle * group_info.idx * Constants.Groupfactor * 2;
             }
 
             if (cur_angle > 2 * Constants.Pi)
