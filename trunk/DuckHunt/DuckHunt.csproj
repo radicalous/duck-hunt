@@ -327,6 +327,18 @@
     <Content Include="Content\Graphics\sky_new_5.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Graphics\plane11_1.xnb" />
+    <None Include="Content\Graphics\plane11_2.xnb" />
+    <None Include="Content\Graphics\plane11_3.xnb" />
+    <None Include="Content\Graphics\plane22_1.xnb" />
+    <None Include="Content\Graphics\plane22_2.xnb" />
+    <None Include="Content\Graphics\plane22_3.xnb" />
+    <None Include="Content\Graphics\plane33_1.xnb" />
+    <None Include="Content\Graphics\plane33_2.xnb" />
+    <None Include="Content\Graphics\plane33_3.xnb" />
+    <None Include="Content\Graphics\plane44_1.xnb" />
+    <None Include="Content\Graphics\plane44_2.xnb" />
+    <None Include="Content\Graphics\plane44_3.xnb" />
     <None Include="Content\MenuItem.xnb" />
     <Content Include="Content\Graphics\red_bird.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

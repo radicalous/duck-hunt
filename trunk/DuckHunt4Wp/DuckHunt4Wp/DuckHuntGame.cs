@@ -1989,7 +1989,7 @@ namespace DuckHuntCommon
             // add I love u
             int i = 0;
 
-            Vector2 endpos;
+            Vector2 endpos = Vector2.Zero;
             endpos.Y = duckFlySpace.Height / 2;
             endpos.X = duckFlySpace.Width / batchcount/3;
             for (int ii = 0; ii < batchcount; ii++)
