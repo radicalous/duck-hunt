@@ -198,9 +198,9 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
             AnimationInfo animationInfo = new AnimationInfo();
             animationInfo.animation = false;
-            animationInfo.frameCount = 4;
+            animationInfo.frameCount = 5;
             animationInfo.frameWidth = animationInfo.frameHeight = 0;
-            animationInfo.frameTime = 400;
+            animationInfo.frameTime = 500;
             anationInfoList.Add(animationInfo);
         }
 
@@ -234,22 +234,28 @@ namespace DuckHuntCommon
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_a_1";
+            //resourceItm.path = "Graphics\\sky_a_1";
+            resourceItm.path = "Graphics\\sky_new_1";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_a_2";
+            resourceItm.path = "Graphics\\sky_new_2";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_a_3";
+            resourceItm.path = "Graphics\\sky_new_3";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_a_4";
+            resourceItm.path = "Graphics\\sky_new_4";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\sky_new_5";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -1319,6 +1325,8 @@ namespace DuckHuntCommon
         public abstract void SetSpeedRatio(float ratio);
         public abstract bool Gone();
         public abstract bool Dead();
+        public abstract void SetStartPos(Vector2 startPos);
+        public abstract void SetEndPos(Vector2 endPos);
 
     }
 
@@ -1980,6 +1988,16 @@ namespace DuckHuntCommon
         override public bool Dead()
         {
             return dead;
+        }
+
+        override public void SetStartPos(Vector2 startPos)
+        {
+            flyduckPilot.SetStartPos(startPos);
+        }
+
+        override public void SetEndPos(Vector2 endPos)
+        {
+            flyduckPilot.SetEndPos(endPos);
         }
 
     }
@@ -5048,6 +5066,16 @@ namespace DuckHuntCommon
         override public bool Dead()
         {
             return dead;
+        }
+
+        override public void SetStartPos(Vector2 startPos)
+        {
+            flyPilot.SetStartPos(startPos);
+        }
+
+        override public void SetEndPos(Vector2 endPos)
+        {
+            flyPilot.SetEndPos(endPos);
         }
 
     }

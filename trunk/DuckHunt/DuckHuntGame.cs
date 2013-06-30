@@ -464,12 +464,20 @@ namespace DuckHuntCommon
         public GameChapter()
         {
         }
+        abstract public int GetDuckBatch();
         abstract public bool GetDuckList(out List<AnimalModel> ducks);
         abstract public bool CanBeRemoved();
     }
 
+    abstract class GameChapterBase : GameChapter
+    {
+        override public int GetDuckBatch()
+        {
+            return 1;
+        }
+    }
 
-    class GameChapter1 : GameChapter
+    class GameChapter1 : GameChapterBase
     {
         int duckcount = 0;
         override public bool GetDuckList(out List<AnimalModel> ducks)
@@ -500,7 +508,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapter2 : GameChapter
+    class GameChapter2 : GameChapterBase
     {
         int duckcount = 0;
         override public bool GetDuckList(out List<AnimalModel> ducks)
@@ -535,7 +543,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapter3 : GameChapter
+    class GameChapter3 : GameChapterBase
     {
         int duckcount = 0;
         int totalcount = 12;
@@ -580,7 +588,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapter4 : GameChapter
+    class GameChapter4 : GameChapterBase
     {
         int duckcount = 0;
         int totalcount = 12;
@@ -625,7 +633,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapter5 : GameChapter
+    class GameChapter5 : GameChapterBase
     {
         int duckcount = 0;
         int totalcount = 12;
@@ -677,7 +685,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapter6 : GameChapter
+    class GameChapter6 : GameChapterBase
     {
         int duckcount = 0;
         int totalcount = 15;
@@ -735,7 +743,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapter7 : GameChapter
+    class GameChapter7 : GameChapterBase
     {
         int duckcount = 0;
         int totalcount = 18;
@@ -797,7 +805,7 @@ namespace DuckHuntCommon
     }
 
 
-    class GameChapter8 : GameChapter
+    class GameChapter8 : GameChapterBase
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
@@ -855,7 +863,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapter9 : GameChapter
+    class GameChapter9 : GameChapterBase
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
@@ -922,7 +930,7 @@ namespace DuckHuntCommon
     }
 
 
-    class GameChapter10 : GameChapter
+    class GameChapter10 : GameChapterBase
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
@@ -990,7 +998,7 @@ namespace DuckHuntCommon
     }
 
 
-    class GameChapterFunShowCurve : GameChapter
+    class GameChapterFunShowCurve : GameChapterBase
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
@@ -1037,11 +1045,12 @@ namespace DuckHuntCommon
 
 
 
-    class GameChapterILoveU : GameChapter
+    class GameChapterILoveU : GameChapterBase
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
         int pilottypeindex = 0;
+
 
         public GameChapterILoveU()
         {
@@ -1059,30 +1068,50 @@ namespace DuckHuntCommon
             pilottypeindex = pilottypeindex % pilotypelist.Count;
 
 
-            string name = "chapteriloveui" + duckcount.ToString();
+            string name = "";
+            if (pilottypeindex == 0)
+            {
+                name = "chapteriloveui" + duckcount.ToString();
 
-            for (int i = 0; i < 5; i++)
-            {
-                duck = new DuckModel(pilotypelist[0], name);
-                ducks.Add(duck);
-                duckcount++;
+                for (int i = 0; i < 5; i++)
+                {
+                    duck = new DuckModel(pilotypelist[0], name);
+                    ducks.Add(duck);
+                    duckcount++;
+                }
+                pilottypeindex++;
             }
-            name = "chapteriloveul" + duckcount.ToString();
-            for (int i = 0; i < 20; i++)
+            else if (pilottypeindex == 1)
             {
-                duck = new DuckModel(pilotypelist[1], name);
-                ducks.Add(duck);
-                duckcount++;
+
+                name = "chapteriloveul" + duckcount.ToString();
+                for (int i = 0; i < 9; i++)
+                {
+                    duck = new DuckModel(pilotypelist[1], name);
+                    ducks.Add(duck);
+                    duckcount++;
+                }
+                pilottypeindex++;
             }
-            name = "chapteriloveuu" + duckcount.ToString();
-            for (int i = 0; i < 20; i++)
+            else if (pilottypeindex == 2)
             {
-                duck = new DuckModel(pilotypelist[2], name);
-                ducks.Add(duck);
-                duckcount++;
+                name = "chapteriloveuu" + duckcount.ToString();
+                for (int i = 0; i < 15; i++)
+                {
+                    duck = new DuckModel(pilotypelist[2], name);
+                    ducks.Add(duck);
+                    duckcount++;
+                }
+                pilottypeindex++;
+                pilottypeindex %= 3;
             }
 
             return true;
+        }
+
+        public override int GetDuckBatch()
+        {
+            return 3;
         }
 
         public override bool CanBeRemoved()
@@ -1095,7 +1124,7 @@ namespace DuckHuntCommon
         }
     }
 
-    class GameChapterForever : GameChapter
+    class GameChapterForever : GameChapterBase
     {
         int duckcount = 0;
         List<PilotType> pilotypelist;
@@ -1954,23 +1983,36 @@ namespace DuckHuntCommon
             List<AnimalModel> ducks = null;
             GameChapter bonousChapter = null;
             gameChapterMgr.GetBonusChapter(out bonousChapter);
-            bonousChapter.GetDuckList(out ducks);
 
+            int batchcount = bonousChapter.GetDuckBatch();
 
-            if (ducks == null)
-            {
-                return;
-            }
-
+            // add I love u
             int i = 0;
-            DateTime now = System.DateTime.Now;
-            foreach (AnimalModel duck in ducks)
-            {
-                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
-                duck.Initialize(null, duckFlySpace, s + (i++) * 7);
-                duck.StartPilot(startPos);
-                duckList.Add(duck);
 
+            Vector2 endpos;
+            endpos.Y = duckFlySpace.Height / 2;
+            endpos.X = duckFlySpace.Width / batchcount/3;
+            for (int ii = 0; ii < batchcount; ii++)
+            {
+                bonousChapter.GetDuckList(out ducks);
+
+
+                if (ducks == null)
+                {
+                    return;
+                }
+
+                DateTime now = System.DateTime.Now;
+                foreach (AnimalModel duck in ducks)
+                {
+                    int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                    duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                    duck.StartPilot(startPos);
+                    duck.SetStartPos(startPos);
+                    duck.SetEndPos(endpos);
+                    duckList.Add(duck);
+                }
+                endpos.X += duckFlySpace.Width / batchcount;
             }
         }
 
