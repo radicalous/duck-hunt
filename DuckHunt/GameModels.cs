@@ -2583,7 +2583,7 @@ namespace DuckHuntCommon
         {
             return parrot;
         }
-
+        /*
         public void SetTarget(ParrotModel parrot)
         {
             if (parrot != null)
@@ -2592,6 +2592,7 @@ namespace DuckHuntCommon
                 depth = parrot.GetAnimationDepth() + 0.1f;
             }
         }
+        */
 
         public void SetTarget(BaloonModel baloon)
         {
@@ -4565,9 +4566,9 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 400;
-            animationInfo.frameHeight = 256;
-            animationInfo.frameCount = 4;
+            animationInfo.frameWidth = 506;
+            animationInfo.frameHeight = 203;
+            animationInfo.frameCount = 3;
             animationInfo.frameTime = 250;
             anationInfoList.Add(animationInfo);
 
