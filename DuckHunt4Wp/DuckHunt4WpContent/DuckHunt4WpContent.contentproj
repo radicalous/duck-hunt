@@ -387,31 +387,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>FontTextureProcessor</Processor>
     </Compile>
-    <Compile Include="Graphics\font_10.png">
-      <Name>font_10</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>FontTextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\font_15.png">
-      <Name>font_15</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>FontTextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\font_20.png">
-      <Name>font_20</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>FontTextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\font_25.png">
-      <Name>font_25</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>FontTextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\font_30.png">
-      <Name>font_30</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>FontTextureProcessor</Processor>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\red_bird.png">
@@ -569,6 +544,57 @@
       <Name>plane44_3</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\menu_font_15.png">
+      <Name>menu_font_15</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\menu_font_20.png">
+      <Name>menu_font_20</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\menu_font_25.png">
+      <Name>menu_font_25</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\menu_font_30.png">
+      <Name>menu_font_30</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\cnt_font_20 .png">
+      <Name>cnt_font_20</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\cnt_font_25.png">
+      <Name>cnt_font_25</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\cnt_font_28.png">
+      <Name>cnt_font_28</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\cnt_font_30.png">
+      <Name>cnt_font_30</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\cnt_font_15.png">
+      <Name>cnt_font_15</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
