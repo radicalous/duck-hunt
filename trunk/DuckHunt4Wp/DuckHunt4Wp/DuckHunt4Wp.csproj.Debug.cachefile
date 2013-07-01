@@ -57,11 +57,6 @@ Content\Graphics\fireworks9.xnb
 Content\Graphics\plane.xnb
 Content\Graphics\flag.xnb
 Content\Graphics\font2.xnb
-Content\Graphics\font_10.xnb
-Content\Graphics\font_15.xnb
-Content\Graphics\font_20.xnb
-Content\Graphics\font_25.xnb
-Content\Graphics\font_30.xnb
 Content\Graphics\red_bird.xnb
 Content\Graphics\red_bird_dead.xnb
 Content\Graphics\red_bird_dying.xnb
@@ -90,6 +85,15 @@ Content\Graphics\plane33_3.xnb
 Content\Graphics\plane44_1.xnb
 Content\Graphics\plane44_2.xnb
 Content\Graphics\plane44_3.xnb
+Content\Graphics\menu_font_15.xnb
+Content\Graphics\menu_font_20.xnb
+Content\Graphics\menu_font_25.xnb
+Content\Graphics\menu_font_30.xnb
+Content\Graphics\cnt_font_20.xnb
+Content\Graphics\cnt_font_25.xnb
+Content\Graphics\cnt_font_28.xnb
+Content\Graphics\cnt_font_30.xnb
+Content\Graphics\cnt_font_15.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
 Content\Graphics\balloon.xnb

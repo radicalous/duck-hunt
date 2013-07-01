@@ -601,19 +601,19 @@ namespace DuckHuntCommon
 #else
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\font_30";
+            resourceItm.path = "Graphics\\menu_font_30";
             resourceList.Add(resourceItm);
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\font_25";
+            resourceItm.path = "Graphics\\menu_font_25";
             resourceList.Add(resourceItm);
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\font_20";
+            resourceItm.path = "Graphics\\menu_font_20";
             resourceList.Add(resourceItm);
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\font_15";
+            resourceItm.path = "Graphics\\menu_font_15";
             resourceList.Add(resourceItm);
 #endif
 
@@ -775,9 +775,9 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -1250,9 +1250,9 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -2845,9 +2845,9 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3253,9 +3253,9 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3310,6 +3310,10 @@ namespace DuckHuntCommon
         public void AddScore(int score)
         {
             totalscore += score;
+            if (totalscore < 0)
+            {
+                totalscore = 0;
+            }
         }
 
         public int TotalScore
@@ -3413,32 +3417,28 @@ namespace DuckHuntCommon
 #if  WINDOWS_PHONE
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\font_20";
+            resourceItm.path = "Graphics\\cnt_font_20";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\font_15";
+            resourceItm.path = "Graphics\\cnt_font_15";
             resourceList.Add(resourceItm);
 #else
             ResourceItem resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_30";
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\cnt_font_30";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_25";
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\cnt_font_25";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_20";
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\cnt_font_20";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_15";
-            resourceList.Add(resourceItm);
-
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\font_10";
+            resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\cnt_font_15";
             resourceList.Add(resourceItm);
 
 #endif
@@ -3560,10 +3560,10 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
             //resourceItm.path = "Graphics\\font";
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3673,9 +3673,9 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -3862,9 +3862,9 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -4033,9 +4033,9 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
@@ -4182,9 +4182,9 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
 #if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\gameFont_10";
+            resourceItm.path = "Graphics\\cnt_font_20";
 #else
-            resourceItm.path = "Graphics\\test_font";
+            resourceItm.path = "Graphics\\cnt_font_30";
 #endif
             resourceList.Add(resourceItm);
 
