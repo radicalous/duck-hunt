@@ -1477,7 +1477,7 @@ namespace DuckHuntCommon
             {
                 objlst.Add(dog);
                 //objlst.Add(panda);
-                objlst.Add(levelUp);
+                //objlst.Add(levelUp);
 
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
