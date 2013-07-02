@@ -1407,11 +1407,11 @@ namespace DuckHuntCommon
     {
         LevelUpBoardModel model;
         Vector2 scoreposition;
-        Color color1 = Color.Yellow;
+        Color color1 = Color.Orange;
         public LevelUpBoardViewObject(ModelObject model1)
         {
             model = (LevelUpBoardModel)model1;
-            color1.A = 100;
+            //color1.A = 95;
         }
 
         public override void Init(Vector2 orgpoint, float defscale, ModelObject model1,
@@ -1428,6 +1428,7 @@ namespace DuckHuntCommon
 
         public override void Update(GameTime gameTime)
         {
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -1451,11 +1452,8 @@ namespace DuckHuntCommon
             pos1.Y += 10 * DefScaleInScreen;
             pos1.X += 10 * DefScaleInScreen;
 
-//            color1.A = 100;
-            color1.B -= 5;
-            color1.R = 0;
-            color1.G += 5;
-            spriteBatch.DrawString(base.ObjFontList[0], "Level Up", pos1, color1, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(base.ObjFontList[0], "Level Up", pos1, color1,
+                model.Rotate, Vector2.Zero, model.Scale,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }

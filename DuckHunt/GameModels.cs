@@ -3642,6 +3642,12 @@ namespace DuckHuntCommon
         Rectangle space; //indicate the object view range
         Vector2 relativePosition = Vector2.Zero; // no use
 
+        float scale = 1.0f;
+        float rotate = 0.0f;
+        float deltascale = 0.1f;
+
+        int stopcount = 0;
+
         public LevelUpBoardModel()
         {
 
@@ -3714,7 +3720,30 @@ namespace DuckHuntCommon
                 lefttime = 0;
             }
 
-            // update child object
+            if (stopcount > 0)
+            {
+                stopcount--;
+                return;
+            }
+
+            scale += deltascale;
+            if (scale > 1.5f && deltascale > 0)
+            {
+                deltascale = -1.5f * deltascale;
+                stopcount = 30;
+            }
+            rotate = 0f;
+            if (scale < 0)
+            {
+                scale = 0;
+            }
+            /*
+            rotate += 0.4f;
+            if (rotate >= 6.28f*4)
+            {
+                rotate = 6.28f*4 + 0.01f;
+            }
+             */
         }
 
         override public List<AnimationInfo> GetAnimationInfoList()
@@ -3746,9 +3775,30 @@ namespace DuckHuntCommon
             return false;
         }
 
+        public float Scale
+        {
+            get
+            {
+                return scale;
+            }
+        }
+
+        public float Rotate
+        {
+            get
+            {
+                return rotate;
+            }
+        }
+
+
         public void Reset()
         {
             lefttime = 3;
+            scale = 1.0f;
+            rotate = 0f;
+            deltascale = 0.01f;
+            stopcount = 0;
         }
     }
 
