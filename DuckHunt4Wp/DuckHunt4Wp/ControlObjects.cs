@@ -556,6 +556,217 @@ namespace DuckHuntCommon
 
 
 
+    class SmokeViewObject : DefViewObject
+    {
+        List<AnimationInfo> animationList;
+        List<ViewItem> viewItmList;
+
+        SmokeModel model;
+
+        Vector2 _orgpointinscreen;
+        float _defscaleinscreen;
+
+        public Vector2 OrgPointInScreen
+        {
+            get
+            {
+                return _orgpointinscreen;
+            }
+        }
+        public float DefScaleInScreen
+        {
+            get
+            {
+                return _defscaleinscreen;
+            }
+        }
+
+        public List<SpriteFont> ObjFontList
+        {
+            get
+            {
+                return _resLst[model.Type()].fontList;
+            }
+        }
+        List<SpriteFont> fontlist;
+
+        // screen rect
+        public Rectangle screenRc = new Rectangle();
+
+        public SmokeViewObject(ModelObject model1, Vector2 orgpointinscreen, float defscaleinscreen)
+        {
+
+        }
+
+        public SmokeViewObject()
+        {
+
+        }
+
+        Dictionary<ModelType, ObjectTexturesItem> _resLst;
+
+        int bgxoff = 0;
+        int bgyoff = 0;
+        float bgscale = 1.0f;
+
+        public override void Init(Vector2 orgpointinscreen, float defscaleinscreen, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle spaceInLogic)
+        {
+            if (model == null || (model.Type() != ModelType.KEYBORD && model.Type() != ModelType.KEYITEM))
+            {
+                _orgpointinscreen = orgpointinscreen;
+                _defscaleinscreen = defscaleinscreen;
+            }
+            screenRc = spaceInLogic;
+
+            model = (SmokeModel)model1;
+
+
+            _orgpointinscreen = orgpointinscreen;
+            _defscaleinscreen = defscaleinscreen;
+
+            _resLst = objTextureLst;
+            // try to calculate how may textures are needed by children
+
+            // create view items for this object
+            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
+            animationList = model.GetAnimationInfoList();
+            viewItmList = new List<ViewItem>();
+
+
+            int bgwidth = model.BgRcWidth;
+            int bgheight = model.BgRcHight;
+            if (bgwidth * 1.0f / bgheight > screenRc.Width * 1.0 / screenRc.Height)
+            {
+                // the text wider, should extend according height
+                bgscale = screenRc.Height * 1.0f / bgheight;
+                int offx = (int)((bgwidth * bgscale - screenRc.Width) / 2 / bgscale);
+                bgxoff = offx;
+
+                /*
+                offx = model.XOffInBg - offx;
+                offx = (int)(offx * scale);
+                //offx = -offx;
+                int centerx = (int)(offx + texturesList[i].Width * scale / 2);
+                int centery = (int)(model.YOffInBg*scale + texturesList[i].Height*scale / 2);
+                viewItm.bganimation.Position.X = centerx;
+                viewItm.bganimation.Position.Y = centery;
+                viewItm.bganimation.scale = scale;
+                 */
+            }
+            else
+            {
+                // the texture is higher, should extend according width
+                bgscale = screenRc.Width * 1.0f / bgwidth;
+
+                int offy = (int)((bgheight * bgscale - screenRc.Height) / bgscale);
+                bgyoff = offy;
+                /*
+                offy = model.YOffInBg - offy;
+                offy = (int)(offy * scale);
+
+                int centerx = (int)(model.XOffInBg * scale + texturesList[i].Width * scale / 2);
+                int centery = (int)(offy + texturesList[i].Height* scale / 2);
+                viewItm.bganimation.Position.X = centerx;
+                viewItm.bganimation.Position.Y = centery;
+                viewItm.bganimation.scale = scale;
+                 */
+            }
+
+            for (int i = 0; i < texturesList.Count; i++)
+            {
+                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
+                ViewItem viewItm = new ViewItem();
+                {
+                    viewItm.backGroundAnimation = true;
+                    viewItm.bganimation = new Animation();
+                        viewItm.bganimation.Initialize(
+                            texturesList[i],
+                            Vector2.Zero, (int)(texturesList[i].Width),
+                            (int)(texturesList[i].Height),
+                            1, 1, animationInfo.backColor,
+                            1.0f/*model.GetSacle()*/, true);
+
+                }
+                viewItmList.Add(viewItm);
+            }
+
+        }
+
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+        float smokedeltay = 0;
+        int smokeindex = 0;
+        float smokescale = 1.0f;
+
+        public override void Update(GameTime gameTime)
+        {
+            // prepare this time
+            smokedeltay += 1;
+            smokescale += 0.01f;
+            if (smokedeltay > 10)
+            {
+                smokedeltay = 0;
+                smokescale = 1.0f;
+                smokeindex = (smokeindex + 1) % viewItmList.Count;
+            }
+
+
+            ViewItem viewItm = viewItmList[smokeindex];
+
+            Vector2 smokelefttop = Vector2.Zero;
+            smokelefttop.X = model.XOffInBg;
+            smokelefttop.Y = model.YOffInBg;
+            // translate it to screen
+            smokelefttop.X -= bgxoff;
+            smokelefttop.Y -= bgyoff;
+
+            Vector2 smokecenter = Vector2.Zero;
+            smokecenter.X = smokelefttop.X + viewItm.bganimation.FrameWidth / 2;
+            smokecenter.Y = smokelefttop.Y + viewItm.bganimation.FrameHeight / 2;
+
+            // adust center
+            smokecenter.Y -= smokedeltay;
+
+
+            // center after scaled
+            smokecenter.X *= bgscale;
+            smokecenter.Y *= bgscale;
+
+            // animation scale
+            viewItm.bganimation.scale = bgscale * smokescale;
+            viewItm.bganimation.Position = smokecenter;
+            viewItm.bganimation.Update(gameTime);
+
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            ViewItem viewItm = viewItmList[smokeindex];
+            viewItm.bganimation.Draw(spriteBatch, model.GetAnimationDepth());
+        }
+
+        public override void PlaySound()
+        {
+            // check need to play audio
+            //play init sound
+            if (_resLst[model.Type()].soundList.Count > 0)
+            {
+                int soundindex = model.GetSoundIndex();
+                if (soundindex >= 0 && soundindex < _resLst[model.Type()].soundList.Count)
+                {
+                    float mastvol = SoundEffect.MasterVolume;
+                    _resLst[model.Type()].soundList[0].Play(1, 0, 0);
+                }
+
+            }
+        }
+    }
+
+
+
     class FireworkViewObject : DefViewObject
     {
         List<AnimationInfo> animationList;

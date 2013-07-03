@@ -15,7 +15,7 @@ namespace DuckHuntCommon
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
         LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
-        FIREWORK,PLANE, BALOON, LEVELUPBOARD,PARROT,
+        FIREWORK,PLANE, BALOON, LEVELUPBOARD,PARROT,SMOKE
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -198,7 +198,7 @@ namespace DuckHuntCommon
             anationInfoList = new List<AnimationInfo>();
             AnimationInfo animationInfo = new AnimationInfo();
             animationInfo.animation = false;
-            animationInfo.frameCount = 5;
+            animationInfo.frameCount = 1; // 5;
             animationInfo.frameWidth = animationInfo.frameHeight = 0;
             animationInfo.frameTime = 500;
             anationInfoList.Add(animationInfo);
@@ -229,8 +229,9 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\sky_2";
-            //resourceList.Add(resourceItm);
+            resourceList.Add(resourceItm);
 
+            return resourceList;
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
@@ -260,6 +261,141 @@ namespace DuckHuntCommon
 
             return resourceList;
         }
+    }
+
+
+
+    class SmokeModel : BackgroundModel
+    {
+        List<AnimationInfo> anationInfoList;
+
+        public int BgRcWidth
+        {
+            get
+            {
+                return 1920;
+            }
+        }
+
+        public int BgRcHight
+        {
+            get
+            {
+                return 1200;
+            }
+        }
+
+        public int XOffInBg
+        {
+            get
+            {
+                return 1533;
+            }
+        }
+
+        public int YOffInBg
+        {
+            get
+            {
+                return 281;
+            }
+        }
+
+        public SmokeModel()
+        {
+
+            anationInfoList = new List<AnimationInfo>();
+            AnimationInfo animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameTime = 500;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameTime = 500;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameTime = 500;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameTime = 500;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo = new AnimationInfo();
+            animationInfo.animation = false;
+            animationInfo.frameCount = 1;
+            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameTime = 500;
+            anationInfoList.Add(animationInfo);
+        }
+
+        // interfaces implementation
+        override public ModelType Type()
+        {
+            // sky 
+            return ModelType.SMOKE;
+        }
+
+        override public void Initialize(ModelObject parent, Rectangle rect, int seed)
+        {
+            base.Initialize(parent, rect, seed);
+        }
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return anationInfoList;
+        }
+
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\smoke_1";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\smoke_2";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\smoke_3";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\smoke_4";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\smoke_5";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        override public float GetAnimationDepth()
+        {
+            return 0.999f;
+        }
+
     }
 
 

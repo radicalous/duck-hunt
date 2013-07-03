@@ -69,6 +69,11 @@ namespace DuckHuntCommon
                         viewObject = objext;
                     }
                     break;
+                case ModelType.SMOKE:
+                    {
+                        viewObject = new SmokeViewObject(model, s_backgroundOrgPoint, s_backgroundDefScale);
+                    }
+                    break;
                 case ModelType.CLOUD:
                 case ModelType.GRASS:
                 case ModelType.FORGROUND:
