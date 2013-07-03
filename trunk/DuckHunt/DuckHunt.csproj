@@ -348,6 +348,21 @@
     <None Include="Content\Graphics\plane44_1.xnb" />
     <None Include="Content\Graphics\plane44_2.xnb" />
     <None Include="Content\Graphics\plane44_3.xnb" />
+    <Content Include="Content\Graphics\smoke_1.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\smoke_2.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\smoke_3.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\smoke_4.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\smoke_5.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\MenuItem.xnb" />
     <Content Include="Content\Graphics\red_bird.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
