@@ -73,6 +73,18 @@ namespace GameCommon
 
         }
 
+        ~PilotManager()
+        {
+            duckEightPilotGroup = null;
+            duckCirclePilotGroup = null;
+            duckEllipsePilotGroup = null;
+            duckSinPilotGroup = null;
+            duckLinePilotGroup = null;
+            duckILoveU_IPilotGroup = null;
+            duckILoveU_LPilotGroup = null;
+            duckILoveU_UPilotGroup = null;
+        }
+
         public static PilotManager GetInstance()
         {
             if (instance == null)
