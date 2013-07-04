@@ -1,0 +1,28 @@
+stack:
+empty	Tests if the stack is empty.
+pop	Removes the element from the top of the stack.
+push	Adds an element to the top of the stack.
+size	Returns the number of elements in the stack.
+stack	Constructs a stack that is empty or that is a copy of a base container object.
+top	Returns a reference to an element at the top of the stack.
+
+queue:
+back Returns a reference to the last and most recently added element at the back of the queue.
+empty Tests if the queue is empty.
+front Returns a reference to the first element at the front of the queue.
+pop Removes an element from the front of the queue.
+push Adds an element to the back of the queue.
+size Returns the number of elements in the queue.
+
+priority_queue:
+empty Tests if the priority_queue is empty.
+pop Removes the largest element of the priority_queue from the top position.
+push Adds an element to the priority queue based on the priority of the element from operator<.
+size Returns the number of elements in the priority_queue.
+top Returns a const reference to the largest element at the top of the priority_queue.
+
+heap:
+make_heap
+sort_heap
+push_heap
+pop_heap
