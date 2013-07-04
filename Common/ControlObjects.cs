@@ -482,9 +482,9 @@ namespace DuckHuntCommon
                         offy = -offy;
                         int centerx = screenRc.Width / 2;
                         int centery = (int)(offy + texturesList[0].Height * scale / 2);
-                        viewItm.Position.X = centerx;
+                        viewItm.Position.X = centerx; 
                         viewItm.Position.Y = centery;
-                        viewItm.scale = scale;
+                        viewItm.scale = scale + 0.00001f;
 
                     }
                 }
@@ -700,21 +700,33 @@ namespace DuckHuntCommon
         float smokedeltay = 0;
         int smokeindex = 0;
         float smokescale = 1.0f;
+        float deltasmokescale = 0.01f;
 
+        int elapsedTime = 0;
         public override void Update(GameTime gameTime)
         {
+            elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (elapsedTime <= 300)
+            {
+                return;
+            }
+            elapsedTime = 0;
+
             // prepare this time
-            smokedeltay += 1;
-            smokescale += 0.01f;
-            if (smokedeltay > 10)
+            //smokedeltay += 1f;
+            //smokescale += 0.001f;
+            if (smokedeltay > 5)
             {
                 smokedeltay = 0;
                 smokescale = 1.0f;
-                smokeindex = (smokeindex + 1) % viewItmList.Count;
+                smokeindex = (smokeindex + 0) % viewItmList.Count;
             }
-
-
             ViewItem viewItm = viewItmList[smokeindex];
+
+            smokedeltay = viewItm.bganimation.FrameHeight * deltasmokescale / 2;
+            smokedeltay += 1;
+            smokescale += deltasmokescale;
+
 
             Vector2 smokelefttop = Vector2.Zero;
             smokelefttop.X = model.XOffInBg;

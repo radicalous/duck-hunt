@@ -46,12 +46,13 @@ namespace GameCommon
 
     }
 
-
+    
     struct pilotGroupInfo
     {
         public int idx;
         public Point endpoint;
         public float speed_ratio;
+        public int[] dirs;
     }
 
     class PilotManager
@@ -70,6 +71,18 @@ namespace GameCommon
         public PilotManager()
         {
 
+        }
+
+        ~PilotManager()
+        {
+            duckEightPilotGroup = null;
+            duckCirclePilotGroup = null;
+            duckEllipsePilotGroup = null;
+            duckSinPilotGroup = null;
+            duckLinePilotGroup = null;
+            duckILoveU_IPilotGroup = null;
+            duckILoveU_LPilotGroup = null;
+            duckILoveU_UPilotGroup = null;
         }
 
         public static PilotManager GetInstance()
@@ -112,6 +125,12 @@ namespace GameCommon
 
             pgi.speed_ratio = (float)(rdm.Next(50, 200)) / 100;
 
+            pgi.dirs = new int[10];
+            for (int i = 0; i < 10; i++)
+            {
+                pgi.dirs[i] = rdm.Next(0,3);
+            }
+           
             return pgi;
         }
 
@@ -1189,6 +1208,8 @@ namespace GameCommon
         protected Vector2 start_pos; //random start position
         protected Vector2 end_pos; //different end position
         protected Vector2 center_pos; //
+        protected int center_pos_idx = 0;
+        protected Rectangle centerBoundaryRect = new Rectangle();
 
         protected int lineStep = 0;
         protected int max_lineSteps = Constants.MaxLineSteps;
@@ -1225,6 +1246,12 @@ namespace GameCommon
 
             start_pos.X = rdm.Next(boundaryRect.Left, boundaryRect.Right);
             start_pos.Y = boundaryRect.Bottom;
+
+
+            centerBoundaryRect.Width = 2 * r;
+            centerBoundaryRect.Height = 2 * r;
+            centerBoundaryRect.X = boundaryRect.Center.X - r;
+            centerBoundaryRect.Y = boundaryRect.Center.Y - r;
 
             max_lineSteps = (int)(max_lineSteps / group_info.speed_ratio);
 
@@ -1293,6 +1320,27 @@ namespace GameCommon
         public bool InCurve()
         {
             return lineStep > max_lineSteps ? true : false;
+        }
+
+        public void updateCenter()
+        {
+            int d = 20;
+            float[] xs = { -d, 0, d, 0 };
+            float[] ys = { 0, d, 0, -d };
+
+            Vector2 tmp_pos = center_pos;
+            tmp_pos.X += (float)(xs[group_info.dirs[center_pos_idx]]);
+            tmp_pos.Y += (float)(ys[group_info.dirs[center_pos_idx]]);
+         
+            if (centerBoundaryRect.Contains((int)tmp_pos.X, (int)tmp_pos.Y))
+            {
+                center_pos = tmp_pos;
+            }
+            
+            if (center_pos_idx >= 10)
+            {
+                center_pos_idx = 0;
+            }
         }
     }
 
@@ -1380,8 +1428,11 @@ namespace GameCommon
             {
                 cur_angle += delta_angle;
                 if (cur_angle > 2 * Constants.Pi)
+                {                   
+                    updateCenter();
                     cur_angle = 0.0;
-
+                }
+               
                 float a = Math.Min(boundaryRect.Width, boundaryRect.Height);
                 a /= Constants.Ratio;
 
@@ -1506,8 +1557,10 @@ namespace GameCommon
             {
                 cur_angle += delta_angle;
                 if (cur_angle > 2 * Constants.Pi)
+                {
+                    updateCenter();
                     cur_angle = 0.0;
-
+                }
                 float r = Math.Min(boundaryRect.Width, boundaryRect.Height);
                 r /= (3 * Constants.Ratio / 2);
 
@@ -1635,8 +1688,10 @@ namespace GameCommon
 
                 cur_angle += delta_angle;
                 if (cur_angle > 2 * Constants.Pi)
-                    cur_angle = 0;
-
+                {
+                    updateCenter();
+                    cur_angle = 0.0;
+                }
                 Position.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
                 Position.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
             }
@@ -1925,7 +1980,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
     
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0;
@@ -2019,7 +2074,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
 
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0;
@@ -2131,11 +2186,11 @@ namespace GameCommon
         {
             if (left2right == 1)
             {
-                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor; ;
+                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2 ;
             }
             else
             {
-                cur_angle -= delta_angle * group_info.idx * Constants.Groupfactor; ;
+                cur_angle -= delta_angle * group_info.idx * Constants.Groupfactor * 2;
             }
 
             if (cur_angle > 2 * Constants.Pi)
