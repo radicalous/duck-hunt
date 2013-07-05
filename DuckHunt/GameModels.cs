@@ -729,29 +729,10 @@ namespace DuckHuntCommon
             resourceItm.path = "Graphics\\Cloud";
             resourceList.Add(resourceItm);
 
-#if  WINDOWS_PHONE
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\font_15";
-            resourceList.Add(resourceItm);
-#else
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
             resourceItm.path = "Graphics\\menu_font_30";
             resourceList.Add(resourceItm);
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\menu_font_25";
-            resourceList.Add(resourceItm);
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\menu_font_20";
-            resourceList.Add(resourceItm);
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\menu_font_15";
-            resourceList.Add(resourceItm);
-#endif
 
             return resourceList;
         }
@@ -1604,7 +1585,7 @@ namespace DuckHuntCommon
                     break;
                 default:
                     {
-                        duckstyle = 1;
+                        duckstyle = 0;
                     }
                     break;
 
@@ -1618,9 +1599,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            //animationInfo.frameWidth = 180;
-           // animationInfo.frameHeight = 202;
-            //animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -1647,9 +1625,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-           // animationInfo.frameWidth = 180;
-           // animationInfo.frameHeight = 202;
-           // animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -1661,9 +1636,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            //animationInfo.frameWidth = 180;
-            // animationInfo.frameHeight = 202;
-            //animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -1690,9 +1662,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            // animationInfo.frameWidth = 180;
-            // animationInfo.frameHeight = 202;
-            // animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -1704,9 +1673,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            //animationInfo.frameWidth = 180;
-            // animationInfo.frameHeight = 202;
-            //animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -1722,8 +1688,6 @@ namespace DuckHuntCommon
             animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
-            //animationInfo.frameWidth = 180;
-            //animationInfo.frameHeight = 202;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
@@ -1733,9 +1697,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 105;
             animationInfo.frameHeight = 102;
             animationInfo.frameCount = 3;
-            // animationInfo.frameWidth = 180;
-            // animationInfo.frameHeight = 202;
-            // animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -1747,9 +1708,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 160;
             animationInfo.frameHeight = 172;
             animationInfo.frameCount = 6;
-            //animationInfo.frameWidth = 180;
-            // animationInfo.frameHeight = 202;
-            //animationInfo.frameCount = 4;
             animationInfo.frameTime = 100;
             anationInfoList.Add(animationInfo);
 
@@ -1765,8 +1723,6 @@ namespace DuckHuntCommon
             animationInfo = new AnimationInfo();
             animationInfo.frameWidth = 160;
             animationInfo.frameHeight = 172;
-            //animationInfo.frameWidth = 180;
-            //animationInfo.frameHeight = 202;
             animationInfo.frameCount = 2;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
@@ -1776,9 +1732,6 @@ namespace DuckHuntCommon
             animationInfo.frameWidth = 160;
             animationInfo.frameHeight = 172;
             animationInfo.frameCount = 6;
-            // animationInfo.frameWidth = 180;
-            // animationInfo.frameHeight = 202;
-            // animationInfo.frameCount = 4;
             animationInfo.frameTime = 200;
             anationInfoList.Add(animationInfo);
 
@@ -2980,11 +2933,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\cnt_font_20";
-#else
             resourceItm.path = "Graphics\\cnt_font_30";
-#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -3388,11 +3337,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\cnt_font_20";
-#else
             resourceItm.path = "Graphics\\cnt_font_30";
-#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -3550,17 +3495,7 @@ namespace DuckHuntCommon
         {
             //
             List<ResourceItem> resourceList = new List<ResourceItem>();
-#if  WINDOWS_PHONE
-            ResourceItem resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\cnt_font_20";
-            resourceList.Add(resourceItm);
 
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.FONT;
-            resourceItm.path = "Graphics\\cnt_font_15";
-            resourceList.Add(resourceItm);
-#else
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\cnt_font_30";
             resourceList.Add(resourceItm);
@@ -3577,7 +3512,6 @@ namespace DuckHuntCommon
             resourceItm.type = ResourceType.FONT; resourceItm.path = "Graphics\\cnt_font_15";
             resourceList.Add(resourceItm);
 
-#endif
 
             return resourceList;
         }
@@ -3695,12 +3629,8 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\cnt_font_20";
-#else
             //resourceItm.path = "Graphics\\font";
             resourceItm.path = "Graphics\\cnt_font_30";
-#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -3814,11 +3744,7 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\cnt_font_20";
-#else
             resourceItm.path = "Graphics\\cnt_font_30";
-#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -4047,11 +3973,7 @@ namespace DuckHuntCommon
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\cnt_font_20";
-#else
             resourceItm.path = "Graphics\\cnt_font_30";
-#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -4218,11 +4140,7 @@ namespace DuckHuntCommon
             
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\cnt_font_20";
-#else
             resourceItm.path = "Graphics\\cnt_font_30";
-#endif
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -4367,11 +4285,7 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.FONT;
-#if  WINDOWS_PHONE
-            resourceItm.path = "Graphics\\cnt_font_20";
-#else
             resourceItm.path = "Graphics\\cnt_font_30";
-#endif
             resourceList.Add(resourceItm);
 
             return resourceList;

@@ -88,21 +88,45 @@
     <None Include="Content\Graphics\cnt_font_25.xnb" />
     <None Include="Content\Graphics\cnt_font_28.xnb" />
     <None Include="Content\Graphics\cnt_font_30.xnb" />
-    <None Include="Content\Graphics\duck_black_dead.xnb" />
-    <None Include="Content\Graphics\duck_black_flying.xnb" />
-    <None Include="Content\Graphics\duck_black_flying_r.xnb" />
-    <None Include="Content\Graphics\duck_black_shot.xnb" />
+    <Content Include="Content\Graphics\duck_black_dead.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_black_flying.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_black_flying_r.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_black_shot.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_blue_dead.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_blue_flying.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_blue_flying_r.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_blue_shot.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_dead.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_flying.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_flying_r.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\duck_red_shot.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Content\Graphics\flag.xnb" />
-    <None Include="Content\Graphics\font1.xnb" />
-    <None Include="Content\Graphics\font2.xnb" />
-    <None Include="Content\Graphics\Forest.xnb" />
-    <None Include="Content\Graphics\gameFont.xnb" />
-    <None Include="Content\Graphics\gameFont_10.xnb" />
     <None Include="Content\Graphics\laser1.xnb" />
     <None Include="Content\Graphics\MenuItemBg_unselected.xnb" />
-    <None Include="Content\Graphics\menu_font_15.xnb" />
-    <None Include="Content\Graphics\menu_font_20.xnb" />
-    <None Include="Content\Graphics\menu_font_25.xnb" />
     <None Include="Content\Graphics\menu_font_30.xnb" />
     <None Include="Content\Graphics\plane.xnb" />
     <None Include="Content\Graphics\plutojumpdown.xnb" />

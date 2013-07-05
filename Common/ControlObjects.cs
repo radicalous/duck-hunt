@@ -1282,7 +1282,8 @@ namespace DuckHuntCommon
             string value = this.model.Content;
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(fontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(fontList[0], value, pos1, Color.Yellow,
+                0, Vector2.Zero, _defscale,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -1396,14 +1397,14 @@ namespace DuckHuntCommon
             string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(ObjFontList[0], "SCORE: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(ObjFontList[0], "SCORE: " + value, pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
             value = "Level: " + model.GetLevel().ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
             pos1.Y += 50 * DefScaleInScreen;
-            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
         }
@@ -1618,7 +1619,8 @@ namespace DuckHuntCommon
             pos1.X += 10 * DefScaleInScreen;
             string value = this.model.LeftTime.ToString();
 
-            spriteBatch.DrawString(base.ObjFontList[0], "Left Time: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(base.ObjFontList[0], "Left Time: " + value,
+                pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -1676,7 +1678,7 @@ namespace DuckHuntCommon
             pos1.X += 10 * DefScaleInScreen;
 
             spriteBatch.DrawString(base.ObjFontList[0], "Level Up", pos1, color1,
-                model.Rotate, Vector2.Zero, model.Scale,
+                model.Rotate, Vector2.Zero, model.Scale * DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -1753,7 +1755,8 @@ namespace DuckHuntCommon
             pos1.X += 10 * DefScaleInScreen;
             string value = this.model.LostDuckCount.ToString();
 
-            spriteBatch.DrawString(this.ObjFontList[0], "Lost Duck: " + value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(this.ObjFontList[0], "Lost Duck: " + value, 
+                pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
 
@@ -1872,7 +1875,7 @@ namespace DuckHuntCommon
             string value = "Hit Duck: " + model.GetHitCount().ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
         }
@@ -1917,6 +1920,7 @@ namespace DuckHuntCommon
             {
                 fontindex = base.ObjFontList.Count - 1;
             }
+            fontindex = 0;
         }
 
         public override void Update(GameTime gameTime)
@@ -1933,7 +1937,7 @@ namespace DuckHuntCommon
             //.Y += (space.Height/2 - 60) * _defscale;
             //pos1.X += 0 * _defscale;
             string value = this.model.Conent.ToString();
-            spriteBatch.DrawString(base.ObjFontList[fontindex], value, pos1, Color.Blue, 0, Vector2.Zero, 1,
+            spriteBatch.DrawString(base.ObjFontList[fontindex], value, pos1, Color.Blue, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
 
@@ -2022,12 +2026,12 @@ namespace DuckHuntCommon
             foreach (KeyValuePair<int, string> pair in result)
             {
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Value,
-                    pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                    pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos2 = pos1;
                 pos2.X += 500 * DefScaleInScreen;
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Key.ToString(),
-                    pos2, Color.Yellow, 0, Vector2.Zero, 1,
+                    pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos1.Y += 30 * DefScaleInScreen;
             }

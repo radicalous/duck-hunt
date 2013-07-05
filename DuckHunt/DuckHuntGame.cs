@@ -2649,7 +2649,7 @@ namespace DuckHuntCommon
         {
             objlst = new List<ModelObject>();
             objlst.Add(blueSky);
-            objlst.Add(smoke);
+            //objlst.Add(smoke);
             objlst.Add(cloud);
             objlst.Add(grass);
             objlst.Add(forground);

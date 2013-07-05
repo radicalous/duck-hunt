@@ -176,6 +176,7 @@ namespace DuckHuntCommon
             List<ModelObject> objlst = new List<ModelObject>();
             // sky
             objlst.Add(new SkyModel());
+            objlst.Add(new SmokeModel());
             objlst.Add(new CloudModel());
             objlst.Add(new GrassModel());
             objlst.Add(new ForegroundGrassModel());
@@ -1254,6 +1255,10 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter5();
                 chapters.Add(chapter);
+
+                //chapter = new GameChapterFunShowCurve();
+                //chapters.Add(chapter);
+
                 chapter = new GameChapter6();
                 chapters.Add(chapter);
                 chapter = new GameChapter7();
@@ -1262,10 +1267,16 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter9();
                 chapters.Add(chapter);
+
                 chapter = new GameChapter10();
                 chapters.Add(chapter);
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
+
+                bonousChapter = new List<GameChapter>();
+                GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
+                GameChapterILoveU loveuChapter = new GameChapterILoveU();
+                bonousChapter.Add(loveuChapter);
             }
             return true;
         }
@@ -1693,15 +1704,13 @@ namespace DuckHuntCommon
                 showplanescore += 1000 + 50 * showplanecount;
                 showplanecount++;
             }
-            /*
+
             if (hitBoard.HitCount - previousHitCount > 20 + showbaloonCount * 2)
             {
                 // show baloon
                 previousHitCount = hitBoard.HitCount;
                 ShowBalloon();
-
             }
-            */
 
             // show bomb
             /*
@@ -2590,6 +2599,7 @@ namespace DuckHuntCommon
     {
         Rectangle rectBackground;
         SkyModel blueSky;
+        SmokeModel smoke;
         CloudModel cloud;
         GrassModel grass;
         ForegroundGrassModel forground;
@@ -2639,6 +2649,7 @@ namespace DuckHuntCommon
         {
             objlst = new List<ModelObject>();
             objlst.Add(blueSky);
+            objlst.Add(smoke);
             objlst.Add(cloud);
             objlst.Add(grass);
             objlst.Add(forground);
@@ -2670,6 +2681,9 @@ namespace DuckHuntCommon
             // dog seek duck
             blueSky = new SkyModel();
             blueSky.Initialize(null, rectBackground, 0);
+
+            smoke = new SmokeModel();
+            smoke.Initialize(null, rectBackground, 0);
 
             cloud = new CloudModel();
             cloud.Initialize(null, rectBackground, 0);
