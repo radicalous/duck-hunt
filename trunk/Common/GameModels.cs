@@ -1792,7 +1792,6 @@ namespace DuckHuntCommon
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_flying";
-            //resourceItm.path = "Graphics\\duckrflying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
@@ -1803,19 +1802,16 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_dead";
-            //resourceItm.path = "Graphics\\duckdying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_black_flying_r";
-            //resourceItm.path = "Graphics\\duckflying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_blue_flying";
-            //resourceItm.path = "Graphics\\duckrflying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
@@ -1826,20 +1822,17 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_blue_dead";
-            //resourceItm.path = "Graphics\\duckdying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_blue_flying_r";
-            //resourceItm.path = "Graphics\\duckflying";
             resourceList.Add(resourceItm);
 
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_red_flying";
-            //resourceItm.path = "Graphics\\duckrflying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
@@ -1850,13 +1843,11 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_red_dead";
-            //resourceItm.path = "Graphics\\duckdying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\duck_red_flying_r";
-            //resourceItm.path = "Graphics\\duckflying";
             resourceList.Add(resourceItm);
 
 
@@ -1864,7 +1855,6 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\red_bird_r";
-            //resourceItm.path = "Graphics\\duckrflying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
@@ -1875,16 +1865,22 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\red_bird_dead";
-            //resourceItm.path = "Graphics\\duckdying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\red_bird";
-            //resourceItm.path = "Graphics\\duckflying";
             resourceList.Add(resourceItm);
 
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\duck_live";
+            resourceList.Add(resourceItm);
 
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\duck_dead";
+            resourceList.Add(resourceItm);
 
 
             return resourceList;
@@ -1932,7 +1928,6 @@ namespace DuckHuntCommon
                     Active = false;
                     goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKFLYAWAY, flyduckPilot.GetPosition());
                 }
-
             }
             else
             {
@@ -2008,8 +2003,29 @@ namespace DuckHuntCommon
             return depth;
         }
 
+        bool barked = false;
         override public int GetSoundIndex()
         {
+            if (Active)
+            {
+                //
+                if (elapsedTime > 500)
+                {
+                    if (!barked)
+                    {
+                        barked = true;
+                        return 0;
+                    }
+                }
+            }
+            else if (dead)
+            {
+                if (!barked)
+                {
+                    barked = true;
+                    return 1;
+                }
+            }
             return -1;
         }
 
@@ -2063,6 +2079,7 @@ namespace DuckHuntCommon
             {
                 Active = false;
                 dead = true;
+                barked = false;
                 goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKDEAD, flyduckPilot.GetPosition());
 
                 // new a bullet  
@@ -4969,14 +4986,18 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\red_bird_dead";
-            //resourceItm.path = "Graphics\\duckdying";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
             resourceItm.path = "Graphics\\red_bird";
-            //resourceItm.path = "Graphics\\duckflying";
             resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\parrot";
+            resourceList.Add(resourceItm);
+
 
             return resourceList;
         }
@@ -5100,8 +5121,17 @@ namespace DuckHuntCommon
             return depth;
         }
 
+        bool barked = false;
         override public int GetSoundIndex()
         {
+            if (!dead)
+            {
+                if (!barked && elapsedTime > 500)
+                {
+                    barked = true;
+                    return 0;
+                }
+            }
             return -1;
         }
 
