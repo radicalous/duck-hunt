@@ -350,7 +350,7 @@ namespace DuckHuntCommon
                 if (soundindex >= 0 && soundindex < _resLst[model.Type()].soundList.Count)
                 {
                     float mastvol = SoundEffect.MasterVolume;
-                    _resLst[model.Type()].soundList[0].Play(1, 0, 0);
+                    _resLst[model.Type()].soundList[soundindex].Play(0.1f, 0, 0);
                 }
 
             }

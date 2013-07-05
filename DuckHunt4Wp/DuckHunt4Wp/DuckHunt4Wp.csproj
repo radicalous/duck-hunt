@@ -143,10 +143,13 @@
     <None Include="Content\Graphics\sky_a_3.xnb" />
     <None Include="Content\Graphics\SpriteFontTexture2.xnb" />
     <None Include="Content\Sound\dog_found.xnb" />
+    <None Include="Content\Sound\duck_dead.xnb" />
+    <None Include="Content\Sound\duck_live.xnb" />
     <None Include="Content\Sound\explosion.xnb" />
     <None Include="Content\Sound\gameMusic.xnb" />
     <None Include="Content\Sound\laserFire.xnb" />
     <None Include="Content\Sound\menuMusic.xnb" />
+    <None Include="Content\Sound\parrot.xnb" />
     <None Include="Content\Sound\shoot.xnb" />
     <None Include="Properties\AppManifest.xml">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>

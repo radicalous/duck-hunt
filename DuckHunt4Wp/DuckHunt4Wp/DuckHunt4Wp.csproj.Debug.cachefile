@@ -95,6 +95,9 @@ Content\Graphics\smoke_2.xnb
 Content\Graphics\smoke_3.xnb
 Content\Graphics\smoke_4.xnb
 Content\Graphics\smoke_5.xnb
+Content\Sound\duck_dead.xnb
+Content\Sound\duck_live.xnb
+Content\Sound\parrot.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
 Content\Graphics\balloon.xnb
