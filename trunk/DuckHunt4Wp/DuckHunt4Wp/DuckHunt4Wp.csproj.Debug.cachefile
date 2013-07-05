@@ -98,4 +98,16 @@ Content\Graphics\smoke_5.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
 Content\Graphics\balloon.xnb
+Content\Graphics\duck_black_dead.xnb
+Content\Graphics\duck_black_flying.xnb
+Content\Graphics\duck_black_flying_r.xnb
+Content\Graphics\duck_black_shot.xnb
+Content\Graphics\duck_blue_dead.xnb
+Content\Graphics\duck_blue_flying.xnb
+Content\Graphics\duck_blue_flying_r.xnb
+Content\Graphics\duck_blue_shot.xnb
+Content\Graphics\duck_red_dead.xnb
+Content\Graphics\duck_red_flying.xnb
+Content\Graphics\duck_red_flying_r.xnb
+Content\Graphics\duck_red_shot.xnb
 Content\DuckHunt.xml
