@@ -1086,7 +1086,7 @@ namespace DuckHuntCommon
             {
 
                 name = "chapteriloveul" + duckcount.ToString();
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     duck = new DuckModel(pilotypelist[1], name);
                     ducks.Add(duck);
@@ -1097,7 +1097,7 @@ namespace DuckHuntCommon
             else if (pilottypeindex == 2)
             {
                 name = "chapteriloveuu" + duckcount.ToString();
-                for (int i = 0; i < 15; i++)
+                for (int i = 0; i < 11; i++)
                 {
                     duck = new DuckModel(pilotypelist[2], name);
                     ducks.Add(duck);
@@ -1585,7 +1585,7 @@ namespace DuckHuntCommon
             {
                 //
                 dog.Update(gametime);
-                if (dog.Gone/* || true*/)
+                if (dog.Gone || true)
                 {
                     // show duck
                     phase = GAME_PHASE.DUCK_FLY;
@@ -1601,7 +1601,46 @@ namespace DuckHuntCommon
                     leftTime.Update(gametime);
                 }
 
+
+                if (gameMode != GameMode.GAME_TIME_LIMIT)
+                {
+
+                    if (lostDuck.LostDuckCount >= 3)
+                    {
+                        duckList.Clear();
+
+                        phase = GAME_PHASE.OVER;
+                        // save new score
+
+                        int score = scoreBoard.TotalScore;
+                        int level = scoreBoard.GetLevel();
+                        duckHuntGame.SaveNewScore(score, level);
+
+                        duckHuntGame.GotoMainMenuPage(); 
+                        return;
+                    }
+                }
+                else
+                {
+                    if (leftTime.LeftTime <= 0)
+                    {
+                        duckList.Clear();
+                        phase = GAME_PHASE.OVER;
+                        // save new score
+
+                        int score = scoreBoard.TotalScore;
+                        int level = scoreBoard.GetLevel();
+                        duckHuntGame.SaveNewScore(score, level);
+
+                        duckHuntGame.GotoMainMenuPage();
+                        return;
+                    }
+                }
+
+
                 levelUp.Update(gametime);
+
+
 
                 bool finished = true;
                 int deadcount = 0;
@@ -1997,7 +2036,7 @@ namespace DuckHuntCommon
             int i = 0;
 
             Vector2 endpos = Vector2.Zero;
-            endpos.Y = duckFlySpace.Height / 2;
+            endpos.Y = duckFlySpace.Height *1.0f/ 2;
             endpos.X = duckFlySpace.Width / batchcount/3;
             for (int ii = 0; ii < batchcount; ii++)
             {
@@ -2020,6 +2059,10 @@ namespace DuckHuntCommon
                     duckList.Add(duck);
                 }
                 endpos.X += duckFlySpace.Width / batchcount;
+                if (ii == 1)
+                {
+                    endpos.Y = duckFlySpace.Height * 1.0f / 3;
+                }
             }
         }
 
@@ -2647,7 +2690,7 @@ namespace DuckHuntCommon
         {
             objlst = new List<ModelObject>();
             objlst.Add(blueSky);
-            objlst.Add(smoke);
+            //objlst.Add(smoke);
             objlst.Add(cloud);
             objlst.Add(grass);
             objlst.Add(forground);

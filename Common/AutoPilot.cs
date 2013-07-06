@@ -1144,7 +1144,7 @@ namespace GameCommon
     {
         public const double Pi = 3.14159;
         public const int Ratio = 2;
-        public const int Groupfactor = 12;
+        public const int Groupfactor = 10;
         public const int MaxLineSteps = 160;
         public const int MaxCurveSteps = 400;
     }
@@ -1968,10 +1968,6 @@ namespace GameCommon
 
     class DuckILoveU_IPilot : DuckPilot
     {
-        double cur_angle = 0;
-        double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
-        float a = 10;
-
         public DuckILoveU_IPilot(Vector2 pos, pilotGroupInfo pgi)
             : base(pos, pgi)
         {
@@ -1980,15 +1976,21 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
-    
-            if (cur_angle > 2 * Constants.Pi)
-                cur_angle = 0;
+            float b = boundaryRect.Height / ( Constants.Ratio);
+            float db = b / 4;
 
-            float b = boundaryRect.Height / (2 * Constants.Ratio);
+            float dy = 0;
+            if (group_info.idx % 2 == 0)
+            {
+                dy = db * group_info.idx / 2;
+            }
+            else
+            {
+                dy = db * ( group_info.idx /2 + 1 )* -1;
+            }
 
-            end_pos.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
-            end_pos.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
+            end_pos.X = center_pos.X;
+            end_pos.Y = center_pos.Y + dy;
         }
 
         public override void Initialize(Rectangle space, int seed)
@@ -2009,7 +2011,7 @@ namespace GameCommon
         {
             base.SetSpeedRatio(speedRatio);
 
-            delta_angle = delta_angle * group_info.speed_ratio;
+           // delta_angle = delta_angle * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
@@ -2021,14 +2023,9 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                if (cur_angle >= 0.5*Constants.Pi && cur_angle < 1.5 * Constants.Pi)
-                {
-                    return Direction.LEFT;
-                }
-                else
-                {
+               
                     return Direction.RIGHT;
-                }
+             
             }
             else
             {
@@ -2045,14 +2042,16 @@ namespace GameCommon
         {
             if (InCurve())
             {
+                /*
                 float b = boundaryRect.Height / (2 * Constants.Ratio);
 
-                cur_angle += delta_angle;
+                
                 if (cur_angle > 2 * Constants.Pi)
                     cur_angle = 0;
 
                 Position.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
                 Position.Y = center_pos.Y + (float)(b * Math.Sin(cur_angle));
+                */
             }
             else
             {
@@ -2186,7 +2185,7 @@ namespace GameCommon
         {
             if (left2right == 1)
             {
-                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2 ;
+                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
             }
             else
             {
@@ -2265,6 +2264,7 @@ namespace GameCommon
         {
             if (InCurve())
             {
+                /*
                 if (left2right == 1)
                 {
                     cur_angle += delta_angle;
@@ -2290,6 +2290,7 @@ namespace GameCommon
 
                 Position.X = center_pos.X + (float)(a * Math.Cos(cur_angle));
                 Position.Y = center_pos.Y - (float)(b * Math.Sin(cur_angle));
+                */
             }
             else
             {
