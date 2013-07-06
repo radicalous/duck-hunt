@@ -1261,6 +1261,7 @@ namespace GameCommon
         override public void SetStartPos(Vector2 pos)
         {
             start_pos = pos;
+            Position = start_pos;
         }
 
         public override void SetEndPos(Vector2 pos)
