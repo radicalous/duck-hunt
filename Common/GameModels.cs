@@ -1910,6 +1910,7 @@ namespace DuckHuntCommon
 
                 //scale = autoPilot.scale;
                 scale = 1 - flyduckPilot.GetDepth() * 1.0f / 100;
+                scale *= 1.5f;
             }
 
             return scale;

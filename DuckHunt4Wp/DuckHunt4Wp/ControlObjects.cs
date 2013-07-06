@@ -350,7 +350,7 @@ namespace DuckHuntCommon
                 if (soundindex >= 0 && soundindex < _resLst[model.Type()].soundList.Count)
                 {
                     float mastvol = SoundEffect.MasterVolume;
-                    _resLst[model.Type()].soundList[soundindex].Play(0.1f, 0, 0);
+                    _resLst[model.Type()].soundList[soundindex].Play(0.3f, 0, 0);
                 }
 
             }
@@ -1994,7 +1994,7 @@ namespace DuckHuntCommon
             Vector2 pos2 = pos1;
             pos2.X += 150 * DefScaleInScreen;
             spriteBatch.DrawString(base.ObjFontList[0], "Top 10 Score List",
-                pos2, Color.Yellow, 0, Vector2.Zero, 1,
+                pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
             pos1.Y += 60 * DefScaleInScreen;
@@ -2003,12 +2003,12 @@ namespace DuckHuntCommon
             foreach (KeyValuePair<int, string> pair in result)
             {
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Value,
-                    pos1, Color.Yellow, 0, Vector2.Zero, 1,
+                    pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos2 = pos1;
                 pos2.X += 500 * DefScaleInScreen;
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Key.ToString(),
-                    pos2, Color.Yellow, 0, Vector2.Zero, 1,
+                    pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos1.Y += 30 * DefScaleInScreen;
             }
@@ -2017,7 +2017,7 @@ namespace DuckHuntCommon
             pos2 = pos1;
             pos2.X += 150 * DefScaleInScreen;
             spriteBatch.DrawString(base.ObjFontList[0], "Top 10 Level List",
-                pos2, Color.Yellow, 0, Vector2.Zero, 1,
+                pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
             pos1.Y += 60 * DefScaleInScreen;
