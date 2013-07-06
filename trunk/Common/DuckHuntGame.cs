@@ -176,7 +176,7 @@ namespace DuckHuntCommon
             List<ModelObject> objlst = new List<ModelObject>();
             // sky
             objlst.Add(new SkyModel());
-            objlst.Add(new SmokeModel());
+            //objlst.Add(new SmokeModel());
             objlst.Add(new CloudModel());
             objlst.Add(new GrassModel());
             objlst.Add(new ForegroundGrassModel());
@@ -1234,11 +1234,12 @@ namespace DuckHuntCommon
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
 
+
                 bonousChapter = new List<GameChapter>();
                 GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
                 GameChapterILoveU loveuChapter = new GameChapterILoveU();
                 bonousChapter.Add(loveuChapter);
-
+                chapters.Add(loveuChapter);
 
             }
             else
@@ -2038,11 +2039,16 @@ namespace DuckHuntCommon
             Vector2 endpos = Vector2.Zero;
             endpos.Y = duckFlySpace.Height *1.0f/ 2;
             endpos.X = duckFlySpace.Width / batchcount/3;
+
+            int showTime = 15;
+            if (batchcount == 3)
+            {
+                // i love you
+                showTime = 50;
+            }
             for (int ii = 0; ii < batchcount; ii++)
             {
                 bonousChapter.GetDuckList(out ducks);
-
-
                 if (ducks == null)
                 {
                     return;
@@ -2052,11 +2058,13 @@ namespace DuckHuntCommon
                 foreach (AnimalModel duck in ducks)
                 {
                     int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
-                    duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                    duck.Initialize(null, duckFlySpace, s + (i++) * 73);
                     duck.StartPilot(startPos);
                     duck.SetStartPos(startPos);
                     duck.SetEndPos(endpos);
+                    duck.SetShowTime(showTime);
                     duckList.Add(duck);
+
                 }
                 endpos.X += duckFlySpace.Width / batchcount;
                 if (ii == 1)
@@ -2640,7 +2648,7 @@ namespace DuckHuntCommon
     {
         Rectangle rectBackground;
         SkyModel blueSky;
-        SmokeModel smoke;
+        //SmokeModel smoke;
         CloudModel cloud;
         GrassModel grass;
         ForegroundGrassModel forground;
@@ -2723,8 +2731,10 @@ namespace DuckHuntCommon
             blueSky = new SkyModel();
             blueSky.Initialize(null, rectBackground, 0);
 
+            /*
             smoke = new SmokeModel();
             smoke.Initialize(null, rectBackground, 0);
+            */
 
             cloud = new CloudModel();
             cloud.Initialize(null, rectBackground, 0);

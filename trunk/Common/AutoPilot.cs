@@ -1261,6 +1261,7 @@ namespace GameCommon
         override public void SetStartPos(Vector2 pos)
         {
             start_pos = pos;
+            Position = start_pos;
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -1357,6 +1358,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
+            cur_angle = 0.0;
             cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0.0;
@@ -1486,6 +1488,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
+            cur_angle = 0.0;
             cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0.0;
@@ -1602,7 +1605,7 @@ namespace GameCommon
 
     class DuckEllipsePilot : DuckPilot
     {
-        double cur_angle = 0;
+        double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
         public DuckEllipsePilot(Vector2 pos, pilotGroupInfo pgi)
@@ -1613,6 +1616,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
+            cur_angle = 0.0;
             cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
     
             if (cur_angle > 2 * Constants.Pi)
@@ -1734,7 +1738,7 @@ namespace GameCommon
         int left2right = 1;
         int hor_steps = 0;
         int max_curveSteps = Constants.MaxCurveSteps;
-        double cur_angle = 0;
+        double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
         public DuckSinPilot(Vector2 pos, pilotGroupInfo pgi)
@@ -1745,6 +1749,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
+            cur_angle = 0.0;
             cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
             if (left2right == 1)
             {
@@ -1894,6 +1899,7 @@ namespace GameCommon
             if ( center_pos.X > boundaryRect.Center.X )
                 center_pos.X -= boundaryRect.Width / 2;
 
+            x_steps = 0;
             x_steps += group_info.idx * Constants.Groupfactor*2;
 
             double dx = (double)(boundaryRect.Right - center_pos.X) / max_curveSteps;
@@ -2062,7 +2068,7 @@ namespace GameCommon
 
     class DuckILoveU_LPilot : DuckPilot
     {
-        double cur_angle = 0;
+        double cur_angle = 0.0;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
         public DuckILoveU_LPilot(Vector2 pos, pilotGroupInfo pgi)
@@ -2073,6 +2079,7 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
+            cur_angle = 0.0;
             cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
 
             if (cur_angle > 2 * Constants.Pi)
@@ -2171,7 +2178,6 @@ namespace GameCommon
 
     class DuckILoveU_UPilot : DuckPilot
     {
-        int left2right = 1;
         double cur_angle = Constants.Pi;
         double delta_angle = 2 * Constants.Pi / Constants.MaxCurveSteps;
 
@@ -2183,24 +2189,16 @@ namespace GameCommon
 
         private void adjustEndPos()
         {
-            if (left2right == 1)
-            {
-                cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
-            }
-            else
-            {
-                cur_angle -= delta_angle * group_info.idx * Constants.Groupfactor * 2;
-            }
+            cur_angle = Constants.Pi;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
 
             if (cur_angle > 2 * Constants.Pi)
             {
                 cur_angle = 2 * Constants.Pi;
-                left2right = 0;
             }
             else if (cur_angle < Constants.Pi)
             {
                 cur_angle = Constants.Pi;
-                left2right = 1;
             }
 
             float a = boundaryRect.Width / (5 * Constants.Ratio);
@@ -2240,14 +2238,7 @@ namespace GameCommon
         {
             if (InCurve())
             {
-                if (left2right == 0)
-                {
-                    return Direction.LEFT;
-                }
-                else
-                {
                     return Direction.RIGHT;
-                }
             }
             else
             {

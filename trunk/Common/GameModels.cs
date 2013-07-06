@@ -1444,6 +1444,7 @@ namespace DuckHuntCommon
         public abstract bool Dead();
         public abstract void SetStartPos(Vector2 startPos);
         public abstract void SetEndPos(Vector2 endPos);
+        public abstract void SetShowTime(int seconds);
 
     }
 
@@ -1474,6 +1475,19 @@ namespace DuckHuntCommon
 
         float scale = 1.0f;
         float depth = 0.6f;
+
+        int showTime = 15;
+        public int ShowTime
+        {
+            get
+            {
+                return showTime;
+            }
+            set
+            {
+                showTime = value;
+            }
+        }
 
 
         Vector2 RelativePosition
@@ -1926,7 +1940,7 @@ namespace DuckHuntCommon
 
                 // check if it need to go
                 elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
-                if (elapsedTime > 1000 * 15)
+                if (elapsedTime > 1000 * showTime)
                 {
                     Active = false;
                     goneduckPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKFLYAWAY, flyduckPilot.GetPosition());
@@ -2109,6 +2123,10 @@ namespace DuckHuntCommon
             flyduckPilot.SetEndPos(endPos);
         }
 
+        public override void SetShowTime(int seconds)
+        {
+            ShowTime = seconds;
+        }
     }
 
 
@@ -5108,13 +5126,27 @@ namespace DuckHuntCommon
             }
             else
             {
-                if (flyPilot.GetHorizationDirection() == Direction.LEFT)
+                if (Active)
                 {
-                   return 0 ;
+                    if (flyPilot.GetHorizationDirection() == Direction.LEFT)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 3;
+                    }
                 }
                 else
                 {
-                   return 3 ;
+                    if (deadPilot.GetHorizationDirection() == Direction.LEFT)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 3;
+                    }
                 }
             }
         }
@@ -5212,6 +5244,10 @@ namespace DuckHuntCommon
             flyPilot.SetEndPos(endPos);
         }
 
+        public override void SetShowTime(int seconds)
+        {
+            
+        }
     }
 
     class BaloonModel : BaseModel
