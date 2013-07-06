@@ -1662,12 +1662,19 @@ namespace DuckHuntCommon
         int showplanescore = 1000;
         int showplanecount = 0;
 
+        DateTime lastbaloon = new DateTime(0);
         void ShowBalloon()
         {
             if (baloon == null)
             {
-                baloon = new BaloonModel();
-                baloon.Initialize(null, baloonSpace, 0);
+                DateTime now = System.DateTime.Now;
+                TimeSpan elaspedtime = now - lastbaloon;
+                if (elaspedtime.TotalSeconds > 30)
+                {
+                    lastbaloon = now;
+                    baloon = new BaloonModel();
+                    baloon.Initialize(null, baloonSpace, 0);
+                }
             }
         }
 
@@ -1712,15 +1719,6 @@ namespace DuckHuntCommon
                 ShowBalloon();
             }
 
-            // show bomb
-            /*
-            if (scoreBoard.TotalScore - previousTotalScore > 1000)
-            {
-                ShowBomb();
-                previousTotalScore = scoreBoard.TotalScore;
-
-            }
-             */
         }
 
         public void Click(List<Vector2> clickpositionlist)
@@ -2649,7 +2647,7 @@ namespace DuckHuntCommon
         {
             objlst = new List<ModelObject>();
             objlst.Add(blueSky);
-            //objlst.Add(smoke);
+            objlst.Add(smoke);
             objlst.Add(cloud);
             objlst.Add(grass);
             objlst.Add(forground);
