@@ -1234,11 +1234,12 @@ namespace DuckHuntCommon
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
 
+
                 bonousChapter = new List<GameChapter>();
                 GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
                 GameChapterILoveU loveuChapter = new GameChapterILoveU();
                 bonousChapter.Add(loveuChapter);
-
+                chapters.Add(loveuChapter);
 
             }
             else
@@ -2052,7 +2053,7 @@ namespace DuckHuntCommon
                 foreach (AnimalModel duck in ducks)
                 {
                     int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
-                    duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                    duck.Initialize(null, duckFlySpace, s + (i++) * 73);
                     duck.StartPilot(startPos);
                     duck.SetStartPos(startPos);
                     duck.SetEndPos(endpos);

@@ -79,7 +79,6 @@
     </Content>
     <None Include="Content\Graphics\bg_grass.xnb" />
     <None Include="Content\Graphics\bg_tree.xnb" />
-    <None Include="Content\Graphics\carton_font.xnb" />
     <None Include="Content\Graphics\checkbox_checked.xnb" />
     <None Include="Content\Graphics\checkbox_unchecked.xnb" />
     <None Include="Content\Graphics\Cloud.xnb" />
@@ -124,7 +123,6 @@
     <Content Include="Content\Graphics\duck_red_shot.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Content\Graphics\flag.xnb" />
     <None Include="Content\Graphics\laser1.xnb" />
     <None Include="Content\Graphics\MenuItemBg_unselected.xnb" />
     <None Include="Content\Graphics\menu_font_30.xnb" />
@@ -138,10 +136,6 @@
     <None Include="Content\Graphics\red_bird_dying.xnb" />
     <None Include="Content\Graphics\red_bird_r.xnb" />
     <None Include="Content\Graphics\sky_2.xnb" />
-    <None Include="Content\Graphics\sky_a_1.xnb" />
-    <None Include="Content\Graphics\sky_a_2.xnb" />
-    <None Include="Content\Graphics\sky_a_3.xnb" />
-    <None Include="Content\Graphics\SpriteFontTexture2.xnb" />
     <None Include="Content\Sound\dog_found.xnb" />
     <None Include="Content\Sound\duck_dead.xnb" />
     <None Include="Content\Sound\duck_live.xnb" />
