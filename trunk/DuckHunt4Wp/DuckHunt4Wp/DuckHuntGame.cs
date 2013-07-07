@@ -36,7 +36,7 @@ namespace DuckHuntCommon
         public float defscale;
 
         Rectangle localViewRect = new Rectangle();
-        Rectangle globalViewRect = new Rectangle(0, 0, 1600, 900);
+        Rectangle globalViewRect = new Rectangle(0, 0, 1920, 1080);
 
         GameData gameData;
 
@@ -176,7 +176,7 @@ namespace DuckHuntCommon
             List<ModelObject> objlst = new List<ModelObject>();
             // sky
             objlst.Add(new SkyModel());
-            //objlst.Add(new SmokeModel());
+            objlst.Add(new SmokeModel());
             objlst.Add(new CloudModel());
             objlst.Add(new GrassModel());
             objlst.Add(new ForegroundGrassModel());
@@ -1735,7 +1735,8 @@ namespace DuckHuntCommon
             if (plane == null)
             {
                 plane = new PlaneModel();
-                plane.Initialize(null, this.baloonSpace, 0);
+                DateTime now = DateTime.Now;
+                plane.Initialize(null, this.baloonSpace, now.Millisecond);
             }
         }
 
@@ -2141,22 +2142,22 @@ namespace DuckHuntCommon
             }
             else
             {
-                timeModelMenuSpace.X = 250;
-                timeModelMenuSpace.Y = 100;
+                timeModelMenuSpace.X = 650;
+                timeModelMenuSpace.Y = 250;
                 timeModelMenuSpace.Width = menuItem.GetSpace().Width;
                 timeModelMenuSpace.Height = menuItem.GetSpace().Height;
 
                 freeModelModelMenuSpace = timeModelMenuSpace;
                 freeModelModelMenuSpace.X = 400;
-                freeModelModelMenuSpace.Y = 280;
+                freeModelModelMenuSpace.Y = 380;
 
                 optionMenuSpace = freeModelModelMenuSpace;
-                optionMenuSpace.X = 1000;
-                optionMenuSpace.Y = 200;
+                optionMenuSpace.X = 1200;
+                optionMenuSpace.Y = 300;
 
                 scoreListMenuSpace = optionMenuSpace;
                 scoreListMenuSpace.X = rectBackground.Width / 2;
-                scoreListMenuSpace.Y = rectBackground.Top + 300;
+                scoreListMenuSpace.Y = rectBackground.Top + 400;
 
             }
 
@@ -2648,7 +2649,7 @@ namespace DuckHuntCommon
     {
         Rectangle rectBackground;
         SkyModel blueSky;
-        //SmokeModel smoke;
+        SmokeModel smoke;
         CloudModel cloud;
         GrassModel grass;
         ForegroundGrassModel forground;
@@ -2698,7 +2699,7 @@ namespace DuckHuntCommon
         {
             objlst = new List<ModelObject>();
             objlst.Add(blueSky);
-            //objlst.Add(smoke);
+            objlst.Add(smoke);
             objlst.Add(cloud);
             objlst.Add(grass);
             objlst.Add(forground);
@@ -2731,10 +2732,8 @@ namespace DuckHuntCommon
             blueSky = new SkyModel();
             blueSky.Initialize(null, rectBackground, 0);
 
-            /*
             smoke = new SmokeModel();
             smoke.Initialize(null, rectBackground, 0);
-            */
 
             cloud = new CloudModel();
             cloud.Initialize(null, rectBackground, 0);

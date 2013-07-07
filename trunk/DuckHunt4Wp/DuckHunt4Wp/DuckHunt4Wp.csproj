@@ -126,7 +126,10 @@
     <None Include="Content\Graphics\laser1.xnb" />
     <None Include="Content\Graphics\MenuItemBg_unselected.xnb" />
     <None Include="Content\Graphics\menu_font_30.xnb" />
-    <None Include="Content\Graphics\plane.xnb" />
+    <None Include="Content\Graphics\plane11.xnb" />
+    <None Include="Content\Graphics\plane22.xnb" />
+    <None Include="Content\Graphics\plane33.xnb" />
+    <None Include="Content\Graphics\plane44.xnb" />
     <None Include="Content\Graphics\plutojumpdown.xnb" />
     <None Include="Content\Graphics\plutojumpup.xnb" />
     <None Include="Content\Graphics\plutoseeking.xnb" />
@@ -135,7 +138,13 @@
     <None Include="Content\Graphics\red_bird_dead.xnb" />
     <None Include="Content\Graphics\red_bird_dying.xnb" />
     <None Include="Content\Graphics\red_bird_r.xnb" />
+    <None Include="Content\Graphics\sky.xnb" />
     <None Include="Content\Graphics\sky_2.xnb" />
+    <None Include="Content\Graphics\sky_smoke_1.xnb" />
+    <None Include="Content\Graphics\sky_smoke_2.xnb" />
+    <None Include="Content\Graphics\sky_smoke_3.xnb" />
+    <None Include="Content\Graphics\sky_smoke_4.xnb" />
+    <None Include="Content\Graphics\sky_smoke_5.xnb" />
     <None Include="Content\Sound\dog_found.xnb" />
     <None Include="Content\Sound\duck_dead.xnb" />
     <None Include="Content\Sound\duck_live.xnb" />

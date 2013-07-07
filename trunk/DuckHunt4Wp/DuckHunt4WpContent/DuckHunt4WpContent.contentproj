@@ -267,68 +267,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\plane11_1.png">
-      <Name>plane11_1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane11_2.png">
-      <Name>plane11_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane11_3.png">
-      <Name>plane11_3</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane22_1.png">
-      <Name>plane22_1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane22_2.png">
-      <Name>plane22_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane22_3.png">
-      <Name>plane22_3</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane33_1.png">
-      <Name>plane33_1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane33_2.png">
-      <Name>plane33_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane33_3.png">
-      <Name>plane33_3</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane44_1.png">
-      <Name>plane44_1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane44_2.png">
-      <Name>plane44_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\plane44_3.png">
-      <Name>plane44_3</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Graphics\menu_font_30.png">
       <Name>menu_font_30</Name>
       <Importer>TextureImporter</Importer>
@@ -394,8 +332,57 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\plane.png">
-      <Name>plane</Name>
+    <Compile Include="Graphics\plane11.png">
+      <Name>plane11</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\plane22.png">
+      <Name>plane22</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\plane33.png">
+      <Name>plane33</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\plane44.png">
+      <Name>plane44</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\sky_smoke_1.png">
+      <Name>sky_smoke_1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\sky_smoke_2.png">
+      <Name>sky_smoke_2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\sky_smoke_3.png">
+      <Name>sky_smoke_3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\sky_smoke_4.png">
+      <Name>sky_smoke_4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\sky_smoke_5.png">
+      <Name>sky_smoke_5</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\sky.jpg">
+      <Name>sky</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

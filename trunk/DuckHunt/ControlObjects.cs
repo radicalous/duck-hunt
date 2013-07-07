@@ -593,9 +593,17 @@ namespace DuckHuntCommon
         // screen rect
         public Rectangle screenRc = new Rectangle();
 
+        int bgxoff = 0;
+        int bgyoff = 0;
+        float bgscale = 1.0f;
+
         public SmokeViewObject(ModelObject model1, Vector2 orgpointinscreen, float defscaleinscreen)
         {
-
+            bgxoff = (int)orgpointinscreen.X;
+            bgyoff = (int)orgpointinscreen.Y;
+            bgscale = defscaleinscreen;
+            bgxoff = -(int)(bgxoff * 1.0f / defscaleinscreen);
+            bgyoff = -(int)(bgyoff * 1.0f / defscaleinscreen);
         }
 
         public SmokeViewObject()
@@ -605,9 +613,6 @@ namespace DuckHuntCommon
 
         Dictionary<ModelType, ObjectTexturesItem> _resLst;
 
-        int bgxoff = 0;
-        int bgyoff = 0;
-        float bgscale = 1.0f;
 
         public override void Init(Vector2 orgpointinscreen, float defscaleinscreen, ModelObject model1,
             Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle spaceInLogic)
@@ -617,13 +622,16 @@ namespace DuckHuntCommon
                 _orgpointinscreen = orgpointinscreen;
                 _defscaleinscreen = defscaleinscreen;
             }
+
             screenRc = spaceInLogic;
+            screenRc.Width = (int)(screenRc.Width *_defscaleinscreen);
+            screenRc.Height = (int)(screenRc.Height * _defscaleinscreen);
 
             model = (SmokeModel)model1;
 
 
-            _orgpointinscreen = orgpointinscreen;
-            _defscaleinscreen = defscaleinscreen;
+            //_orgpointinscreen = orgpointinscreen;
+            //_defscaleinscreen = defscaleinscreen;
 
             _resLst = objTextureLst;
             // try to calculate how may textures are needed by children
@@ -634,6 +642,7 @@ namespace DuckHuntCommon
             viewItmList = new List<ViewItem>();
 
 
+            /*
             int bgwidth = model.BgRcWidth;
             int bgheight = model.BgRcHight;
             if (bgwidth * 1.0f / bgheight > screenRc.Width * 1.0 / screenRc.Height)
@@ -643,16 +652,6 @@ namespace DuckHuntCommon
                 int offx = (int)((bgwidth * bgscale - screenRc.Width) / 2 / bgscale);
                 bgxoff = offx;
 
-                /*
-                offx = model.XOffInBg - offx;
-                offx = (int)(offx * scale);
-                //offx = -offx;
-                int centerx = (int)(offx + texturesList[i].Width * scale / 2);
-                int centery = (int)(model.YOffInBg*scale + texturesList[i].Height*scale / 2);
-                viewItm.bganimation.Position.X = centerx;
-                viewItm.bganimation.Position.Y = centery;
-                viewItm.bganimation.scale = scale;
-                 */
             }
             else
             {
@@ -661,17 +660,8 @@ namespace DuckHuntCommon
 
                 int offy = (int)((bgheight * bgscale - screenRc.Height) / bgscale);
                 bgyoff = offy;
-                /*
-                offy = model.YOffInBg - offy;
-                offy = (int)(offy * scale);
-
-                int centerx = (int)(model.XOffInBg * scale + texturesList[i].Width * scale / 2);
-                int centery = (int)(offy + texturesList[i].Height* scale / 2);
-                viewItm.bganimation.Position.X = centerx;
-                viewItm.bganimation.Position.Y = centery;
-                viewItm.bganimation.scale = scale;
-                 */
             }
+            */
 
             for (int i = 0; i < texturesList.Count; i++)
             {
@@ -706,7 +696,7 @@ namespace DuckHuntCommon
         public override void Update(GameTime gameTime)
         {
             elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
-            if (elapsedTime <= 300)
+            if (elapsedTime <= 100)
             {
                 return;
             }
@@ -715,17 +705,21 @@ namespace DuckHuntCommon
             // prepare this time
             //smokedeltay += 1f;
             //smokescale += 0.001f;
-            if (smokedeltay > 5)
+            if (smokedeltay > 3)
             {
                 smokedeltay = 0;
                 smokescale = 1.0f;
-                smokeindex = (smokeindex + 0) % viewItmList.Count;
+                smokeindex = (smokeindex + 1) % viewItmList.Count;
+                if (smokeindex == 0)
+                {
+                    smokedeltay = 3;
+                }
             }
             ViewItem viewItm = viewItmList[smokeindex];
 
-            smokedeltay = viewItm.bganimation.FrameHeight * deltasmokescale / 2;
+            //smokedeltay = viewItm.bganimation.FrameHeight * deltasmokescale / 2;
             smokedeltay += 1;
-            smokescale += deltasmokescale;
+            //smokescale += deltasmokescale;
 
 
             Vector2 smokelefttop = Vector2.Zero;
@@ -748,7 +742,7 @@ namespace DuckHuntCommon
             smokecenter.Y *= bgscale;
 
             // animation scale
-            viewItm.bganimation.scale = bgscale * smokescale;
+            viewItm.bganimation.scale = bgscale /** smokescale*/;
             viewItm.bganimation.Position = smokecenter;
             viewItm.bganimation.Update(gameTime);
 
@@ -1675,7 +1669,7 @@ namespace DuckHuntCommon
             // draw score
             Vector2 pos1 = scoreposition;
             pos1.Y += 10 * DefScaleInScreen;
-            pos1.X += 10 * DefScaleInScreen;
+            pos1.X += 10 * DefScaleInScreen - 20 * (model.Scale - 1);
 
             spriteBatch.DrawString(base.ObjFontList[0], "Level Up", pos1, color1,
                 model.Rotate, Vector2.Zero, model.Scale * DefScaleInScreen,
