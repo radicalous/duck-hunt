@@ -228,35 +228,7 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_2";
-            resourceList.Add(resourceItm);
-
-            return resourceList;
-
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            //resourceItm.path = "Graphics\\sky_a_1";
-            resourceItm.path = "Graphics\\sky_new_1";
-            resourceList.Add(resourceItm);
-
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_new_2";
-            resourceList.Add(resourceItm);
-
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_new_3";
-            resourceList.Add(resourceItm);
-
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_new_4";
-            resourceList.Add(resourceItm);
-
-            resourceItm = new ResourceItem();
-            resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\sky_new_5";
+            resourceItm.path = "Graphics\\sky";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -289,7 +261,7 @@ namespace DuckHuntCommon
         {
             get
             {
-                return 1533;
+                return 1530;
             }
         }
 
@@ -297,7 +269,7 @@ namespace DuckHuntCommon
         {
             get
             {
-                return 281;
+                return 238;
             }
         }
 
@@ -308,35 +280,40 @@ namespace DuckHuntCommon
             AnimationInfo animationInfo = new AnimationInfo();
             animationInfo.animation = false;
             animationInfo.frameCount = 1;
-            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameWidth = 210;
+            animationInfo.frameHeight = 267;
             animationInfo.frameTime = 500;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
             animationInfo.animation = false;
             animationInfo.frameCount = 1;
-            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameWidth = 210;
+            animationInfo.frameHeight = 267;
             animationInfo.frameTime = 500;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
             animationInfo.animation = false;
             animationInfo.frameCount = 1;
-            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameWidth = 210;
+            animationInfo.frameHeight = 267;
             animationInfo.frameTime = 500;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
             animationInfo.animation = false;
             animationInfo.frameCount = 1;
-            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameWidth = 210;
+            animationInfo.frameHeight = 267;
             animationInfo.frameTime = 500;
             anationInfoList.Add(animationInfo);
 
             animationInfo = new AnimationInfo();
             animationInfo.animation = false;
             animationInfo.frameCount = 1;
-            animationInfo.frameWidth = animationInfo.frameHeight = 0;
+            animationInfo.frameWidth = 210;
+            animationInfo.frameHeight = 267;
             animationInfo.frameTime = 500;
             anationInfoList.Add(animationInfo);
         }
@@ -365,27 +342,27 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\smoke_1";
+            resourceItm.path = "Graphics\\sky_smoke_3";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\smoke_2";
+            resourceItm.path = "Graphics\\sky_smoke_4";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\smoke_3";
+            resourceItm.path = "Graphics\\sky_smoke_5";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\smoke_4";
+            resourceItm.path = "Graphics\\sky_smoke_1";
             resourceList.Add(resourceItm);
 
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\smoke_5";
+            resourceItm.path = "Graphics\\sky_smoke_2";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -4672,7 +4649,7 @@ namespace DuckHuntCommon
         List<AnimationInfo> anationInfoList;
         Rectangle planespace;
         Rectangle crashspace;
-        float depth = 0.4F;
+        float depth = 0.8F;
 
         Vector2 relativePos;
 
@@ -4697,6 +4674,9 @@ namespace DuckHuntCommon
             }
         }
 
+        int planeindex = 0;
+
+
         public PlaneModel()
         {
             //
@@ -4704,13 +4684,37 @@ namespace DuckHuntCommon
 
             // flying duck
             AnimationInfo animationInfo = new AnimationInfo();
-            animationInfo.frameWidth = 506;
-            animationInfo.frameHeight = 203;
+            animationInfo.frameWidth = 500;
+            animationInfo.frameHeight = 100;
+            animationInfo.frameCount = 3;
+            animationInfo.frameTime = 250;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 500;
+            animationInfo.frameHeight = 100;
+            animationInfo.frameCount = 3;
+            animationInfo.frameTime = 250;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 500;
+            animationInfo.frameHeight = 100;
+            animationInfo.frameCount = 3;
+            animationInfo.frameTime = 250;
+            anationInfoList.Add(animationInfo);
+
+            animationInfo = new AnimationInfo();
+            animationInfo.frameWidth = 500;
+            animationInfo.frameHeight = 100;
             animationInfo.frameCount = 3;
             animationInfo.frameTime = 250;
             anationInfoList.Add(animationInfo);
 
             triangle = new List<Vector2>();
+
+
+
 
         }
 
@@ -4734,6 +4738,11 @@ namespace DuckHuntCommon
 
             relativePos.X = planespace.Left;
             relativePos.Y = planespace.Bottom;
+
+            Random radom = new Random(seed);
+
+            planeindex = radom.Next(3);
+
         }
 
         override public List<ResourceItem> GetResourceList()
@@ -4742,7 +4751,22 @@ namespace DuckHuntCommon
             List<ResourceItem> resourceList = new List<ResourceItem>();
             ResourceItem resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.TEXTURE;
-            resourceItm.path = "Graphics\\plane";
+            resourceItm.path = "Graphics\\plane11";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\plane22";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\plane33";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.TEXTURE;
+            resourceItm.path = "Graphics\\plane44";
             resourceList.Add(resourceItm);
 
             return resourceList;
@@ -4796,7 +4820,7 @@ namespace DuckHuntCommon
 
         override public int GetCurrentAnimationIndex()
         {
-            return 0;
+            return planeindex;
         }
 
         override public float GetAnimationDepth()
