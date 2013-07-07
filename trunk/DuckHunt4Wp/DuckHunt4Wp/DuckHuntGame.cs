@@ -843,10 +843,10 @@ namespace DuckHuntCommon
                 duckcount++;
             }
             name = "chapter8_parrot_i" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKEIGHTDEPTH, name);
             ducks.Add(duck);
             name = "chapter8_parrot_l" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKELLIPSEDEPTH, name);
             ducks.Add(duck);
 
             pilotTypeIndex++;
@@ -906,14 +906,14 @@ namespace DuckHuntCommon
             }
 
             name = "chapter9_parrot_i" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKILOVEU_L, name);
             ducks.Add(duck);
             name = "chapter9_parrot_l" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKELLIPSEDEPTH, name);
             ducks.Add(duck);
 
             name = "chapter9_parrot_u" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKSINDEPTH, name);
             ducks.Add(duck);
 
 
@@ -974,14 +974,14 @@ namespace DuckHuntCommon
             }
 
             name = "chapter10_parrot_i" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKILOVEU_L, name);
             ducks.Add(duck);
             name = "chapter10_parrot_l" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKSINDEPTH, name);
             ducks.Add(duck);
 
             name = "chapter10_parrot_u" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKEIGHTDEPTH, name);
             ducks.Add(duck);
 
 
@@ -2124,42 +2124,23 @@ namespace DuckHuntCommon
 
 
             MenuItemModel menuItem = new MenuItemModel();
-            if (rectBackground.Width < rectBackground.Height)
-            {
-                timeModelMenuSpace.X = rectBackground.Height - 150;
-                timeModelMenuSpace.Y = rectBackground.Width - 250;
-                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
-                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
+            timeModelMenuSpace.X = 700;
+            timeModelMenuSpace.Y = 200;
+            timeModelMenuSpace.Width = menuItem.GetSpace().Width;
+            timeModelMenuSpace.Height = menuItem.GetSpace().Height;
 
-                freeModelModelMenuSpace = timeModelMenuSpace;
-                freeModelModelMenuSpace.Y += 100;
+            freeModelModelMenuSpace = timeModelMenuSpace;
+            freeModelModelMenuSpace.X = 400;
+            freeModelModelMenuSpace.Y = 310;
 
-                optionMenuSpace = freeModelModelMenuSpace;
-                optionMenuSpace.Y += 100;
+            optionMenuSpace = freeModelModelMenuSpace;
+            optionMenuSpace.X = 1200;
+            optionMenuSpace.Y = 300;
 
-                scoreListMenuSpace = optionMenuSpace;
-                scoreListMenuSpace.Y += 100;
-            }
-            else
-            {
-                timeModelMenuSpace.X = 650;
-                timeModelMenuSpace.Y = 250;
-                timeModelMenuSpace.Width = menuItem.GetSpace().Width;
-                timeModelMenuSpace.Height = menuItem.GetSpace().Height;
+            scoreListMenuSpace = optionMenuSpace;
+            scoreListMenuSpace.X = rectBackground.Width / 2 - 150;
+            scoreListMenuSpace.Y = rectBackground.Top + 400;
 
-                freeModelModelMenuSpace = timeModelMenuSpace;
-                freeModelModelMenuSpace.X = 400;
-                freeModelModelMenuSpace.Y = 380;
-
-                optionMenuSpace = freeModelModelMenuSpace;
-                optionMenuSpace.X = 1200;
-                optionMenuSpace.Y = 300;
-
-                scoreListMenuSpace = optionMenuSpace;
-                scoreListMenuSpace.X = rectBackground.Width / 2;
-                scoreListMenuSpace.Y = rectBackground.Top + 400;
-
-            }
 
             NewMenu();
         }
