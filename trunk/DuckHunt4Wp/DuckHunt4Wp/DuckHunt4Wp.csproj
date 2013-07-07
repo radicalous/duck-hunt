@@ -150,6 +150,9 @@
     <None Include="Content\Sound\duck_live.xnb" />
     <None Include="Content\Sound\explosion.xnb" />
     <None Include="Content\Sound\gameMusic.xnb" />
+    <None Include="Content\Sound\godbless.xnb" />
+    <None Include="Content\Sound\hatedog.xnb" />
+    <None Include="Content\Sound\helpme.xnb" />
     <None Include="Content\Sound\laserFire.xnb" />
     <None Include="Content\Sound\menuMusic.xnb" />
     <None Include="Content\Sound\parrot.xnb" />
