@@ -197,16 +197,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Graphics\duck_blue_flying.png">
-      <Name>duck_blue_flying</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\duck_blue_flying_r.png">
-      <Name>duck_blue_flying_r</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Graphics\duck_blue_shot.png">
       <Name>duck_blue_shot</Name>
       <Importer>TextureImporter</Importer>
@@ -216,16 +206,6 @@
   <ItemGroup>
     <Compile Include="Graphics\duck_red_dead.png">
       <Name>duck_red_dead</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\duck_red_flying.png">
-      <Name>duck_red_flying</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\duck_red_flying_r.png">
-      <Name>duck_red_flying_r</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -317,18 +297,6 @@
       <Name>parrot</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Graphics\duck_black_flying.png">
-      <Name>duck_black_flying</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Graphics\duck_black_flying_r.png">
-      <Name>duck_black_flying_r</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -462,6 +430,38 @@
     </Compile>
     <Compile Include="Graphics\bh_duck_red_shot.png">
       <Name>bh_duck_red_shot</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics\duck_black_flying.png">
+      <Name>duck_black_flying</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\duck_black_flying_r.png">
+      <Name>duck_black_flying_r</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\duck_blue_flying.png">
+      <Name>duck_blue_flying</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\duck_blue_flying_r.png">
+      <Name>duck_blue_flying_r</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\duck_red_flying.png">
+      <Name>duck_red_flying</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Graphics\duck_red_flying_r.png">
+      <Name>duck_red_flying_r</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
