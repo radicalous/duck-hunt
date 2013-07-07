@@ -843,10 +843,10 @@ namespace DuckHuntCommon
                 duckcount++;
             }
             name = "chapter8_parrot_i" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKEIGHTDEPTH, name);
             ducks.Add(duck);
             name = "chapter8_parrot_l" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKELLIPSEDEPTH, name);
             ducks.Add(duck);
 
             pilotTypeIndex++;
@@ -906,14 +906,14 @@ namespace DuckHuntCommon
             }
 
             name = "chapter9_parrot_i" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKILOVEU_L, name);
             ducks.Add(duck);
             name = "chapter9_parrot_l" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKELLIPSEDEPTH, name);
             ducks.Add(duck);
 
             name = "chapter9_parrot_u" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKSINDEPTH, name);
             ducks.Add(duck);
 
 
@@ -974,14 +974,14 @@ namespace DuckHuntCommon
             }
 
             name = "chapter10_parrot_i" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKILOVEU_L, name);
             ducks.Add(duck);
             name = "chapter10_parrot_l" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKSINDEPTH, name);
             ducks.Add(duck);
 
             name = "chapter10_parrot_u" + duckcount.ToString();
-            duck = new ParrotModel(PilotType.DUCKILOVEU_I, name);
+            duck = new ParrotModel(PilotType.DUCKEIGHTDEPTH, name);
             ducks.Add(duck);
 
 
