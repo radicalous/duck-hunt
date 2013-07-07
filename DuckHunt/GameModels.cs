@@ -45,6 +45,7 @@ namespace DuckHuntCommon
         public abstract float GetAnimationDepth();      // animation depth
 
         public abstract int GetSoundIndex();
+        public abstract float GetSoundVolumn();
 
 
         public abstract ModelObject GetParentObject();
@@ -53,6 +54,7 @@ namespace DuckHuntCommon
         // assist function, improve performance
         public abstract ViewObject GetViewObject();
         public abstract void SetViewObject(ViewObject viewObject);
+
     }
 
 
@@ -80,7 +82,10 @@ namespace DuckHuntCommon
         {
             return -1;
         }
-
+        override public float GetSoundVolumn()
+        {
+            return 0.3f;
+        }
         override public ModelObject GetParentObject()
         {
             return parent;
@@ -4996,6 +5001,7 @@ namespace DuckHuntCommon
         }
 
 
+        Random radom ;
         override public void Initialize(ModelObject parent1, Rectangle duckSpace, int seed)
         {
             base.Initialize(null, duckSpace, seed);
@@ -5005,7 +5011,7 @@ namespace DuckHuntCommon
 
             // Set the player health
             randomseed = seed;
-            Random radom = new Random(seed);
+            radom = new Random(seed);
 
             flyspace = duckSpace;
         }
@@ -5041,6 +5047,21 @@ namespace DuckHuntCommon
             resourceItm = new ResourceItem();
             resourceItm.type = ResourceType.SOUND;
             resourceItm.path = "Sound\\parrot";
+            resourceList.Add(resourceItm);
+            /*
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\godbless";
+            resourceList.Add(resourceItm);
+
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\hatedog";
+            resourceList.Add(resourceItm);
+            */
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\helpme";
             resourceList.Add(resourceItm);
 
 
@@ -5188,12 +5209,16 @@ namespace DuckHuntCommon
                 if (!barked && elapsedTime > 500)
                 {
                     barked = true;
-                    return 0;
+                    return radom.Next(2);
                 }
             }
             return -1;
         }
 
+        override public float GetSoundVolumn()
+        {
+            return 1.0f;
+        }
 
         /// <summary>
         ///  specific functions
