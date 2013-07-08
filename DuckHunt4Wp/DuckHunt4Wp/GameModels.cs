@@ -31,6 +31,8 @@ namespace DuckHuntCommon
         public abstract ModelType Type();
 
         public abstract void Initialize(ModelObject parent, Rectangle rect, int seed); // Rect is the rect range based on parent object
+        public abstract void Cleanup(); 
+
         public abstract void Update(GameTime gameTime);
 
         public abstract List<ResourceItem> GetResourceList();
@@ -71,6 +73,11 @@ namespace DuckHuntCommon
             parent = parent1;
             relativePostionInParent.X = itemSpace.Left;
             relativePostionInParent.Y = itemSpace.Top;
+        }
+
+        public override void Cleanup()
+        {
+            
         }
 
         override public void Update(GameTime gameTime)
@@ -1554,10 +1561,11 @@ namespace DuckHuntCommon
                 flyduckPilot.SetSpeedRatio(ratio);
             }
         }
-
+        string pilotgroupname = "";
         public DuckModel(PilotType type, string groupname)
         {
             //
+            pilotgroupname = groupname;
             flyduckPilot = PilotManager.GetInstance().CreatePilot(type, groupname);
             switch(type)
             {
@@ -1779,6 +1787,13 @@ namespace DuckHuntCommon
             boundingTrigle2.Add(pos1);
         }
 
+        public override void Cleanup()
+        {
+            PilotManager.GetInstance().ReturnPilot(pilotgroupname, flyduckPilot);
+
+            this.flyduckPilot = null;
+            this.goneduckPilot = null;
+        }
 
 
         override public List<ResourceItem> GetResourceList()
@@ -4952,9 +4967,11 @@ namespace DuckHuntCommon
         }
 
 
-        
+        string pilotgroupname = "";
+        PilotType pilotType = PilotType.DUCKNORMAL;
         public ParrotModel(PilotType type, string groupname)
         {
+            pilotgroupname = groupname;
             anationInfoList = new List<AnimationInfo>();
             //
             flyPilot = PilotManager.GetInstance().CreatePilot(type, groupname);
@@ -5017,6 +5034,13 @@ namespace DuckHuntCommon
         }
 
 
+        public override void Cleanup()
+        {
+            PilotManager.GetInstance().ReturnPilot(pilotgroupname, this.flyPilot);
+
+            this.flyPilot = null;
+            this.deadPilot = null;
+        }
 
         override public List<ResourceItem> GetResourceList()
         {
