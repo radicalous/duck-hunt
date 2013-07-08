@@ -1202,6 +1202,8 @@ namespace DuckHuntCommon
 
         public bool Init(GameMode mode)
         {
+            PilotManager.Reset();
+
             if (mode == GameMode.GAME_TIME_LIMIT)
             {
                 chapters = new List<GameChapter>();
@@ -1948,6 +1950,13 @@ namespace DuckHuntCommon
                         if (!duck2.Gone() && duck2.Type() == ModelType.PARROT)
                         {
                             tmplist.Add(duck2);
+                        }
+
+                        if (duck2.Gone())
+                        {
+                            // animal gone, reutrn pilot
+                            duck2.Cleanup();
+
                         }
                     }
                     if (lostDuck.LostDuckCount >= 3)

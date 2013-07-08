@@ -94,6 +94,11 @@ namespace GameCommon
             return instance;
         }
 
+        public static void Reset()
+        {
+            instance = null;
+        }
+
         public AiPilot CreatePilot(PilotType type)
         {
             Vector2 pos = Vector2.Zero;
@@ -427,8 +432,262 @@ namespace GameCommon
             return pilot;
         }
 
-        public void ReturnPilot(AiPilot pilot)
+        public void ReturnPilot(string groupname, AiPilot pilot)
         {
+            PilotType type = pilot.GetType();
+
+            switch (type)
+            {
+                case PilotType.DUCKNORMAL:
+                case PilotType.DUCKQUICK:
+                    {
+                    }
+                    break;
+                case PilotType.DUCKFLYAWAY:
+                    {
+                    }
+                    break;
+                case PilotType.DUCKDEAD:
+                    {
+                    }
+                    break;
+                case PilotType.DUCKEIGHT:
+                    {
+                        if (duckEightPilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckEightPilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckEightPilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckEightPilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKEIGHTDEPTH:
+                    {
+
+                        if (duckEightPilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckEightPilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckEightPilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckEightPilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKCIRCLE:
+                    {
+
+                        if (duckCirclePilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckCirclePilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckCirclePilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckCirclePilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKCIRCLEDEPTH:
+                    {
+                        if (duckCirclePilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckCirclePilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckCirclePilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckCirclePilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKELLIPSE:
+                    {
+
+                        if (duckEllipsePilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckEllipsePilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckEllipsePilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckEllipsePilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKELLIPSEDEPTH:
+                    {
+
+                        if (duckEllipsePilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckEllipsePilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckEllipsePilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckEllipsePilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKSIN:
+                    {
+                        if (duckSinPilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckSinPilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckSinPilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckSinPilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKSINDEPTH:
+                    {
+
+                        if (duckSinPilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckSinPilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckSinPilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckSinPilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKLINE:
+                    {
+                        if (duckLinePilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckLinePilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckLinePilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckLinePilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKREN:
+                    {
+                        //not done yet
+                    }
+                    break;
+                case PilotType.DUCKILOVEU_I:
+                    {
+                        if (duckILoveU_IPilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckILoveU_IPilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckLinePilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckILoveU_IPilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKILOVEU_L:
+                    {
+                        if (duckILoveU_LPilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckILoveU_LPilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckILoveU_LPilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckILoveU_LPilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DUCKILOVEU_U:
+                    {
+                        if (duckILoveU_UPilotGroup.ContainsKey(groupname))
+                        {
+                            pilotGroupInfo pgi = duckILoveU_UPilotGroup[groupname];
+                            pgi.idx--;
+                            if (pgi.idx == 0)
+                            {
+                                duckILoveU_UPilotGroup.Remove(groupname);
+                            }
+                            else
+                            {
+                                duckILoveU_UPilotGroup[groupname] = pgi;
+                            }
+                        }
+                    }
+                    break;
+                case PilotType.DOGSEEK:
+                    {
+                    }
+                    break;
+                case PilotType.DOGJUMP:
+                    {
+                    }
+                    break;
+                case PilotType.DOGSHOW:
+                    {
+                    }
+                    break;
+                case PilotType.CLOUD:
+                    {
+                    }
+                    break;
+                case PilotType.PARROT:
+                    {
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
