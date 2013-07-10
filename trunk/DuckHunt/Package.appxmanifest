@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="58531pennerzhang.DuckHunt" Publisher="CN=A08AD9D1-43EC-49E9-BABB-C9D8A235E769" Version="1.0.0.3" />
+  <Identity Name="58531pennerzhang.DuckHunt" Publisher="CN=A08AD9D1-43EC-49E9-BABB-C9D8A235E769" Version="1.0.0.8" />
   <Properties>
     <DisplayName>DuckHunt</DisplayName>
     <PublisherDisplayName>penner zhang</PublisherDisplayName>
@@ -24,4 +24,9 @@
   <Capabilities>
     <Capability Name="internetClient" />
   </Capabilities>
+  <Extensions>
+    <Extension Category="windows.gameExplorer">
+      <GameExplorer GameDefinitionContainer="DuckHuntGDF.dll" />
+    </Extension>
+  </Extensions>
 </Package>

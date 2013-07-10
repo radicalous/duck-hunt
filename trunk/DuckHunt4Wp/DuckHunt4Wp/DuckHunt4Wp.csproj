@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DuckHunt4Wp</RootNamespace>
-    <AssemblyName>DuckHunt4Wp</AssemblyName>
+    <AssemblyName>DuckHunt</AssemblyName>
     <XnaRefreshLevel>1</XnaRefreshLevel>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
@@ -21,7 +21,7 @@
     <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
     <XnaWindowsPhoneManifestTemplate>Properties\WMAppManifest.xml</XnaWindowsPhoneManifestTemplate>
     <TileImage>Background.png</TileImage>
-    <TileTitle>DuckHunt4Wp</TileTitle>
+    <TileTitle>DuckHunt</TileTitle>
     <SupportedCultures>
     </SupportedCultures>
     <ApplicationIcon>Game.ico</ApplicationIcon>
@@ -79,42 +79,6 @@
     </Content>
     <None Include="Content\Graphics\bg_grass.xnb" />
     <None Include="Content\Graphics\bg_tree.xnb" />
-    <Content Include="Content\Graphics\bh_duck_black_dead.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_black_flying.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_black_flying_r.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_black_shot.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_blue_dead.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_blue_flying.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_blue_flying_r.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_blue_shot.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_red_dead.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_red_flying.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_red_flying_r.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\bh_duck_red_shot.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="Content\Graphics\checkbox_checked.xnb" />
     <None Include="Content\Graphics\checkbox_unchecked.xnb" />
     <None Include="Content\Graphics\Cloud.xnb" />
@@ -123,6 +87,18 @@
     <None Include="Content\Graphics\cnt_font_25.xnb" />
     <None Include="Content\Graphics\cnt_font_28.xnb" />
     <None Include="Content\Graphics\cnt_font_30.xnb" />
+    <None Include="Content\Graphics\duck_black_dead.xnb" />
+    <None Include="Content\Graphics\duck_black_flying.xnb" />
+    <None Include="Content\Graphics\duck_black_flying_r.xnb" />
+    <None Include="Content\Graphics\duck_black_shot.xnb" />
+    <None Include="Content\Graphics\duck_blue_dead.xnb" />
+    <None Include="Content\Graphics\duck_blue_flying.xnb" />
+    <None Include="Content\Graphics\duck_blue_flying_r.xnb" />
+    <None Include="Content\Graphics\duck_blue_shot.xnb" />
+    <None Include="Content\Graphics\duck_red_dead.xnb" />
+    <None Include="Content\Graphics\duck_red_flying.xnb" />
+    <None Include="Content\Graphics\duck_red_flying_r.xnb" />
+    <None Include="Content\Graphics\duck_red_shot.xnb" />
     <None Include="Content\Graphics\laser1.xnb" />
     <None Include="Content\Graphics\MenuItemBg_unselected.xnb" />
     <None Include="Content\Graphics\menu_font_30.xnb" />

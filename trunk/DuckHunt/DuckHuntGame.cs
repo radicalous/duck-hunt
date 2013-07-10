@@ -48,6 +48,7 @@ namespace DuckHuntCommon
             }
         }
 
+        bool snapview = false;
         bool pause = false;
         public bool Pause
         {
@@ -58,6 +59,35 @@ namespace DuckHuntCommon
             set
             {
                 pause = value;
+            }
+        }
+
+        public bool SnapView
+        {
+            get
+            {
+                return snapview;
+            }
+            set
+            {
+                snapview = value;
+            }
+        }
+
+        GamePage oldPage = null;
+        public void SwapSnap(bool snap)
+        {
+            if (snap)
+            {
+                oldPage = this.currentPage;
+                currentPage = snapPage;
+            }
+            else
+            {
+                if (oldPage != null)
+                {
+                    currentPage = oldPage;
+                }
             }
         }
 
@@ -135,6 +165,8 @@ namespace DuckHuntCommon
 
         GamePage currentPage = null;
 
+        GameSnapPage snapPage;
+
         List<GamePage> pagestack;
 
         public DuckHuntGame()
@@ -148,6 +180,8 @@ namespace DuckHuntCommon
             playPage = new GamePlayPage();
             scoreListPage = new GameScoreListPage();
             optionPage = new GameConfigPage();
+
+            snapPage = new GameSnapPage();
 
             currentPage = mainMenuPage;
             pagestack.Add(currentPage);
@@ -314,6 +348,8 @@ namespace DuckHuntCommon
             mainMenuPage.InitGamePage(this);
             scoreListPage.InitGamePage(this);
             optionPage.InitGamePage(this);
+
+            snapPage.InitGamePage(this);
 
 
             // logic rect 1600x900
@@ -1241,6 +1277,7 @@ namespace DuckHuntCommon
                 GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
                 GameChapterILoveU loveuChapter = new GameChapterILoveU();
                 bonousChapter.Add(loveuChapter);
+                bonousChapter.Add(curveChapter);
                 chapters.Add(loveuChapter);
 
             }
@@ -1284,10 +1321,13 @@ namespace DuckHuntCommon
             return true;
         }
 
+        int bonousindex = 0;
         public bool GetBonusChapter(out GameChapter bounusChapter)
         {
 
-            bounusChapter = bonousChapter[0];
+            bounusChapter = bonousChapter[bonousindex];
+            bonousindex += 1;
+            bonousindex %= bonousChapter.Count;
             return true;
         }
 
@@ -2281,6 +2321,72 @@ namespace DuckHuntCommon
         }
     }
 
+
+    class GameSnapPage : GamePage
+    {
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
+        MenuItemModel menuPausedInfoItem;
+        Rectangle pausedMenuSpace;
+
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
+        public void InitGamePage(DuckHuntGame game)
+        {
+            duckHuntGame = game;
+            backgroundPage = game.GetBackgroundPage();
+
+            Rectangle rectBackground = game.GetGlobalViewRect();
+
+            pausedMenuSpace.X = 50;
+            pausedMenuSpace.Y = rectBackground.Height/3 - 20;
+            pausedMenuSpace.Height = rectBackground.Height;
+            pausedMenuSpace.Width = (int)(rectBackground.Width * 1.0f / 3);
+
+            menuPausedInfoItem = new MenuItemModel();
+
+            menuPausedInfoItem.Initialize(null, pausedMenuSpace, 0);
+            menuPausedInfoItem.Conent = "Paused";
+        }
+
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+
+            objlst.Add(menuPausedInfoItem);
+
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+
+        }
+        public void Update(GameTime gametime)
+        {
+            //backgroundPage.Update(gametime);
+        }
+
+
+        public void Click(List<Vector2> clickpositionlist)
+        {
+            //
+            return;
+        }
+
+        /////////
+
+        public  GameSnapPage()
+        {
+            menuPausedInfoItem = new MenuItemModel();
+        }
+    }
+
+
     class GameScoreListPage : GamePage
     {
 
@@ -2705,12 +2811,15 @@ namespace DuckHuntCommon
         }
         public void Click(List<Vector2> clickpositionlist)
         {
-            if(pause.Click(clickpositionlist[0]))
+            if (showPause)
             {
-                // reset the icon
-                pause.Click(clickpositionlist[0]);
+                if (pause.Click(clickpositionlist[0]))
+                {
+                    // reset the icon
+                    pause.Click(clickpositionlist[0]);
 
-                duckHuntGame.PauseGame(false);
+                    duckHuntGame.PauseGame(false);
+                }
             }
         }
 
@@ -2777,7 +2886,7 @@ namespace DuckHuntCommon
             foreach (var item in result)
             {
                 i++;
-                if (i > 10)
+                if (i > 5)
                 {
                     break;
                 }
@@ -2801,7 +2910,7 @@ namespace DuckHuntCommon
             foreach (var item in result)
             {
                 i++;
-                if (i > 10)
+                if (i > 5)
                 {
                     break;
                 }
