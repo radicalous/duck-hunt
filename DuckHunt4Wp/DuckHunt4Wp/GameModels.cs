@@ -745,7 +745,12 @@ namespace DuckHuntCommon
             }
             else
             {
+#if WINDOWS_PHONE
+                return 1.2f;
+#else
                 return 1.0f;
+#endif
+
             }
         }
 
@@ -2462,7 +2467,10 @@ namespace DuckHuntCommon
             }
             return -1;
         }
- 
+        override public float GetSoundVolumn()
+        {
+            return 1.0f;
+        }
 
         public void ShowDog(int deadduck)
         {

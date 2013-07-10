@@ -76,16 +76,4 @@ Content\Graphics\duck_red_flying_r.xnb
 Content\Sound\gameMusic.wma
 Content\Sound\menuMusic.wma
 Content\Graphics\balloon.xnb
-Content\Graphics\bh_duck_black_dead.xnb
-Content\Graphics\bh_duck_black_flying.xnb
-Content\Graphics\bh_duck_black_flying_r.xnb
-Content\Graphics\bh_duck_black_shot.xnb
-Content\Graphics\bh_duck_blue_dead.xnb
-Content\Graphics\bh_duck_blue_flying.xnb
-Content\Graphics\bh_duck_blue_flying_r.xnb
-Content\Graphics\bh_duck_blue_shot.xnb
-Content\Graphics\bh_duck_red_dead.xnb
-Content\Graphics\bh_duck_red_flying.xnb
-Content\Graphics\bh_duck_red_flying_r.xnb
-Content\Graphics\bh_duck_red_shot.xnb
 Content\DuckHunt.xml

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
 using System.Collections.Generic;
+using Windows.ApplicationModel.Core;
 
 using DuckHuntCommon;
 using GameCommon;
@@ -38,6 +39,12 @@ namespace DuckHunt
 
         // A movement speed for the player
         float playerMoveSpeed;
+
+        public enum WindowState { Full = 0, Snap};
+
+        WindowState windState = WindowState.Full;
+        Windows.Foundation.Rect _fullWindowBounds;
+
 
 
         public Game1()
@@ -75,9 +82,14 @@ namespace DuckHunt
             SettingsPane.GetForCurrentView().CommandsRequested += SettingCharmManager_CommandsRequested;
             */
             _windowBounds = Windows.UI.Xaml.Window.Current.Bounds;
+            _fullWindowBounds = _windowBounds;
 
             Windows.UI.Xaml.Window.Current.SizeChanged += OnWindowSizeChanged;
             Windows.UI.ApplicationSettings.SettingsPane.GetForCurrentView().CommandsRequested += SettingCharmManager_CommandsRequested;
+        
+            CoreApplication.Suspending += CoreApplication_Suspending;
+            CoreApplication.Resuming += CoreApplication_Resuming;
+        
         }
 
         Windows.Foundation.Rect _windowBounds;
@@ -88,6 +100,17 @@ namespace DuckHunt
         void OnWindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
         {
             _windowBounds = Windows.UI.Xaml.Window.Current.Bounds;
+
+            if (_windowBounds.Width == _fullWindowBounds.Width && _windowBounds.Height == _fullWindowBounds.Height)
+            {
+                windState = WindowState.Full;
+                controler.Pause(windState == WindowState.Snap);
+            }
+            else
+            {
+                windState = WindowState.Snap;
+                controler.Pause(windState == WindowState.Snap);
+            }
         }
 
         //
@@ -133,6 +156,20 @@ namespace DuckHunt
         void OnPopupClosed(object sender, object e)
         {
             Windows.UI.Xaml.Window.Current.Activated -= OnWindowActivated;
+        }
+
+
+
+
+        static void CoreApplication_Resuming(object sender, object e)
+        {
+            // coming back from suspend, probably don't need to do anything as current state is in memory
+            
+        }
+
+        static void CoreApplication_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        {
+            // suspending, save appropriate game and user state
         }
 
 

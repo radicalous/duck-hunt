@@ -316,6 +316,7 @@
     <Content Include="Content\Graphics\duck_red_shot.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="DuckHuntGDF.dll" />
     <None Include="DuckHunt_StoreKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
     <None Include="DuckHunt_TemporaryKey.pfx" />
