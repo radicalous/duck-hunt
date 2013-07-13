@@ -1940,6 +1940,51 @@ namespace DuckHuntCommon
     }
 
 
+
+    // draw the score myself
+    class TitleItemViewObject : CommonViewObject
+    {
+        TitleItemModel model;
+        Vector2 menuContentPos;
+
+        public TitleItemViewObject(ModelObject model1)
+        {
+            model = (TitleItemModel)model1;
+        }
+
+        int fontindex = 0;
+        public override void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            base.Init(orgpoint, defscale, model, objTextureLst, space);
+            menuContentPos = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
+
+            menuContentPos.X += (120 - model.Conent.Length * 10 * model.GetSacle()) * DefScaleInScreen;
+            menuContentPos.Y += 20 * DefScaleInScreen;
+
+            fontindex = 0;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            //base.Update(gameTime);
+        }
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            //base.Draw(spriteBatch);
+
+            // draw score
+            Vector2 pos1 = menuContentPos;
+            Rectangle space = model.GetSpace();
+            string value = this.model.Conent.ToString();
+            spriteBatch.DrawString(base.ObjFontList[fontindex], value, pos1,
+                Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+
+    }
+
+
     // draw the score myself
     class ScoreListBoardViewObject : CommonViewObject
     {
@@ -1971,9 +2016,9 @@ namespace DuckHuntCommon
             scoreposition.Y += 0 * DefScaleInScreen;
 
 #if WINDOWS_PHONE
-            textscale = 2.0ff;
+            textscale = 2.0f;
 #else
-            textscale = 1.5f;
+            textscale = 1.2f;
 #endif
         }
 
@@ -2009,7 +2054,7 @@ namespace DuckHuntCommon
                     pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos2 = pos1;
-                pos2.X += 500 * DefScaleInScreen;
+                pos2.X += 430 * DefScaleInScreen*textscale;
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Key.ToString(),
                     pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
@@ -2023,7 +2068,7 @@ namespace DuckHuntCommon
                 pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
-            pos1.Y += 60 * DefScaleInScreen;
+            pos1.Y += 60 * DefScaleInScreen*textscale;
 
             result = model.LevelList.OrderByDescending(c => c.Key);
             foreach (KeyValuePair<int, string> pair in result)
@@ -2032,7 +2077,7 @@ namespace DuckHuntCommon
                     pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos2 = pos1;
-                pos2.X += 500 * DefScaleInScreen;
+                pos2.X += 430 * DefScaleInScreen*textscale;
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Key.ToString(),
                     pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);

@@ -159,6 +159,7 @@ namespace DuckHuntCommon
         //
         GameBackGroundPage backgroundPage;
         GameMainMenuPage mainMenuPage;
+        GameOverPage gameOverPage;
         GamePlayPage playPage;
         GameScoreListPage scoreListPage;
         GameConfigPage optionPage;
@@ -177,6 +178,7 @@ namespace DuckHuntCommon
 
             backgroundPage = new GameBackGroundPage();
             mainMenuPage = new GameMainMenuPage();
+            gameOverPage = new GameOverPage();
             playPage = new GamePlayPage();
             scoreListPage = new GameScoreListPage();
             optionPage = new GameConfigPage();
@@ -184,7 +186,10 @@ namespace DuckHuntCommon
             snapPage = new GameSnapPage();
 
             currentPage = mainMenuPage;
+            //currentPage = gameOverPage;
             pagestack.Add(currentPage);
+
+            
 
 
             //
@@ -223,6 +228,7 @@ namespace DuckHuntCommon
             objlst.Add(new BulletIconModel());
             objlst.Add(new ScroeBoardModel());
             objlst.Add(new MenuItemModel());
+            objlst.Add(new TitleItemModel());
             objlst.Add(new ScroeListBoardModel());
             objlst.Add(new TimeBoardModel());
             objlst.Add(new LostDuckBoardModel());
@@ -273,6 +279,12 @@ namespace DuckHuntCommon
             currentPage = mainMenuPage;
         }
 
+
+        public void GotoGameOverPage()
+        {
+            currentPage = gameOverPage;
+        }
+
         public void GotoPlayPage()
         {
             currentPage = playPage;
@@ -281,13 +293,6 @@ namespace DuckHuntCommon
         {
             pagestack.Add(currentPage);
             currentPage = optionPage;
-
-        }
-
-        public void GotoGameOverPage()
-        {
-            pagestack.Add(currentPage);
-            //currentPage = optionPage;
 
         }
 
@@ -346,6 +351,7 @@ namespace DuckHuntCommon
             backgroundPage.InitGamePage(this);
             playPage.InitGamePage(this);
             mainMenuPage.InitGamePage(this);
+            gameOverPage.InitGamePage(this);
             scoreListPage.InitGamePage(this);
             optionPage.InitGamePage(this);
 
@@ -1659,7 +1665,7 @@ namespace DuckHuntCommon
                         int level = scoreBoard.GetLevel();
                         duckHuntGame.SaveNewScore(score, level);
 
-                        duckHuntGame.GotoMainMenuPage(); 
+                        duckHuntGame.GotoGameOverPage(); 
                         return;
                     }
                 }
@@ -1675,7 +1681,7 @@ namespace DuckHuntCommon
                         int level = scoreBoard.GetLevel();
                         duckHuntGame.SaveNewScore(score, level);
 
-                        duckHuntGame.GotoMainMenuPage();
+                        duckHuntGame.GotoGameOverPage();
                         return;
                     }
                 }
@@ -1732,7 +1738,7 @@ namespace DuckHuntCommon
                         int level = scoreBoard.GetLevel();
                         duckHuntGame.SaveNewScore(score, level);
 
-                        duckHuntGame.GotoMainMenuPage();
+                        duckHuntGame.GotoGameOverPage();
                     }
                 }
             }
@@ -2322,6 +2328,163 @@ namespace DuckHuntCommon
     }
 
 
+
+    class GameOverPage : GamePage
+    {
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
+        TitleItemModel gameOverTitleItem;
+        MenuItemModel menuRetryItem;
+        MenuItemModel menuReturnItem;
+        MenuItemModel menuExitItem;
+        MenuItemModel menuScoreListItem;
+
+        Rectangle gameOverTitleSpace;
+        Rectangle retryMenuSpace;
+        Rectangle returnMenuSpace;
+        Rectangle exitMenuSpace;
+        Rectangle scoreListMenuSpace;
+
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
+        public void InitGamePage(DuckHuntGame game)
+        {
+            duckHuntGame = game;
+            backgroundPage = game.GetBackgroundPage();
+
+            Rectangle rectBackground = game.GetGlobalViewRect();
+
+
+            TitleItemModel titleItem = new TitleItemModel();
+            gameOverTitleSpace.X = (rectBackground.Width - titleItem.GetSpace().Width) / 2;
+            gameOverTitleSpace.Y = 50;
+            gameOverTitleSpace.Width = titleItem.GetSpace().Width;
+            gameOverTitleSpace.Height = titleItem.GetSpace().Height;
+
+            MenuItemModel menuItem = new MenuItemModel();
+            retryMenuSpace.X = 700;
+            retryMenuSpace.Y = 200;
+            retryMenuSpace.Width = menuItem.GetSpace().Width;
+            retryMenuSpace.Height = menuItem.GetSpace().Height;
+
+            returnMenuSpace = retryMenuSpace;
+            returnMenuSpace.X = 400;
+            returnMenuSpace.Y = 310;
+
+            exitMenuSpace = returnMenuSpace;
+            exitMenuSpace.X = 1200;
+            exitMenuSpace.Y = 300;
+
+            scoreListMenuSpace = exitMenuSpace;
+            scoreListMenuSpace.X = 1000;
+            scoreListMenuSpace.Y = rectBackground.Top + 400;
+
+
+            NewMenu();
+        }
+
+        public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+
+            objlst.Add(gameOverTitleItem);
+            objlst.Add(menuRetryItem);
+            objlst.Add(menuReturnItem);
+            //objlst.Add(menuExitItem);
+            objlst.Add(menuScoreListItem);
+
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+
+        }
+        public void Update(GameTime gametime)
+        {
+            backgroundPage.Update(gametime);
+            gameOverTitleItem.Update(gametime);
+            menuRetryItem.Update(gametime);
+            menuReturnItem.Update(gametime);
+            menuExitItem.Update(gametime);
+            menuScoreListItem.Update(gametime);
+
+        }
+
+
+        public void Click(List<Vector2> clickpositionlist)
+        {
+            //
+            backgroundPage.Click(clickpositionlist);
+
+            foreach (Vector2 clickpos in clickpositionlist)
+            {
+
+                if (menuRetryItem.Hit(clickpos))
+                {
+                    duckHuntGame.NewGame();
+                    return;
+                }
+
+                if (menuReturnItem.Hit(clickpos))
+                {
+                    duckHuntGame.GotoMainMenuPage();
+
+                    return;
+                }
+
+                /*
+                if (menuExitItem.Hit(clickpos))
+                {
+                    // exit
+                    //System.
+                    return;
+                }
+                */
+
+                if (menuScoreListItem.Hit(clickpos))
+                {
+                    // show score list
+                    duckHuntGame.GotoScoreListPage();
+                }
+
+
+
+
+            }
+            return;
+        }
+
+        /////////
+
+        void NewMenu()
+        {
+            gameOverTitleItem = new TitleItemModel();
+            gameOverTitleItem.Initialize(null, gameOverTitleSpace, 0);
+            gameOverTitleItem.Conent = "Game Over";
+
+            this.menuRetryItem = new MenuItemModel();
+            menuRetryItem.Initialize(null, retryMenuSpace, 0);
+            menuRetryItem.Conent = "Retry";
+
+            menuReturnItem = new MenuItemModel();
+            menuReturnItem.Initialize(null, returnMenuSpace, 0);
+            menuReturnItem.Conent = "Return";
+
+            menuExitItem = new MenuItemModel();
+            menuExitItem.Initialize(null, exitMenuSpace, 0);
+            menuExitItem.Conent = "Exit";
+
+            menuScoreListItem = new MenuItemModel();
+            menuScoreListItem.Initialize(null, scoreListMenuSpace, 0);
+            menuScoreListItem.Conent = "Score List";
+        }
+    }
+
     class GameSnapPage : GamePage
     {
         // local rect, global rect
@@ -2558,22 +2721,6 @@ namespace DuckHuntCommon
         /////
     }
 
-    class GameOverPage : GamePage
-    {
-        public void InitGamePage(DuckHuntGame game)
-        {
-        }
-        public void GetObjects(out List<ModelObject> objlst)
-        {
-            objlst = null;
-        }
-        public void Update(GameTime gametime)
-        {
-        }
-        public void Click(List<Vector2> clickpositionlist)
-        {
-        }
-    }
 
     class GameHelpPage : GamePage
     {
@@ -2854,8 +3001,8 @@ namespace DuckHuntCommon
         //SortedSet<KeyValuePair<string, int>> scorelist;
 
         // configuration
-        public bool EnableBgMusic = false;
-        public bool EnableGameSound = false;
+        public bool EnableBgMusic = true;
+        public bool EnableGameSound = true;
 
         // score list
         Dictionary<int, string> scorelist;

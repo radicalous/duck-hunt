@@ -33,6 +33,8 @@ namespace DuckHunt4Wp
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.IsFullScreen = true;
+
             Content.RootDirectory = "Content";
 
             // Frame rate is 30 fps by default for Windows Phone.
