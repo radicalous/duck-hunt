@@ -148,6 +148,11 @@ namespace DuckHuntCommon
                         viewObject = new MenuItemViewObject(model);
                     }
                     break;
+                case ModelType.TITLEITEM:
+                    {
+                        viewObject = new TitleItemViewObject(model);
+                    }
+                    break;
                 case ModelType.TIMEBOARD:
                     {
                         viewObject = new TimeBoardViewObject(model);
