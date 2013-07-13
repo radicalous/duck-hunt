@@ -917,12 +917,16 @@ namespace GameCommon
 
         int deltax = 1;
         int deltay = 1;
-        int factorx = 1;
-        int factory = 1;
-        float detalz = 1;
 
         Random radom;
         int maxRatio = 8;
+        int minRatio = 3;
+
+        int factorx = 3;
+        int factory = 3;
+        float detalz = 1;
+
+
         override public void Initialize(Rectangle boundary, int seed)
         {
             radom = new Random(seed);
@@ -1015,12 +1019,12 @@ namespace GameCommon
             if (deltax < 0 && Position.X <= boundaryRect.X + 10)
             {
                 deltax = -deltax;
-                factorx = radom.Next(maxRatio);
+                factorx = radom.Next(minRatio, maxRatio);
                 if (factorx < 1)
                 {
                     factorx = 1;
                 }
-                factory = radom.Next(maxRatio);
+                factory = radom.Next(minRatio, maxRatio);
                 if (factory < 1)
                 {
                     factory = 1;
@@ -1029,12 +1033,12 @@ namespace GameCommon
             if (deltax > 0 && Position.X >= boundaryRect.Right - 10)
             {
                 deltax = -deltax;
-                factorx = radom.Next(maxRatio);
+                factorx = radom.Next(minRatio, maxRatio);
                 if (factorx < 1)
                 {
                     factorx = 1;
                 }
-                factory = radom.Next(maxRatio);
+                factory = radom.Next(minRatio, maxRatio);
                 if (factory < 1)
                 {
                     factory = 1;
@@ -1044,12 +1048,12 @@ namespace GameCommon
             if (deltay > 0 && Position.Y >= boundaryRect.Bottom - 10)
             {
                 deltay = -deltay;
-                factorx = radom.Next(maxRatio);
+                factorx = radom.Next(minRatio, maxRatio);
                 if (factorx < 1)
                 {
                     factorx = 1;
                 }
-                factory = radom.Next(maxRatio);
+                factory = radom.Next(minRatio, maxRatio);
                 if (factory < 1)
                 {
                     factory = 1;
@@ -1059,12 +1063,12 @@ namespace GameCommon
             if (deltay < 0 && Position.Y <= boundaryRect.Y + 10)
             {
                 deltay = -deltay;
-                factorx = radom.Next(maxRatio);
+                factorx = radom.Next(minRatio, maxRatio);
                 if (factorx < 1)
                 {
                     factorx = 1;
                 }
-                factory = radom.Next(maxRatio);
+                factory = radom.Next(minRatio, maxRatio);
                 if (factory < 1)
                 {
                     factory = 1;

@@ -189,8 +189,6 @@ namespace DuckHuntCommon
             //currentPage = gameOverPage;
             pagestack.Add(currentPage);
 
-            
-
 
             //
             // load config
