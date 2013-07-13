@@ -14,7 +14,7 @@ namespace DuckHuntCommon
 {
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
-        LOSTDUCKBOARD, MENUITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
+        LOSTDUCKBOARD, MENUITEM, TITLEITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
         FIREWORK,PLANE, BALOON, LEVELUPBOARD,PARROT,SMOKE
     };
     
@@ -794,6 +794,117 @@ namespace DuckHuntCommon
     }
 
 
+    class TitleItemModel : BaseModel
+    {
+
+        // Animation representing the player
+        List<AnimationInfo> anationInfoList;
+        int elapsedTime = 0;
+
+        List<Vector2> boundingTrigle1;
+        List<Vector2> boundingTrigle2;
+
+        Rectangle _itemspace = new Rectangle(0, 0, 240, 137);
+
+        float scale = 1.0f;
+        float depth = 0.6f;
+
+        bool onHover = false;
+
+
+        string content = "test";
+        public string Conent
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                content = value;
+            }
+        }
+
+        Vector2 relativePostionInParent;
+
+
+        public TitleItemModel()
+        {
+            //
+            anationInfoList = new List<AnimationInfo>();
+
+        }
+
+        // interfaces implementation
+        override public ModelType Type()
+        {
+            return ModelType.TITLEITEM;
+        }
+
+        override public void Initialize(ModelObject parent1, Rectangle itemSpace, int seed)
+        {
+            base.Initialize(parent1, itemSpace, seed);
+
+            relativePostionInParent.X = itemSpace.Left;
+            relativePostionInParent.Y = itemSpace.Top;
+
+            _itemspace = itemSpace;
+            _itemspace.X -= (int)relativePostionInParent.X;
+            itemSpace.Y -= (int)relativePostionInParent.Y;
+            //_itemspace.Offset((int)-postion.X, (int)-postion.Y);
+        }
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\menu_font_30";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+
+        override public Vector2 GetAbsolutePosition()
+        {
+            Vector2 absPos = relativePostionInParent;
+
+            return absPos;
+        }
+        override public Rectangle GetSpace()
+        {
+            return _itemspace;
+        }
+        override public float GetSacle()
+        {
+            {
+#if WINDOWS_PHONE
+                return 3.0f;
+#else
+                return 2.0f;
+#endif
+
+            }
+        }
+
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return null;
+        }
+
+        override public int GetCurrentAnimationIndex()
+        {
+            return -1;
+        }
+        override public float GetAnimationDepth()
+        {
+            return depth;
+        }
+    }
 
     class KeyItemModel : BaseModel
     {
