@@ -1288,14 +1288,8 @@ namespace DuckHuntCommon
     class ScoreBoardViewObject : CommonViewObject
     {
         ScroeBoardModel model;
-        /*
-        List<AnimationInfo> animationList;
-        List<ViewItem> viewItmList;
-        List<SpriteFont> fontList;
-         Vector2 _orgpoint;
-        float _defscale;
- 
-        */
+
+        float textscale = 1.0f;
 
         Vector2 scoreposition;
 
@@ -1310,49 +1304,13 @@ namespace DuckHuntCommon
         {
             base.Init(orgpoint, defscale, model, objTextureLst, space);
 
-            /*
-            model = (ScroeBoardModel)model1;
-
-            _orgpoint = orgpoint;
-            _defscale = defscale;
-
-            fontList = objTextureLst[model.Type()].fontList;
-
-
-            // create view items for this object
-            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
-            animationList = model.GetAnimationInfoList();
-
-            // background
-            viewItmList = new List<ViewItem>();
-            for (int i = 0; i < texturesList.Count; i++)
-            {
-                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
-                ViewItem viewItm = new ViewItem();
-                if (animationInfo.animation)
-                {
-                    viewItm.animation = new Animation();
-                    viewItm.animation.Initialize(
-                        texturesList[i],
-                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
-                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
-                        model.GetSacle(), true);
-                }
-                else
-                {
-                    viewItm.staticBackground = new StaticBackground2();
-                    viewItm.staticBackground.Initialize(
-                        texturesList[i],
-                        orgpoint,
-                        (int)(space.Width*defscale), (int)(space.Height*defscale), 0);
-                }
-                viewItmList.Add(viewItm);
-            }
-            */
             scoreposition = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
             scoreposition.X += 20 * DefScaleInScreen;
             scoreposition.Y += 25 * DefScaleInScreen;
 
+#if WINDOWS_PHONE
+            textscale = 1.5f;
+#endif
 
         }
 
@@ -1392,15 +1350,28 @@ namespace DuckHuntCommon
             string value = this.model.TotalScore.ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(ObjFontList[0], "SCORE: " + value, pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
+            spriteBatch.DrawString(ObjFontList[0], "SCORE: ", pos1, Color.Yellow, 0, Vector2.Zero, 
+                DefScaleInScreen * textscale,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 160 * DefScaleInScreen * textscale;
+            spriteBatch.DrawString(ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero,
+                DefScaleInScreen * textscale,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
-            value = "Level: " + model.GetLevel().ToString();
+            pos1.X -= 160 * DefScaleInScreen * textscale;
+            value = "LEVEL: "; // +model.GetLevel().ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
             pos1.Y += 50 * DefScaleInScreen;
-            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero,
+                DefScaleInScreen * textscale,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 160 * DefScaleInScreen * textscale;
+            value = model.GetLevel().ToString();
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero,
+                DefScaleInScreen * textscale,
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
 
         }
 
@@ -1556,6 +1527,22 @@ namespace DuckHuntCommon
         TimeBoardModel model;
         Vector2 scoreposition;
 
+
+        Vector2 _bgOrgPoint = Vector2.Zero;
+
+        public Vector2 BgOrgPoint
+        {
+            get
+            {
+                return _bgOrgPoint;
+            }
+
+            set
+            {
+                _bgOrgPoint = value;
+            }
+        }
+
         public TimeBoardViewObject(ModelObject model1)
         {
             model = (TimeBoardModel)model1;
@@ -1567,17 +1554,7 @@ namespace DuckHuntCommon
             model = (TimeBoardModel)model1;
 
             base.Init(orgpoint, defscale, model, objTextureLst, space);
-            /*
-            _orgpoint = orgpoint;
-            _defscale = defscale;
 
-            fontList = objTextureLst[model.Type()].fontList;
-
-
-            // create view items for this object
-            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
-            // background
-            */
             scoreposition = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
             scoreposition.X += 20 * DefScaleInScreen;
             scoreposition.Y += 25 * DefScaleInScreen;
@@ -1600,22 +1577,28 @@ namespace DuckHuntCommon
             rc.X += (int)scoreposition.X; // scoreposition is position in local view
             rc.Y += (int)scoreposition.Y;
 
-            Color color = new Color(167, 167, 167);
-            color.A = 10;
-
-            color = new Color(253, 253, 253);
-
-            Color color1 = Color.Blue;
-            color1.A = 10;
 
             // draw score
             Vector2 pos1 = scoreposition;
             pos1.Y += 10 * DefScaleInScreen;
-            pos1.X += 10 * DefScaleInScreen;
+            // OrgPointInScreen.X is the adjust value, because
+            // the timeboard item is placed aside the logic right side
+            pos1.X += 10 * DefScaleInScreen + _bgOrgPoint.X*2; 
             string value = this.model.LeftTime.ToString();
 
-            spriteBatch.DrawString(base.ObjFontList[0], "Left Time: " + value,
-                pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
+            spriteBatch.DrawString(base.ObjFontList[0], "Left Time: " ,
+                pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen*model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            Color color = Color.Yellow;
+            if (model.LeftTime <= 30)
+            {
+                color = Color.Red;
+            }
+
+            pos1.X += 210 * DefScaleInScreen * model.GetSacle();
+            spriteBatch.DrawString(base.ObjFontList[0], value,
+                pos1, color, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
     }
@@ -1684,36 +1667,34 @@ namespace DuckHuntCommon
     {
         LostDuckBoardModel model;
         Vector2 scoreposition;
-        /*
-        List<SpriteFont> fontList;
 
 
-        Vector2 _orgpoint;
-        float _defscale;
-        */
+        Vector2 _bgOrgPoint = Vector2.Zero;
+
+        public Vector2 BgOrgPoint
+        {
+            get
+            {
+                return _bgOrgPoint;
+            }
+
+            set
+            {
+                _bgOrgPoint = value;
+            }
+        }
 
         public LostDuckBoardViewObject(ModelObject model1)
         {
             model = (LostDuckBoardModel)model1;
+            color = Color.Yellow;
         }
 
         public override void Init(Vector2 orgpoint, float defscale, ModelObject model1,
             Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
         {
             base.Init(orgpoint, defscale, model, objTextureLst, space);
-            /*
-            model = (LostDuckBoardModel)model1;
 
-            _orgpoint = orgpoint;
-            _defscale = defscale;
-
-            fontList = objTextureLst[model.Type()].fontList;
-
-
-            // create view items for this object
-            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
-            // background
-            */
             scoreposition = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
             scoreposition.X += 20 * DefScaleInScreen;
             scoreposition.Y += 25 * DefScaleInScreen;
@@ -1724,7 +1705,7 @@ namespace DuckHuntCommon
 
         }
 
-
+        Color color;
         public override void Draw(SpriteBatch spriteBatch)
         {
             // this rc is logic rc
@@ -1736,22 +1717,26 @@ namespace DuckHuntCommon
             rc.X += (int)scoreposition.X; // scoreposition is position in local view
             rc.Y += (int)scoreposition.Y;
 
-            Color color = new Color(167, 167, 167);
-            color.A = 10;
-
-            color = new Color(253, 253, 253);
-
-            Color color1 = Color.Blue;
-            color1.A = 10;
-
             // draw score
             Vector2 pos1 = scoreposition;
             pos1.Y += 10 * DefScaleInScreen;
-            pos1.X += 10 * DefScaleInScreen;
+            // OrgPointInScreen.X is the adjust value, because
+            // the timeboard item is placed aside the logic right side
+            pos1.X += 10 * DefScaleInScreen + _bgOrgPoint.X*2; 
+
             string value = this.model.LostDuckCount.ToString();
 
-            spriteBatch.DrawString(this.ObjFontList[0], "Lost Duck: " + value, 
-                pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
+            spriteBatch.DrawString(this.ObjFontList[0], "Lost Duck: ", 
+                pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen*model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 210 * DefScaleInScreen * model.GetSacle();
+            Color color = Color.Yellow;
+            if (this.model.LostDuckCount >= 2)
+            {
+                color = Color.Red;
+            }
+            spriteBatch.DrawString(this.ObjFontList[0], value,
+                pos1, color, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
         }
 
@@ -1764,15 +1749,22 @@ namespace DuckHuntCommon
     {
         HitBoardModel model;
         Vector2 scoreposition;
-        /*
-        List<AnimationInfo> animationList;
-        List<ViewItem> viewItmList;
-        List<SpriteFont> fontList;
 
+        Vector2 _bgOrgPoint = Vector2.Zero;
 
-        Vector2 _orgpoint;
-        float _defscale;
-        */
+        public Vector2 BgOrgPoint
+        {
+            get
+            {
+                return _bgOrgPoint;
+            }
+
+            set
+            {
+                _bgOrgPoint = value;
+            }
+        }
+
         public HitBoardViewObject(ModelObject model1)
         {
             model = (HitBoardModel)model1;
@@ -1782,45 +1774,6 @@ namespace DuckHuntCommon
             Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
         {
             base.Init(orgpoint, defscale, model, objTextureLst, space);
-            /*
-            model = (HitBoardModel)model1;
-
-            _orgpoint = orgpoint;
-            _defscale = defscale;
-
-            fontList = objTextureLst[model.Type()].fontList;
-
-
-            // create view items for this object
-            List<Texture2D> texturesList = objTextureLst[model.Type()].textureList;
-            animationList = model.GetAnimationInfoList();
-
-            // background
-            viewItmList = new List<ViewItem>();
-            for (int i = 0; i < texturesList.Count; i++)
-            {
-                AnimationInfo animationInfo = model.GetAnimationInfoList()[i];
-                ViewItem viewItm = new ViewItem();
-                if (animationInfo.animation)
-                {
-                    viewItm.animation = new Animation();
-                    viewItm.animation.Initialize(
-                        texturesList[i],
-                        Vector2.Zero, animationInfo.frameWidth, animationInfo.frameHeight,
-                        animationInfo.frameCount, animationInfo.frameTime, animationInfo.backColor,
-                        model.GetSacle(), true);
-                }
-                else
-                {
-                    viewItm.staticBackground = new StaticBackground2();
-                    viewItm.staticBackground.Initialize(
-                        texturesList[i],
-                        orgpoint,
-                        (int)(space.Width * defscale), (int)(space.Height * defscale), 0);
-                }
-                viewItmList.Add(viewItm);
-            }
-            */
             scoreposition = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
             scoreposition.X += 20 * DefScaleInScreen;
             scoreposition.Y += 25 * DefScaleInScreen;
@@ -1828,26 +1781,6 @@ namespace DuckHuntCommon
 
         public override void Update(GameTime gameTime)
         {
-            /*
-            ViewItem viewItm = viewItmList[model.GetCurrentAnimationIndex()];
-            if (animationList[model.GetCurrentAnimationIndex()].animation)
-            {
-                viewItm.animation.Position = _orgpoint + model.GetAbsolutePosition() * _defscale;
-
-                viewItm.animation.Position.X += (viewItm.animation.FrameWidth / 2) * _defscale;
-                viewItm.animation.Position.Y += (viewItm.animation.FrameHeight / 2) * _defscale;
-                viewItm.animation.scale = model.GetSacle() * _defscale;
-                viewItm.animation.Update(gameTime);
-            }
-            else
-            {
-                viewItm.staticBackground.Update(gameTime);
-            }
-
-            scoreposition = model.GetAbsolutePosition() * _defscale + _orgpoint;
-            scoreposition.X += 20 * _defscale;
-            scoreposition.Y += 25 * _defscale;
-             */
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -1866,11 +1799,20 @@ namespace DuckHuntCommon
             // draw score
             Vector2 pos1 = scoreposition;
             pos1.Y += 10 * DefScaleInScreen;
-            pos1.X += 10 * DefScaleInScreen;
-            string value = "Hit Duck: " + model.GetHitCount().ToString();
+            // OrgPointInScreen.X is the adjust value, because
+            // the timeboard item is placed aside the logic right side
+            pos1.X += 10 * DefScaleInScreen + _bgOrgPoint.X*2;
+            
+            string value = "Hit Duck: ";// +model.GetHitCount().ToString();
             //spriteBatch.DrawString(fontList[0], value, pos1, Color.White, 0, Vector2.Zero, 1,
             //    SpriteEffects.None,  model.GetAnimationDepth() - 0.02f);
-            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen,
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0, 
+                Vector2.Zero, DefScaleInScreen*model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 210 * DefScaleInScreen * model.GetSacle();
+            value = model.GetHitCount().ToString();
+            spriteBatch.DrawString(base.ObjFontList[0], value, pos1, Color.Yellow, 0,
+                Vector2.Zero, DefScaleInScreen * model.GetSacle(),
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
         }
@@ -1960,7 +1902,7 @@ namespace DuckHuntCommon
             menuContentPos = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
 
             menuContentPos.X += (120 - model.Conent.Length * 10 * model.GetSacle()) * DefScaleInScreen;
-            menuContentPos.Y += 20 * DefScaleInScreen;
+            //menuContentPos.Y += 20 * DefScaleInScreen;
 
             fontindex = 0;
         }
@@ -1980,6 +1922,91 @@ namespace DuckHuntCommon
             spriteBatch.DrawString(base.ObjFontList[fontindex], value, pos1,
                 Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+        }
+
+    }
+
+
+
+    // draw the score myself
+    class ResultSummaryViewObject : CommonViewObject
+    {
+        ResultSummaryModel model;
+        Vector2 menuContentPos;
+
+        public ResultSummaryViewObject(ModelObject model1)
+        {
+            model = (ResultSummaryModel)model1;
+        }
+
+        int fontindex = 0;
+        public override void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            base.Init(orgpoint, defscale, model, objTextureLst, space);
+            menuContentPos = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
+
+            menuContentPos.X += (120 - model.Conent.Length * 10 * model.GetSacle()) * DefScaleInScreen;
+            menuContentPos.Y += 20 * DefScaleInScreen;
+
+            fontindex = 0;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            //base.Update(gameTime);
+        }
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            //base.Draw(spriteBatch);
+
+            // draw score
+            Vector2 pos1 = menuContentPos;
+            Rectangle space = model.GetSpace();
+            string value = this.model.Conent.ToString();
+            // You Score: xxxx, Highest Score: xxxx
+            // You Level: xxxx, Highest Level: xxxx
+            spriteBatch.DrawString(base.ObjFontList[fontindex], "Your Score:", pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 250 * DefScaleInScreen * model.GetSacle();
+            spriteBatch.DrawString(base.ObjFontList[fontindex], model.YourScore.ToString(), pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            pos1.X += 200 * DefScaleInScreen * model.GetSacle();
+            spriteBatch.DrawString(base.ObjFontList[fontindex], "Highest Score:", pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 300 * DefScaleInScreen * model.GetSacle();
+            spriteBatch.DrawString(base.ObjFontList[fontindex], model.HighestScore.ToString(), pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            pos1.X -= (300+250) * DefScaleInScreen * model.GetSacle();
+            pos1.X -= 200 * DefScaleInScreen * model.GetSacle();
+
+
+            pos1.Y += 50 * DefScaleInScreen;
+
+            spriteBatch.DrawString(base.ObjFontList[fontindex], "Your Level:", pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 250 * DefScaleInScreen * model.GetSacle();
+            spriteBatch.DrawString(base.ObjFontList[fontindex], model.YourLevel.ToString(), pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
+            pos1.X += 200 * DefScaleInScreen * model.GetSacle();
+
+            spriteBatch.DrawString(base.ObjFontList[fontindex], "Highest Level:", pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            pos1.X += 300 * DefScaleInScreen * model.GetSacle();
+            spriteBatch.DrawString(base.ObjFontList[fontindex], model.HighestLevel.ToString(), pos1,
+                Color.Snow, 0, Vector2.Zero, DefScaleInScreen * model.GetSacle(),
+                SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+
         }
 
     }

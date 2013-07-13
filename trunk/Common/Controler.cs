@@ -95,6 +95,7 @@ namespace DuckHuntCommon
                 case ModelType.HITBOARD:
                     {
                         hitBoardObj = new HitBoardViewObject(model);
+                        hitBoardObj.BgOrgPoint = s_backgroundOrgPoint;
                     }
                     break;
                 case ModelType.SCORELISTBOARD:
@@ -156,11 +157,18 @@ namespace DuckHuntCommon
                 case ModelType.TIMEBOARD:
                     {
                         viewObject = new TimeBoardViewObject(model);
+                        ((TimeBoardViewObject)viewObject).BgOrgPoint = s_backgroundOrgPoint;
                     }
                     break;
                 case ModelType.LOSTDUCKBOARD:
                     {
                         viewObject = new LostDuckBoardViewObject(model);
+                        ((LostDuckBoardViewObject)viewObject).BgOrgPoint = s_backgroundOrgPoint;
+                    }
+                    break;
+                case ModelType.RESULTSUMMARY:
+                    {
+                        viewObject = new ResultSummaryViewObject(model);
                     }
                     break;
                 case ModelType.CHECKBOX:

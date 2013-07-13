@@ -240,6 +240,7 @@ namespace DuckHuntCommon
             objlst.Add(new BaloonModel());
             objlst.Add(new LevelUpBoardModel());
             objlst.Add(new ParrotModel());
+            objlst.Add(new ResultSummaryModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -278,8 +279,12 @@ namespace DuckHuntCommon
         }
 
 
-        public void GotoGameOverPage()
+        public void GotoGameOverPage(int yourscore, int yourlevel)
         {
+            gameOverPage.SetGameResult(yourscore, yourlevel);
+            int highestScore = 0, highestLevel = 0;
+            gameData.GetGameRecord(out highestScore, out highestLevel);
+            gameOverPage.SetGameRecord(highestScore, highestLevel);
             currentPage = gameOverPage;
         }
 
@@ -436,6 +441,12 @@ namespace DuckHuntCommon
             gameData.AddScore(now.ToString(), score);
             gameData.AddLevel(now.ToString(), level);
             gameData.Save("duckhunt.xml");
+        }
+
+        public void GetGameRecord(out int highestScore, out int highestLevel)
+        {
+            // 
+            gameData.GetGameRecord(out highestScore, out highestLevel);
         }
 
         public void SaveGameData()
@@ -1467,7 +1478,8 @@ namespace DuckHuntCommon
             TimeBoardModel timeBoard = new TimeBoardModel();
             if (rectBackground.Width < rectBackground.Height)
             {
-                leftTimeBoardSpace.X = rectBackground.Height - timeBoard.GetSpace().Width - 20;
+                leftTimeBoardSpace.X = (int)
+                    (rectBackground.Height - timeBoard.GetSpace().Width * timeBoard.GetSacle() - 20);
                 leftTimeBoardSpace.Y = 20;
                 leftTimeBoardSpace.Width = timeBoard.GetSpace().Width;
                 leftTimeBoardSpace.Height = timeBoard.GetSpace().Height;
@@ -1475,7 +1487,8 @@ namespace DuckHuntCommon
             else
             {
 
-                leftTimeBoardSpace.X = rectBackground.Width - timeBoard.GetSpace().Width - 20;
+                leftTimeBoardSpace.X =
+                    (int)(rectBackground.Width - timeBoard.GetSpace().Width*timeBoard.GetSacle() - 20);
                 leftTimeBoardSpace.Y = 20;
                 leftTimeBoardSpace.Width = timeBoard.GetSpace().Width;
                 leftTimeBoardSpace.Height = timeBoard.GetSpace().Height;
@@ -1663,7 +1676,7 @@ namespace DuckHuntCommon
                         int level = scoreBoard.GetLevel();
                         duckHuntGame.SaveNewScore(score, level);
 
-                        duckHuntGame.GotoGameOverPage(); 
+                        duckHuntGame.GotoGameOverPage(score, level); 
                         return;
                     }
                 }
@@ -1679,7 +1692,7 @@ namespace DuckHuntCommon
                         int level = scoreBoard.GetLevel();
                         duckHuntGame.SaveNewScore(score, level);
 
-                        duckHuntGame.GotoGameOverPage();
+                        duckHuntGame.GotoGameOverPage(score, level);
                         return;
                     }
                 }
@@ -1736,7 +1749,7 @@ namespace DuckHuntCommon
                         int level = scoreBoard.GetLevel();
                         duckHuntGame.SaveNewScore(score, level);
 
-                        duckHuntGame.GotoGameOverPage();
+                        duckHuntGame.GotoGameOverPage(score, level);
                     }
                 }
             }
@@ -2335,12 +2348,16 @@ namespace DuckHuntCommon
         //
 
         TitleItemModel gameOverTitleItem;
+        ResultSummaryModel resultSummary;
+
         MenuItemModel menuRetryItem;
         MenuItemModel menuReturnItem;
         MenuItemModel menuExitItem;
         MenuItemModel menuScoreListItem;
 
+
         Rectangle gameOverTitleSpace;
+        Rectangle resultSummarySpace;
         Rectangle retryMenuSpace;
         Rectangle returnMenuSpace;
         Rectangle exitMenuSpace;
@@ -2358,13 +2375,17 @@ namespace DuckHuntCommon
 
             TitleItemModel titleItem = new TitleItemModel();
             gameOverTitleSpace.X = (rectBackground.Width - titleItem.GetSpace().Width) / 2;
-            gameOverTitleSpace.Y = 50;
+            gameOverTitleSpace.Y = 30;
             gameOverTitleSpace.Width = titleItem.GetSpace().Width;
             gameOverTitleSpace.Height = titleItem.GetSpace().Height;
 
+            ResultSummaryModel resultSummaryItm = new ResultSummaryModel();
+            resultSummarySpace.X = (rectBackground.Width - resultSummaryItm.GetSpace().Width) / 2;
+            resultSummarySpace.Y = 150;
+
             MenuItemModel menuItem = new MenuItemModel();
             retryMenuSpace.X = 700;
-            retryMenuSpace.Y = 200;
+            retryMenuSpace.Y = 300;
             retryMenuSpace.Width = menuItem.GetSpace().Width;
             retryMenuSpace.Height = menuItem.GetSpace().Height;
 
@@ -2377,8 +2398,8 @@ namespace DuckHuntCommon
             exitMenuSpace.Y = 300;
 
             scoreListMenuSpace = exitMenuSpace;
-            scoreListMenuSpace.X = 1000;
-            scoreListMenuSpace.Y = rectBackground.Top + 400;
+            scoreListMenuSpace.X = 1200;
+            scoreListMenuSpace.Y = rectBackground.Top + 300;
 
 
             NewMenu();
@@ -2389,6 +2410,7 @@ namespace DuckHuntCommon
             objlst = new List<ModelObject>();
 
             objlst.Add(gameOverTitleItem);
+            objlst.Add(resultSummary);
             objlst.Add(menuRetryItem);
             objlst.Add(menuReturnItem);
             //objlst.Add(menuExitItem);
@@ -2465,6 +2487,9 @@ namespace DuckHuntCommon
             gameOverTitleItem.Initialize(null, gameOverTitleSpace, 0);
             gameOverTitleItem.Conent = "Game Over";
 
+            resultSummary = new ResultSummaryModel();
+            resultSummary.Initialize(null, resultSummarySpace, 0);
+
             this.menuRetryItem = new MenuItemModel();
             menuRetryItem.Initialize(null, retryMenuSpace, 0);
             menuRetryItem.Conent = "Retry";
@@ -2480,6 +2505,18 @@ namespace DuckHuntCommon
             menuScoreListItem = new MenuItemModel();
             menuScoreListItem.Initialize(null, scoreListMenuSpace, 0);
             menuScoreListItem.Conent = "Score List";
+        }
+
+        public void SetGameRecord(int highestScore, int highestLevel)
+        {
+            resultSummary.HighestScore = highestScore;
+            resultSummary.HighestLevel = highestLevel;
+        }
+
+        public void SetGameResult(int yourScore, int yourLevel)
+        {
+            resultSummary.YourLevel = yourLevel;
+            resultSummary.YourScore = yourLevel;
         }
     }
 
@@ -3065,6 +3102,26 @@ namespace DuckHuntCommon
             foreach (var item in tmp)
             {
                 levellist[item.Key] = item.Value;
+            }
+        }
+
+        public void GetGameRecord(out int highestScore, out int highestLevel)
+        {
+            highestLevel = 0;
+            highestScore = 0;
+            var result = scorelist.OrderByDescending(c => c.Key);
+            foreach (var item in result)
+            {
+                highestScore = item.Key;
+                break;
+            }
+
+
+            result = levellist.OrderByDescending(c => c.Key);
+            foreach (var item in result)
+            {
+                highestLevel = item.Key;
+                break;
             }
         }
 
