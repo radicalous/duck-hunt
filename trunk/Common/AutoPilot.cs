@@ -1622,7 +1622,7 @@ namespace GameCommon
         private void adjustEndPos()
         {
             cur_angle = 0.0;
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0.0;
 
@@ -1752,7 +1752,7 @@ namespace GameCommon
         private void adjustEndPos()
         {
             cur_angle = 0.0;
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0.0;
 
@@ -1880,7 +1880,7 @@ namespace GameCommon
         private void adjustEndPos()
         {
             cur_angle = 0.0;
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
     
             if (cur_angle > 2 * Constants.Pi)
                 cur_angle = 0;
@@ -2013,7 +2013,7 @@ namespace GameCommon
         private void adjustEndPos()
         {
             cur_angle = 0.0;
-            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor;
+            cur_angle += delta_angle * group_info.idx * Constants.Groupfactor * 2;
             if (left2right == 1)
             {
                 hor_steps += group_info.idx * Constants.Groupfactor;
@@ -2163,7 +2163,7 @@ namespace GameCommon
                 center_pos.X -= boundaryRect.Width / 2;
 
             x_steps = 0;
-            x_steps += group_info.idx * Constants.Groupfactor*2;
+            x_steps += group_info.idx * Constants.Groupfactor * 2;
 
             double dx = (double)(boundaryRect.Right - center_pos.X) / max_curveSteps;
 
