@@ -1059,9 +1059,10 @@ namespace DuckHuntCommon
         public GameChapterFunShowCurve()
         {
             pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKEIGHT);
             pilotypelist.Add(PilotType.DUCKCIRCLE);
             pilotypelist.Add(PilotType.DUCKELLIPSE);
-            pilotypelist.Add(PilotType.DUCKEIGHT);
+            pilotypelist.Add(PilotType.DUCKSIN);
         }
         override public bool GetDuckList(out List<AnimalModel> ducks)
         {
@@ -1074,7 +1075,7 @@ namespace DuckHuntCommon
 
             string name = "chaptershowfuncurve_" + duckcount.ToString();
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 15; i++)
             {
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
@@ -1259,6 +1260,7 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
+                /*
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -1277,6 +1279,8 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
+                 *                  */
+
                 chapter = new GameChapter8();
                 chapters.Add(chapter);
                 chapter = new GameChapter9();
@@ -1332,6 +1336,7 @@ namespace DuckHuntCommon
                 GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
                 GameChapterILoveU loveuChapter = new GameChapterILoveU();
                 bonousChapter.Add(loveuChapter);
+                bonousChapter.Add(curveChapter);
             }
             return true;
         }
@@ -2108,7 +2113,7 @@ namespace DuckHuntCommon
             endpos.X = duckFlySpace.Width / batchcount/3;
 
             int showTime = 15;
-            if (batchcount == 3)
+            //if (batchcount == 3)
             {
                 // i love you
                 showTime = 50;
@@ -2126,8 +2131,8 @@ namespace DuckHuntCommon
                 {
                     int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                     duck.Initialize(null, duckFlySpace, s + (i++) * 73);
-                    duck.StartPilot(startPos);
-                    duck.SetStartPos(startPos);
+                    duck.StartPilot();
+                    //duck.SetStartPos(startPos);
                     duck.SetEndPos(endpos);
                     duck.SetShowTime(showTime);
                     duckList.Add(duck);
@@ -2516,7 +2521,7 @@ namespace DuckHuntCommon
         public void SetGameResult(int yourScore, int yourLevel)
         {
             resultSummary.YourLevel = yourLevel;
-            resultSummary.YourScore = yourLevel;
+            resultSummary.YourScore = yourScore;
         }
     }
 
