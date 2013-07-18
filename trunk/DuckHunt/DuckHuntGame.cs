@@ -1075,7 +1075,7 @@ namespace DuckHuntCommon
 
             string name = "chaptershowfuncurve_" + duckcount.ToString();
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 20; i++)
             {
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
