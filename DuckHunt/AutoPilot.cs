@@ -1638,6 +1638,8 @@ namespace GameCommon
             base.Initialize(space, seed);
 
             adjustEndPos();
+
+	      SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -1768,6 +1770,8 @@ namespace GameCommon
             base.Initialize(space, seed);
 
             adjustEndPos();
+
+	      SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -1897,6 +1901,8 @@ namespace GameCommon
             base.Initialize(space, seed);
 
             adjustEndPos();
+
+	      SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -2042,10 +2048,10 @@ namespace GameCommon
         public override void Initialize(Rectangle space, int seed)
         {
             base.Initialize(space, seed);
-            
-            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
 
             adjustEndPos();
+
+		SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -2175,9 +2181,11 @@ namespace GameCommon
         {
             base.Initialize(space, seed);
 
-            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
+            
 
             adjustEndPos();
+
+	      SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -2365,6 +2373,8 @@ namespace GameCommon
             base.Initialize(space, seed);
 
             adjustEndPos();
+
+		SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
