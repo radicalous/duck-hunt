@@ -2031,6 +2031,7 @@ namespace DuckHuntCommon
         }
 
 
+        int barkeddelaytime = 100;
         override public void Initialize(ModelObject parent1, Rectangle duckSpace, int seed)
         {
             base.Initialize(null, duckspace, seed);
@@ -2042,6 +2043,8 @@ namespace DuckHuntCommon
             Health = 100;
             randomseed = seed;
             Random radom = new Random(seed);
+
+            barkeddelaytime = radom.Next(100, 500);
 
             duckspace = duckSpace;
 
@@ -2226,9 +2229,10 @@ namespace DuckHuntCommon
             }
             else
             {
-                if (deadstopcount < 10)
+                if (deadstopcount < 20)
                 {
                     deadstopcount++;
+                    return;
                 }
                 goneduckPilot.Update(gameTime);
                 if (goneduckPilot.GetPosition().Y > duckspace.Height ||
@@ -2249,7 +2253,7 @@ namespace DuckHuntCommon
         {  
             if(dead)
             {
-                if (deadstopcount < 10)
+                if (deadstopcount < 20)
                 {
                     return 1 + this.duckstyle*4;
                 }
@@ -2304,7 +2308,8 @@ namespace DuckHuntCommon
             if (Active)
             {
                 //
-                if (elapsedTime > 500)
+                
+                if (elapsedTime > barkeddelaytime)
                 {
                     if (!barked)
                     {
@@ -5452,6 +5457,8 @@ namespace DuckHuntCommon
 
 
         Random radom ;
+
+        int barkeddelaytime = 100;
         override public void Initialize(ModelObject parent1, Rectangle duckSpace, int seed)
         {
             base.Initialize(null, duckSpace, seed);
@@ -5462,6 +5469,8 @@ namespace DuckHuntCommon
             // Set the player health
             randomseed = seed;
             radom = new Random(seed);
+
+            barkeddelaytime = radom.Next(100, 500);
 
             flyspace = duckSpace;
         }
@@ -5594,9 +5603,10 @@ namespace DuckHuntCommon
             }
             else
             {
-                if (deadstopcount < 10)
+                if (deadstopcount < 20)
                 {
                     deadstopcount++;
+                    return;
                 }
                 deadPilot.Update(gameTime);
                 if (deadPilot.GetPosition().Y > flyspace.Height ||
@@ -5617,7 +5627,7 @@ namespace DuckHuntCommon
         {
             if (dead)
             {
-                if (deadstopcount < 10)
+                if (deadstopcount < 20)
                 {
                     return 1 ;
                 }
@@ -5661,14 +5671,28 @@ namespace DuckHuntCommon
         bool barked = false;
         override public int GetSoundIndex()
         {
-            if (!dead)
+            if (Active)
             {
-                if (!barked && elapsedTime > 500)
+                //
+
+                if (elapsedTime > barkeddelaytime)
                 {
-                    barked = true;
-                    return radom.Next(2);
+                    if (!barked)
+                    {
+                        barked = true;
+                        return 0;
+                    }
                 }
             }
+            else if (dead)
+            {
+                if (!barked)
+                {
+                    barked = true;
+                    return 1;
+                }
+            }
+
             return -1;
         }
 
@@ -5722,6 +5746,7 @@ namespace DuckHuntCommon
             {
                 Active = false;
                 dead = true;
+                barked = false;
                 deadPilot = PilotManager.GetInstance().CreatePilot(PilotType.DUCKDEAD, flyPilot.GetPosition());
 
                 // new a bullet  
@@ -5827,6 +5852,11 @@ namespace DuckHuntCommon
             resourceItm.path = "Graphics\\balloon";
             resourceList.Add(resourceItm);
 
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.SOUND;
+            resourceItm.path = "Sound\\explosion";
+            resourceList.Add(resourceItm);
+
             return resourceList;
         }
 
@@ -5855,6 +5885,11 @@ namespace DuckHuntCommon
 
         override public void Update(GameTime gameTime)
         {
+            if (!active)
+            {
+                gone = true;
+                return;
+            }
             relativePos.X += 3;
             if (relativePos.X >= planespace.Right)
             {
@@ -5878,7 +5913,20 @@ namespace DuckHuntCommon
             return depth;
         }
 
+        public override int GetSoundIndex()
+        {
+            if (exploring)
+            {
+                exploring = false;
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
 
+        bool exploring = false;
         public void Shoot(BulletModel bullet)
         {
             if (!active)
@@ -5905,6 +5953,8 @@ namespace DuckHuntCommon
             }
 
             bullet.SetTarget(this);
+
+            exploring = true;
             // if shoot, 
             active = false;
         }

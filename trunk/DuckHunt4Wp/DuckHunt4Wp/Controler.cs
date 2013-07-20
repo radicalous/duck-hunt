@@ -230,7 +230,7 @@ namespace DuckHuntCommon
             game = new DuckHuntGame();
             viewRect = viewScene;
             objTextureLst = new Dictionary<ModelType, ObjectTexturesItem>();
-            game.TrialVersion = Guide.IsTrialMode; 
+            game.TrialVersion = Guide.IsTrialMode;
         }
 
         Song gamebackgorundsound;
