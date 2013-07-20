@@ -15,7 +15,7 @@ namespace DuckHuntCommon
     enum ModelType { NONE, CLOUD, SKY, GRASS,FORGROUND, DUCK, DOG, BULLET, HITBOARD,
         DUCKICON, BULLETBOARD, BULLETICON, SCOREBOARD, SCORELISTBOARD, TIMEBOARD, 
         LOSTDUCKBOARD, MENUITEM, TITLEITEM, KEYBORD, KEYITEM, CHECKBOX, BUTTON,  PANDA,
-        FIREWORK,PLANE, BALOON, LEVELUPBOARD,PARROT,SMOKE, RESULTSUMMARY
+        FIREWORK,PLANE, BALOON, LEVELUPBOARD,PARROT,SMOKE, RESULTSUMMARY, INFOBORD
     };
     
     enum ResourceType { TEXTURE, SOUND, FONT };
@@ -1859,7 +1859,7 @@ namespace DuckHuntCommon
                     break;
                 case PilotType.DUCKEIGHTDEPTH:
                     {
-                        duckstyle = 2;
+                        duckstyle = 1;
                     }
                     break;
                 case PilotType.PARROT:
@@ -4197,6 +4197,134 @@ namespace DuckHuntCommon
             rotate = 0f;
             deltascale = 0.01f;
             stopcount = 0;
+        }
+    }
+
+
+
+
+    class InfoBoardModel : BaseModel
+    {
+        Rectangle space; //indicate the object view range
+        Vector2 relativePosition = Vector2.Zero; // no use
+
+        float scale = 1.0f;
+
+        public InfoBoardModel()
+        {
+
+            space.Width = 1600;
+            space.Height = 600;
+
+            infoStrList = new List<string>();
+
+        }
+
+        override public ModelType Type()
+        {
+            return ModelType.INFOBORD;
+        }
+
+        override public void Initialize(ModelObject parent1, Rectangle rangespace, int seed)
+        {
+            base.Initialize(null, rangespace, seed);
+            space = rangespace;
+            relativePosition.X = space.Left;
+            relativePosition.Y = space.Top;
+            space.Offset(-space.Left, -space.Top);
+        }
+
+
+        override public List<ResourceItem> GetResourceList()
+        {
+            //
+            List<ResourceItem> resourceList = new List<ResourceItem>();
+            ResourceItem resourceItm = new ResourceItem();
+            resourceItm = new ResourceItem();
+            resourceItm.type = ResourceType.FONT;
+            resourceItm.path = "Graphics\\cnt_font_30";
+            resourceList.Add(resourceItm);
+
+            return resourceList;
+        }
+
+        override public Vector2 GetAbsolutePosition()
+        {
+            Vector2 abspos = relativePosition;
+            if (GetParentObject() != null)
+            {
+                abspos += GetParentObject().GetAbsolutePosition();
+            }
+            return abspos;
+        }
+
+        override public Rectangle GetSpace()
+        {
+            return space;
+        }
+        override public float GetSacle()
+        {
+            return 1;
+        }
+
+
+        override public void Update(GameTime gameTime)
+        {
+            // no update for itself
+        }
+
+        override public List<AnimationInfo> GetAnimationInfoList()
+        {
+            return null;
+        }
+        override public int GetCurrentAnimationIndex()
+        {
+            return -1;
+        }
+
+        override public float GetAnimationDepth()
+        {
+            return 0.35f;
+        }
+
+
+        public float Scale
+        {
+            get
+            {
+                return scale;
+            }
+        }
+
+
+        List<string> infoStrList;
+        public List<string> InfoStrList
+        {
+            get
+            {
+                return infoStrList;
+            }
+            set
+            {
+                infoStrList.Clear();
+                foreach (var str in value)
+                {
+                    infoStrList.Add(str);
+                }
+            }
+        }
+
+        public void AddStr(string str)
+        {
+            infoStrList.Add(str);
+        }
+
+        public int LineHeight
+        {
+            get
+            {
+                return 100;
+            }
         }
     }
 
