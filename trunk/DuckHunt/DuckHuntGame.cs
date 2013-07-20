@@ -1296,7 +1296,7 @@ namespace DuckHuntCommon
             {
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
-                /*
+
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -1315,7 +1315,7 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
-                 *                  */
+
 
                 chapter = new GameChapter8();
                 chapters.Add(chapter);
@@ -1373,6 +1373,10 @@ namespace DuckHuntCommon
                 GameChapterILoveU loveuChapter = new GameChapterILoveU();
                 bonousChapter.Add(loveuChapter);
                 bonousChapter.Add(curveChapter);
+                bonousChapter.Add(curveChapter);
+                bonousChapter.Add(curveChapter);
+                bonousChapter.Add(curveChapter);
+
             }
             return true;
         }
