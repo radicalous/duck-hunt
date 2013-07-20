@@ -22,6 +22,7 @@ using GameCommon;
 using System.Threading.Tasks;
 #else
 using System.IO.IsolatedStorage;
+using Microsoft.Xna.Framework.GamerServices;
 #endif
 
 
@@ -181,6 +182,11 @@ namespace DuckHuntCommon
                         viewObject = new FireworkViewObject();
                     }
                     break;
+                case ModelType.INFOBORD:
+                    {
+                        viewObject = new InfoBoardViewObject(model);
+                    }
+                    break;
             }
             if (commViewObj != null)
             {
@@ -224,8 +230,7 @@ namespace DuckHuntCommon
             game = new DuckHuntGame();
             viewRect = viewScene;
             objTextureLst = new Dictionary<ModelType, ObjectTexturesItem>();
-
-
+            game.TrialVersion = Guide.IsTrialMode; 
         }
 
         Song gamebackgorundsound;
@@ -246,11 +251,19 @@ namespace DuckHuntCommon
             //MediaPlayer.Volume = 50;
             game.StartGame(viewRect);
 
+
+            if (game.IsExpired())
+            {
+                Guide.ShowMarketplace(PlayerIndex.One);
+                return;
+            }
+
             if (game.DuckHuntGameData.EnableBgMusic)
             {
                 MediaPlayer.Play(gamebackgorundsound);
             }
             bgSoundEnabled = game.DuckHuntGameData.EnableBgMusic;
+
 
         }
 
@@ -308,6 +321,10 @@ namespace DuckHuntCommon
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public void Update(GameTime gameTime)
         {
+            if (game.IsExpired())
+            {
+                return;
+            }
             game.Update(gameTime);
             if (game.DuckHuntGameData.EnableBgMusic != bgSoundEnabled)
             {

@@ -1603,7 +1603,104 @@ namespace DuckHuntCommon
         }
     }
 
+    class InfoBoardViewObject : CommonViewObject
+    {
+        InfoBoardModel model;
+        Rectangle boardspace;
+        Color color1 = Color.Orange;
+        public InfoBoardViewObject(ModelObject model1)
+        {
+            model = (InfoBoardModel)model1;
+            //color1.A = 95;
+        }
 
+        int onelineheight = 20;
+        int firstliney = 0;
+        float firstlinescale = 2.0f;
+        float onelinescale = 0.1f;
+
+#if WINDOWS_PHONE
+        float detaly = 0.4f;
+        float deltadepth = 0.003f;
+#else
+        float detaly = 0.63f;
+        float deltadepth = 0.0045f;
+#endif
+
+        List<float> lineYpos;
+        List<float> lineScale;
+
+        public override void Init(Vector2 orgpoint, float defscale, ModelObject model1,
+            Dictionary<ModelType, ObjectTexturesItem> objTextureLst, Rectangle space)
+        {
+            model = (InfoBoardModel)model1;
+
+            base.Init(orgpoint, defscale, model, objTextureLst, space);
+
+            Vector2 lefttop = model.GetAbsolutePosition() * DefScaleInScreen + OrgPointInScreen;
+            boardspace.X = (int)lefttop.X;
+            boardspace.Y = (int)lefttop.Y;
+            boardspace.Width = (int)(model.GetSpace().Width * DefScaleInScreen);
+            boardspace.Height = (int)(model.GetSpace().Height * DefScaleInScreen);
+
+            // one line should occupied 
+            onelineheight = (int)(model.LineHeight * DefScaleInScreen);
+
+            firstliney = boardspace.Bottom;
+
+            lineYpos = new List<float>();
+            lineScale = new List<float>();
+
+            int liney = firstliney;
+            float linescale = firstlinescale;
+
+            foreach (var str in model.InfoStrList)
+            {
+                lineYpos.Add(liney);
+                lineScale.Add(linescale);
+                liney += onelineheight;
+                linescale += onelinescale;
+            }
+            
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // move the lines up and in depth
+
+            for(int i=0; i<lineYpos.Count; i++)
+            {
+                if (lineYpos[i] > boardspace.Bottom && lineYpos[i] - detaly <= boardspace.Bottom)
+                {
+                    lineScale[i] = firstlinescale;
+                }
+                else
+                {
+                    lineScale[i] -= deltadepth;
+                }
+                lineYpos[i] -= detaly;
+            }
+
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            for (int i = 0; i < lineYpos.Count; i++)
+            {
+                if (lineYpos[i] > boardspace.Bottom ||
+                    lineYpos[i] < boardspace.Top || lineScale[i]<0)
+                {
+                    continue;
+                }
+                Vector2 pos1 = Vector2.Zero;
+                pos1.X = boardspace.Left + (boardspace.Width - model.InfoStrList[i].Length * 30 * DefScaleInScreen) / 2 /lineScale[i];
+                pos1.Y = lineYpos[i];
+                spriteBatch.DrawString(base.ObjFontList[0], model.InfoStrList[i], pos1, color1,
+                    0, Vector2.Zero, lineScale[i] *DefScaleInScreen,
+                    SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
+            }
+        }
+    }
 
     // draw the score myself
     class LevelUpBoardViewObject : CommonViewObject

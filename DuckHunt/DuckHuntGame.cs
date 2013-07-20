@@ -241,6 +241,7 @@ namespace DuckHuntCommon
             objlst.Add(new LevelUpBoardModel());
             objlst.Add(new ParrotModel());
             objlst.Add(new ResultSummaryModel());
+            objlst.Add(new InfoBoardModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -336,11 +337,46 @@ namespace DuckHuntCommon
         }
         Rectangle screenRect = new Rectangle();
 
+
+        public bool IsExpired()
+        {
+            if (!TrialVersion)
+            {
+                return false;
+            }
+
+            DateTime now = DateTime.Now;
+            TimeSpan span = now - gameData.installedDate;
+            if (span.Days >= 7)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        bool isTrialVersion = false;
+        public bool TrialVersion
+        {
+            set
+            {
+                isTrialVersion = value;
+            }
+            get
+            {
+                return isTrialVersion;
+            }
+        }
+
         public void StartGame(Rectangle screenRect1)
         {
             screenRect = screenRect1;
 
             gameData.Load("duckhunt.xml");
+            if (IsExpired())
+            {
+                return;
+            }
+
             if (gameData.ScoreList.Count == 0)
             {
                 /*
@@ -1075,7 +1111,7 @@ namespace DuckHuntCommon
 
             string name = "chaptershowfuncurve_" + duckcount.ToString();
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 15; i++)
             {
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
@@ -1420,6 +1456,9 @@ namespace DuckHuntCommon
         ScroeBoardModel scoreBoard;
         Rectangle scoreBoardSpace;
 
+        InfoBoardModel infoBoard;
+        Rectangle infoBoardSpace;
+
         ButtonModel pause;
         Rectangle pauseButtonSpace;
 
@@ -1479,6 +1518,11 @@ namespace DuckHuntCommon
             scoreBoardSpace.Width = scoreBoard1.GetSpace().Width;
             scoreBoardSpace.Height = scoreBoard1.GetSpace().Height;
 
+            InfoBoardModel infoBoard1 = new InfoBoardModel();
+            infoBoardSpace.X = rectBackground.Left + (rectBackground.Width - infoBoard1.GetSpace().Width)/2;
+            infoBoardSpace.Y = rectBackground.Top + 30;
+            infoBoardSpace.Width = infoBoard1.GetSpace().Width;
+            infoBoardSpace.Height = infoBoard1.GetSpace().Height;
 
             TimeBoardModel timeBoard = new TimeBoardModel();
             if (rectBackground.Width < rectBackground.Height)
@@ -1554,6 +1598,7 @@ namespace DuckHuntCommon
                 objlst.Add(dog);
                 //objlst.Add(panda);
                 //objlst.Add(levelUp);
+                objlst.Add(infoBoard);
 
             }
             else if (phase == GAME_PHASE.DUCK_FLY)
@@ -1962,6 +2007,19 @@ namespace DuckHuntCommon
 
             levelUp = new LevelUpBoardModel();
             levelUp.Initialize(null, levelUpSpace, 0);
+
+            infoBoard = new InfoBoardModel();
+            infoBoard.Initialize(null, infoBoardSpace, 0);
+
+            infoBoard.AddStr("Duck hunt is a simple game.");
+            infoBoard.AddStr("Just shoot(click) the flying duck.");
+            infoBoard.AddStr("If you shoot more than one ducks in one click.");
+            infoBoard.AddStr("You will get additional score.");
+            infoBoard.AddStr("Please do not shoot parrot.");
+            infoBoard.AddStr("If parrot is shoot, score will be dcreased.");
+            infoBoard.AddStr("If you shoot a balloon.");
+            infoBoard.AddStr("You will get additional ducks as bonous.");
+            infoBoard.AddStr("Good Luck!");
 
         }
 
@@ -3043,6 +3101,7 @@ namespace DuckHuntCommon
         // configuration
         public bool EnableBgMusic = true;
         public bool EnableGameSound = true;
+        public DateTime installedDate = DateTime.Now;
 
         // score list
         Dictionary<int, string> scorelist;
@@ -3256,13 +3315,6 @@ namespace DuckHuntCommon
         {
             string content = "";
 #if WINDOWS_PHONE
-            /*
-            System.IO.Stream stream = TitleContainer.OpenStream(filename);
-            using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
-            {
-                content = reader.ReadToEnd();
-            }
-             */
 
             IsolatedStorageFile savegameStorage = IsolatedStorageFile.GetUserStoreForApplication();
             // open isolated storage, and write the savefile.
@@ -3305,6 +3357,9 @@ namespace DuckHuntCommon
         {
             // <?xml version='1.0'?>
             // <DuckHunt>
+            //      <installeddate>
+            //          
+            //      </installeddate>
             //      <scorelist>
             //          <count> </count>
             //          <record>
@@ -3323,12 +3378,20 @@ namespace DuckHuntCommon
 
             content += "<?xml version='1.0'?>";
             content += "<DuckHunt>";
+            SaveInstalledDate(ref content, this.installedDate);
             SaveScoreList(ref content);
             SaveLevelList(ref content);
 
             // could save other configuration
             SaveGameConfig(ref content);
             content += "</DuckHunt>";
+        }
+
+        private void SaveInstalledDate(ref string content, DateTime installedDate)
+        {
+            content += "<installeddate>";
+            content += installedDate.ToString();
+            content += "</installeddate>";
         }
 
 
@@ -3526,6 +3589,29 @@ namespace DuckHuntCommon
                 if (reader.NodeType == XmlNodeType.EndElement)
                 {
                     if (reader.Name == "count")
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void LoadInstalledDate(XmlReader reader, ref DateTime installedDate)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "installeddate")
+            {
+                // error
+                return;
+            }
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Text)
+                {
+                    installedDate = Convert.ToDateTime(reader.Value);
+                }
+                if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (reader.Name == "installeddate")
                     {
                         return;
                     }
@@ -3732,6 +3818,11 @@ namespace DuckHuntCommon
                     {
                         if (reader.NodeType == XmlNodeType.Element)
                         {
+                            if (reader.Name == "installeddate")
+                            {
+                                LoadInstalledDate(reader, ref installedDate);
+                            }
+
                             if (reader.Name == "scorelist")
                             {
                                 // find score list element
