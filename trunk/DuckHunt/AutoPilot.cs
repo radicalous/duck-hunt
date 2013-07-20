@@ -128,7 +128,7 @@ namespace GameCommon
             pgi.endpoint.X = rdm.Next(-50, 50);
             pgi.endpoint.Y = rdm.Next(-50, 50);
 
-            pgi.speed_ratio = (float)(rdm.Next(50, 200)) / 100;
+            pgi.speed_ratio = (float)(rdm.Next(50, 150)) / 100;
 
             pgi.dirs = new int[10];
             for (int i = 0; i < 10; i++)
@@ -1516,8 +1516,6 @@ namespace GameCommon
             centerBoundaryRect.X = boundaryRect.Center.X - r;
             centerBoundaryRect.Y = boundaryRect.Center.Y - r;
 
-            max_lineSteps = (int)(max_lineSteps / group_info.speed_ratio);
-
             Position = start_pos;
         }
 
@@ -1537,7 +1535,7 @@ namespace GameCommon
         {
             group_info.speed_ratio = speedRatio;
 
-            max_lineSteps = (int)(max_lineSteps / group_info.speed_ratio);
+            max_lineSteps = (int)(Constants.MaxLineSteps / group_info.speed_ratio);
         }
 
         override public Vector2 GetPosition()
@@ -1639,7 +1637,7 @@ namespace GameCommon
 
             adjustEndPos();
 
-	      SetSpeedRatio(group_info.speed_ratio);
+	        SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -1653,7 +1651,7 @@ namespace GameCommon
         {
             base.SetSpeedRatio(speedRatio);
 
-            delta_angle = delta_angle * group_info.speed_ratio;
+            delta_angle = (2 * Constants.Pi / Constants.MaxCurveSteps) * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
@@ -1771,7 +1769,7 @@ namespace GameCommon
 
             adjustEndPos();
 
-	      SetSpeedRatio(group_info.speed_ratio);
+	        SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -1785,7 +1783,7 @@ namespace GameCommon
         {
             base.SetSpeedRatio(speedRatio);
 
-            delta_angle = delta_angle * group_info.speed_ratio;
+            delta_angle = (2 * Constants.Pi / Constants.MaxCurveSteps) * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
@@ -1902,7 +1900,7 @@ namespace GameCommon
 
             adjustEndPos();
 
-	      SetSpeedRatio(group_info.speed_ratio);
+	        SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -1916,7 +1914,7 @@ namespace GameCommon
         {
             base.SetSpeedRatio(speedRatio);
 
-            delta_angle = delta_angle * group_info.speed_ratio;
+            delta_angle = (2 * Constants.Pi / Constants.MaxCurveSteps) * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
@@ -2051,7 +2049,7 @@ namespace GameCommon
 
             adjustEndPos();
 
-		SetSpeedRatio(group_info.speed_ratio);
+		    SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -2065,8 +2063,8 @@ namespace GameCommon
         {
             base.SetSpeedRatio(speedRatio);
 
-            delta_angle = delta_angle * group_info.speed_ratio;
-            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
+            delta_angle = (2 * Constants.Pi / Constants.MaxCurveSteps) * group_info.speed_ratio;
+            max_curveSteps = (int)(Constants.MaxCurveSteps / group_info.speed_ratio);
         }
 
         public override PilotType GetType()
@@ -2181,11 +2179,9 @@ namespace GameCommon
         {
             base.Initialize(space, seed);
 
-            
-
             adjustEndPos();
 
-	      SetSpeedRatio(group_info.speed_ratio);
+	        SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -2199,7 +2195,7 @@ namespace GameCommon
         {
             base.SetSpeedRatio(speedRatio);
 
-            max_curveSteps = (int)(max_curveSteps / group_info.speed_ratio);
+            max_curveSteps = (int)(Constants.MaxCurveSteps / group_info.speed_ratio);
         }
 
         public override PilotType GetType()
@@ -2374,7 +2370,7 @@ namespace GameCommon
 
             adjustEndPos();
 
-		SetSpeedRatio(group_info.speed_ratio);
+		    SetSpeedRatio(group_info.speed_ratio);
         }
 
         public override void SetEndPos(Vector2 pos)
@@ -2388,7 +2384,7 @@ namespace GameCommon
         {
             base.SetSpeedRatio(speedRatio);
 
-            delta_angle = delta_angle * group_info.speed_ratio;
+            delta_angle = (2 * Constants.Pi / Constants.MaxCurveSteps) * group_info.speed_ratio;
         }
 
         public override PilotType GetType()
