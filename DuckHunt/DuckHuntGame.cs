@@ -1680,6 +1680,7 @@ namespace DuckHuntCommon
                 {
                     baloon = null;
                 }
+
             }
 
             if (plane != null)
@@ -1960,7 +1961,7 @@ namespace DuckHuntCommon
                 {
                     // show award
                     AddBonusDuck(clickpos);
-                    baloon = null;
+                    //baloon = null;
                 }
 
                 /*
