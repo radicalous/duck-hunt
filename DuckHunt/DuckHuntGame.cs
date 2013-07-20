@@ -925,7 +925,7 @@ namespace DuckHuntCommon
             {
                 name = "chapter8_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilotTypeIndex], name);
-                duck.SetSpeedRatio(1.2f);
+                //duck.SetSpeedRatio(1.2f);
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -986,7 +986,7 @@ namespace DuckHuntCommon
             {
                 name = "chapter9_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
-                duck.SetSpeedRatio(1.3f);
+                //duck.SetSpeedRatio(1.3f);
                 ducks.Add(duck);
                 duckcount++;
                 pilottypeindex++;
@@ -1054,7 +1054,7 @@ namespace DuckHuntCommon
             {
                 name = "chapter10_" + duckcount.ToString();
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
-                duck.SetSpeedRatio(1.5f);
+                //duck.SetSpeedRatio(1.5f);
                 ducks.Add(duck);
                 duckcount++;
                 pilottypeindex++;
@@ -1111,7 +1111,7 @@ namespace DuckHuntCommon
 
             string name = "chaptershowfuncurve_" + duckcount.ToString();
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 20; i++)
             {
                 duck = new DuckModel(pilotypelist[pilottypeindex % pilotypelist.Count], name);
                 ducks.Add(duck);
@@ -1248,7 +1248,7 @@ namespace DuckHuntCommon
                 int pilottypeindex = i % duckstyle;
                
                 duck = new DuckModel(pilotypelist[pilottypeindex], name);
-                duck.SetSpeedRatio(speedratio);
+                //duck.SetSpeedRatio(speedratio);
                 ducks.Add(duck);
                 duckcount++;
             }
@@ -1315,7 +1315,6 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
-
 
                 chapter = new GameChapter8();
                 chapters.Add(chapter);
