@@ -23,6 +23,7 @@ namespace DuckHunt
         //DuckHuntGameControler controler;
         DuckHuntGameControler controler;
 
+
         // input
 
         // Keyboard states used to determine key presses
@@ -53,6 +54,7 @@ namespace DuckHunt
             Content.RootDirectory = "Content";
 
             controler = new DuckHuntGameControler();
+
         }
 
         /// <summary>

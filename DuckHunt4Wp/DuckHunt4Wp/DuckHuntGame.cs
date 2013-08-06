@@ -565,6 +565,132 @@ namespace DuckHuntCommon
         }
     }
 
+    class TimeChapter1 : GameChapterBase
+    {
+        int duckcount = 0;
+        int batchcount = 1;
+        override public int GetDuckBatch()
+        {
+            return batchcount++;
+        }
+
+        override public bool GetDuckList(out List<AnimalModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<AnimalModel>();
+
+            DuckModel duck;
+            if (duckcount >= 50)
+            {
+                ducks = null;
+                return false;
+            }
+            string name = "chapter1_" + duckcount.ToString();
+            for (int i = 0; i < 10; i++)
+            {
+                duck = new DuckModel(PilotType.DUCKLINE, name);
+                ducks.Add(duck);
+                duckcount++;
+            }
+
+            return true;
+        }
+        public override bool CanBeRemoved()
+        {
+            if (duckcount >= 50)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    class TimeChapter2 : GameChapterBase
+    {
+        int count = 5;
+        int times = 0;
+        int level = 1;
+
+        List<PilotType> pilotypelist;
+        public TimeChapter2()
+        {
+            pilotypelist = new List<PilotType>();
+            pilotypelist.Add(PilotType.DUCKNORMAL);
+            //pilotypelist.Add(PilotType.DUCKQUICK);
+            //pilotypelist.Add(PilotType.DUCKFLOWER);
+            pilotypelist.Add(PilotType.DUCKEIGHT);
+            pilotypelist.Add(PilotType.DUCKCIRCLE);
+            pilotypelist.Add(PilotType.DUCKELLIPSE);
+            pilotypelist.Add(PilotType.DUCKSIN);
+            pilotypelist.Add(PilotType.DUCKLINE);
+
+            pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
+            pilotypelist.Add(PilotType.DUCKCIRCLEDEPTH);
+            pilotypelist.Add(PilotType.DUCKELLIPSEDEPTH);
+            pilotypelist.Add(PilotType.DUCKSINDEPTH);
+            //pilotypelist.Add(PilotType.DUCKREN);
+        }
+        override public bool GetDuckList(out List<AnimalModel> ducks)
+        {
+            ducks = null;
+            ducks = new List<AnimalModel>();
+
+            DuckModel duck;
+            if (times >= 1)
+            {
+                times = 0;
+                count += 2;
+                ducks = null;
+                level++;
+                if (level == 3)
+                {
+                    pilotypelist.Add(PilotType.DUCKEIGHTDEPTH);
+                }
+
+                if (level == 5)
+                {
+                    pilotypelist.Add(PilotType.DUCKCIRCLEDEPTH);
+                }
+
+                if (level == 7)
+                {
+                    pilotypelist.Add(PilotType.DUCKELLIPSEDEPTH);
+                }
+
+                if (level == 9)
+                {
+                    pilotypelist.Add(PilotType.DUCKSINDEPTH);
+                }
+                return false;
+            }
+            for (int i = 0; i < count; i++)
+            {
+                string name = "chapter2_" + count.ToString() + "_" + i.ToString();
+                duck = new DuckModel(pilotypelist[i%pilotypelist.Count], name);
+                duck.SetSpeedRatio(1 + level * 0.1f);
+                ducks.Add(duck);
+            }
+            for (int i = 0; i < level; i++)
+            {
+                ducks.Add(new ParrotModel(pilotypelist[i * level % pilotypelist.Count], ""));
+            }
+
+
+            times++;
+
+            return true;
+        }
+        public override bool CanBeRemoved()
+        {
+            if (times >= 15)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
     class GameChapter1 : GameChapterBase
     {
         int duckcount = 0;
@@ -1297,6 +1423,11 @@ namespace DuckHuntCommon
                 chapters = new List<GameChapter>();
                 GameChapter chapter;
 
+                chapter = new TimeChapter2();
+                chapters.Add(chapter);
+
+                chapter = new TimeChapter1();
+                chapters.Add(chapter);
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -2125,15 +2256,30 @@ namespace DuckHuntCommon
                 return;
             }
 
-            int i = 0;
-            DateTime now = System.DateTime.Now;
-            foreach (AnimalModel duck in ducks)
+            int batchcount = chapter.GetDuckBatch();
+            do
             {
-                int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
-                duck.Initialize(null, duckFlySpace, s + (i++) * 7);
-                duck.StartPilot();
-                duckList.Add(duck);
-            }
+
+                int i = 0;
+                DateTime now = System.DateTime.Now;
+                foreach (AnimalModel duck in ducks)
+                {
+                    int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                    duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                    duck.StartPilot();
+                    duckList.Add(duck);
+                }
+                batchcount--;
+                if (batchcount > 0)
+                {
+                    chapter.GetDuckList(out ducks);
+                    if (ducks == null || ducks.Count == 0)
+                    {
+                        break;
+                    }
+                }
+            } while (batchcount > 0);
+
             duckList.AddRange(tmplist);
             tmplist.Clear();
         }
