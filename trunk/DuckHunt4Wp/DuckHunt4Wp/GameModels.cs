@@ -2371,6 +2371,10 @@ namespace DuckHuntCommon
             //
             float r = anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2; // 
             r = 40;
+#if WINDOWS_PHONE
+            r *= 1.2f;
+#endif
+
             duckCenter.X += anationInfoList[GetCurrentAnimationIndex()].frameWidth / 2;
             duckCenter.Y += anationInfoList[GetCurrentAnimationIndex()].frameHeight / 2;
 

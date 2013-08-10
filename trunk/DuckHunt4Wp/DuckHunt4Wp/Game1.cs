@@ -98,7 +98,12 @@ namespace DuckHunt4Wp
         {
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            {
+                if (!controler.GoPrevious())
+                {
+                    this.Exit();
+                }
+            }
 
             // TODO: Add your update logic here
 
@@ -207,7 +212,6 @@ namespace DuckHunt4Wp
                     return;
                 }
             }
-
 
 #if WINDOW_PHONE
             //Get Mouse State then Capture the Button type and Respond Button Press
