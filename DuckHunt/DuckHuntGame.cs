@@ -286,11 +286,15 @@ namespace DuckHuntCommon
             int highestScore = 0, highestLevel = 0;
             gameData.GetGameRecord(out highestScore, out highestLevel);
             gameOverPage.SetGameRecord(highestScore, highestLevel);
+
+            pagestack.Add(currentPage);
+
             currentPage = gameOverPage;
         }
 
         public void GotoPlayPage()
         {
+            pagestack.Add(currentPage);
             currentPage = playPage;
         }
         public void GotoConfigPage()
@@ -306,11 +310,17 @@ namespace DuckHuntCommon
             currentPage = scoreListPage;
         }
 
-        public void ReturnToPrevious()
+        public bool ReturnToPrevious()
         {
             int count = pagestack.Count;
-            currentPage = pagestack[count - 1];
+            if (count <= 1)
+            {
+                return false;
+            }
+            currentPage = pagestack[count - 2];
             pagestack.RemoveAt(count - 1);
+
+            return true;
         }
 
         public void ShowkeyBoard()

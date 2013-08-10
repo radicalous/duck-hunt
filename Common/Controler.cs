@@ -430,6 +430,11 @@ namespace DuckHuntCommon
             game.Click(globalpointposlst);
         }
 
+        public bool GoPrevious()
+        {
+            return game.ReturnToPrevious();
+        }
+
         public void Pause(bool snapview)
         {
             game.SnapView = snapview;
