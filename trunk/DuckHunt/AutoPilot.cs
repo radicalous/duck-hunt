@@ -10,10 +10,11 @@ namespace GameCommon
     public enum Direction { LEFT, BOTTOM, RIGHT, UP, RANDOM, IN, OUT };
     public enum PilotType
     {
-        DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD, DUCKFLYAWAY,
+        DUCKSTOP, DUCKNORMAL, DUCKQUICK, DUCKFLOWER, DUCKDEAD, DUCKFLYAWAY,
         DUCKEIGHT, DUCKEIGHTDEPTH, DUCKCIRCLE, DUCKCIRCLEDEPTH,
         DUCKELLIPSE, DUCKELLIPSEDEPTH, DUCKSIN, DUCKSINDEPTH,
         DUCKLINE, DUCKREN, DUCKILOVEU_I, DUCKILOVEU_L, DUCKILOVEU_U,
+        DUCK_BEZIER,
         DOGSEEK, DOGJUMP, DOGSHOW,
         CLOUD,PARROT,
     };
@@ -145,6 +146,11 @@ namespace GameCommon
 
             switch (type)
             {
+                case PilotType.DUCKSTOP:
+                    {
+                        pilot = new DuckStopPilot();
+                    }
+                    break;
                 case PilotType.DUCKNORMAL:
                 case PilotType.DUCKQUICK:
                     {
@@ -423,6 +429,11 @@ namespace GameCommon
                 case PilotType.PARROT:
                     {
                         pilot = new ParrotPilot();
+                    }
+                    break;
+                case PilotType.DUCK_BEZIER:
+                    {
+                        pilot = new BezierCurvePilot();
                     }
                     break;
                 default:
@@ -878,6 +889,176 @@ namespace GameCommon
         }
     }
 
+    class BezierCurvePilot : BasePilot
+    {
+        // The boundary
+        public Rectangle boundaryRect = new Rectangle();
+
+        override public Direction GetHorizationDirection()
+        {            
+            return Direction.RIGHT;
+        }
+        override public Direction GetZDirection()
+        {
+            if (detalz > 0)
+            {
+                return Direction.IN;
+            }
+            else
+            {
+                return Direction.OUT;
+            }
+        }
+
+        // current position
+        Vector2 Position;
+        int privousStartY = 0;
+
+        public float depthpos = 0;
+
+        Random radom;
+        float detalz = 1;
+
+        List<Vector2> curvePosList;
+        int curpos = 0;
+
+        override public void Initialize(Rectangle boundary, int seed)
+        {
+            radom = new Random(seed);
+            boundaryRect = boundary;
+
+            // radom a intial position
+            Position.X = boundary.Width / 2;
+            Position.Y = boundary.Height / 2;
+
+            Rectangle startSpace = new Rectangle(0, 0 + (int)(0.9 * boundaryRect.Height),
+                boundaryRect.Width, (int)(boundaryRect.Height * 0.1));
+
+            // calculate the start position and end position
+            int starty = radom.Next(10, boundary.Height-50);
+            if(Math.Abs(starty - privousStartY) < 50)
+            {
+                starty = privousStartY + 50;
+                if (starty > boundaryRect.Bottom)
+                {
+                    starty -= 100;
+                }
+            }
+            int endy = radom.Next(0, boundary.Height);
+            int radomx = radom.Next(0, boundary.Width);
+            int radomy = radom.Next(5, boundary.Height - 10);
+
+            Curves.BezierCurve curve = new Curves.BezierCurve();
+
+            double[] startPoint = new double[6];
+            startPoint[0] = boundaryRect.X - 50;
+            startPoint[1] = starty;
+            startPoint[2] = radomx;
+            startPoint[3] = radomy;
+            startPoint[4] = boundaryRect.Right + 30;
+            startPoint[5] = endy;
+
+            double[] curvepoints = new double[1600];
+            curve.Bezier2D(startPoint, 800, curvepoints);
+            curvePosList = new List<Vector2>();
+            for (int i = 0; i < 1600; i+=2)
+            {
+                curvePosList.Add(new Vector2((float)curvepoints[i], (float)curvepoints[i + 1]));
+            }
+            curvepoints = null;
+        }
+
+        override public Vector2 GetPosition()
+        {
+            return curvePosList[curpos];
+        }
+
+        override public float GetDepth()
+        {
+            return depthpos;
+        }
+        override public PilotType GetType()
+        {
+            return PilotType.DUCK_BEZIER;
+        }
+
+        float speed = 1;
+        override public void SetSpeedRatio(float speedRatio)
+        {
+            speed = speedRatio;
+            if (speed < 1)
+            {
+                speed = 1;
+            }
+        }
+
+        float curroff = 0;
+        int curindex = 0;
+        DateTime lastMoveTime = DateTime.Now;
+        override public void Update(GameTime gameTime)
+        {
+            // Update the elapsed time
+            TimeSpan losttime = DateTime.Now - lastMoveTime;
+            if (losttime.TotalMilliseconds > 100)
+            {
+                curroff = 0 + curindex * speed;
+                curpos = (int)curroff;
+                curindex++;
+                if (curpos > this.curvePosList.Count - 1)
+                {
+                    curpos = this.curvePosList.Count - 1;
+                }
+            }
+        }
+    }
+
+
+
+    class DuckStopPilot : BasePilot
+    {
+        // The boundary
+        public Rectangle boundaryRect = new Rectangle();
+
+        override public Direction GetHorizationDirection()
+        {
+            return Direction.RIGHT;
+        }
+        override public Direction GetZDirection()
+        {
+            return Direction.OUT;
+        }
+
+        override public void Initialize(Rectangle boundary, int seed)
+        {
+            boundaryRect = boundary;
+
+        }
+        Vector2 pos = Vector2.Zero;
+        override public void SetStartPos(Vector2 pos1)
+        {
+            pos = pos1;
+        }
+
+        override public Vector2 GetPosition()
+        {
+            return pos;
+        }
+
+        override public float GetDepth()
+        {
+            return 0;
+        }
+        override public PilotType GetType()
+        {
+            return PilotType.DUCKSTOP;
+        }
+
+
+        override public void Update(GameTime gameTime)
+        {
+
+        }
+    }
 
     class DuckNormalPilot : BasePilot
     {
@@ -2567,7 +2748,7 @@ namespace GameCommon
 
         // current position
         Vector2 Position;
-        int deltax = 1;
+        int deltax = 2;
         int deltay = 5;
 
         public enum DOGSTATE { FindingDuck, Jumpup, Jumpdown, Showup, Showdown };

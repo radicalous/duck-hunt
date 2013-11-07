@@ -21,8 +21,12 @@ using GameCommon;
 #if !WINDOWS_PHONE
 using System.Threading.Tasks;
 #else
+using System.Threading;
 using System.IO.IsolatedStorage;
 #endif
+
+using StorageSampleREST;
+using System.Xml.Linq;
 
 
 namespace DuckHuntCommon
@@ -97,14 +101,15 @@ namespace DuckHuntCommon
             if (pause)
             {
                 // go to mnue page
-                backgroundPage.ShowPause(true);
+                mainMenuPage.ShowPause(true);               
                 GotoMainMenuPage();
             }
             else
             {
                 // go to play page
-                backgroundPage.ShowPause(false);
-                GotoPlayPage();
+                mainMenuPage.ShowPause(false);
+                ReturnToPrevious();
+                //GotoPlayPage();
             }
         }
 
@@ -161,6 +166,9 @@ namespace DuckHuntCommon
         GameMainMenuPage mainMenuPage;
         GameOverPage gameOverPage;
         GamePlayPage playPage;
+        LevelGoalDescriptionPage levelGoalPage;
+        LevelConclusionPage levelConclusionPage;
+        StagePorpSelectPage propSeletPage;
         GameScoreListPage scoreListPage;
         GameConfigPage optionPage;
 
@@ -179,6 +187,11 @@ namespace DuckHuntCommon
             backgroundPage = new GameBackGroundPage();
             mainMenuPage = new GameMainMenuPage();
             gameOverPage = new GameOverPage();
+
+            levelGoalPage = new LevelGoalDescriptionPage();
+            levelConclusionPage = new LevelConclusionPage();
+            propSeletPage = new StagePorpSelectPage();
+
             playPage = new GamePlayPage();
             scoreListPage = new GameScoreListPage();
             optionPage = new GameConfigPage();
@@ -188,6 +201,8 @@ namespace DuckHuntCommon
             currentPage = mainMenuPage;
             //currentPage = gameOverPage;
             pagestack.Add(currentPage);
+
+            currentPage.Active();
 
 
             //
@@ -242,6 +257,8 @@ namespace DuckHuntCommon
             objlst.Add(new ParrotModel());
             objlst.Add(new ResultSummaryModel());
             objlst.Add(new InfoBoardModel());
+            //objlst.Add(new HunterModel());
+            //objlst.Add(new ArrowModel());
 
             foreach (ModelObject obj in objlst)
             {
@@ -276,9 +293,25 @@ namespace DuckHuntCommon
 
         public void GotoMainMenuPage()
         {
+            pagestack.Add(currentPage);
             currentPage = mainMenuPage;
+            currentPage.Active();
         }
 
+
+
+        public void GotoPropSelctPage()
+        {
+            currentPage = propSeletPage;
+            currentPage.Active();
+        }
+
+        public void GotoLevelConclusionPage(int yourscore, int yourlevel)
+        {
+            levelConclusionPage.SetConclusion(yourscore, curLevelGoal);
+            currentPage = levelConclusionPage;
+            currentPage.Active();
+        }
 
         public void GotoGameOverPage(int yourscore, int yourlevel)
         {
@@ -290,17 +323,81 @@ namespace DuckHuntCommon
             pagestack.Add(currentPage);
 
             currentPage = gameOverPage;
+
+
+            AskPlayerNameAndSaveScore(yourscore, yourlevel);
         }
 
-        public void GotoPlayPage()
+        int curLevelGoal = 0;
+        int level = 0;
+        public int GetCurrentLevelGoal()
         {
-            pagestack.Add(currentPage);
+            switch (level)
+            {
+                case 0:
+                    {
+                        return 100;
+                    }
+                    break;
+                case 1:
+                    {
+                        return 600;
+                    }
+                    break;
+                case 2:
+                    {
+                        return 800;
+                    }
+                    break;
+                case 3:
+                    break;
+                    {
+                        return 900;
+                    }
+                case 4:
+                    {
+                        return 1000;
+                    }
+                    break;
+                default:
+                    return 600 + level * 100;
+            }
+
+            return 100;
+        }
+
+        public void StartNextLevel()
+        {
+            level++;
+            playPage.ResetGame();
+            GotoPlayPage(false);
+        }
+
+
+        public void GotoLevelGoalDescriptionPage()
+        {
+            // from configuration page, no need to save
+            curLevelGoal = GetCurrentLevelGoal();
+            levelGoalPage.ShowLevelGoal(curLevelGoal);
+            currentPage = levelGoalPage;
+            currentPage.Active();
+        }
+
+        public void GotoPlayPage(bool savecurepage)
+        {
+            if (savecurepage)
+            {
+                pagestack.Add(currentPage);
+            }
             currentPage = playPage;
+            currentPage.Active();
+
         }
         public void GotoConfigPage()
         {
             pagestack.Add(currentPage);
             currentPage = optionPage;
+            currentPage.Active();
 
         }
 
@@ -308,6 +405,8 @@ namespace DuckHuntCommon
         {
             pagestack.Add(currentPage);
             currentPage = scoreListPage;
+            currentPage.Active();
+
         }
 
         public bool ReturnToPrevious()
@@ -317,8 +416,9 @@ namespace DuckHuntCommon
             {
                 return false;
             }
-            currentPage = pagestack[count - 2];
+            currentPage = pagestack[count - 1];
             pagestack.RemoveAt(count - 1);
+            currentPage.Active();
 
             return true;
         }
@@ -343,7 +443,9 @@ namespace DuckHuntCommon
             backgroundPage.ShowPause(false);
 
             playPage.NewGame(gameMode);
-            GotoPlayPage();
+
+            GotoLevelGoalDescriptionPage();
+            //GotoPlayPage(true);
         }
         Rectangle screenRect = new Rectangle();
 
@@ -377,35 +479,8 @@ namespace DuckHuntCommon
             }
         }
 
-        public void StartGame(Rectangle screenRect1)
+        void InitCamaerView()
         {
-            screenRect = screenRect1;
-
-            gameData.Load("duckhunt.xml");
-            if (IsExpired())
-            {
-                return;
-            }
-
-            if (gameData.ScoreList.Count == 0)
-            {
-                /*
-                gameData.AddScore("Penner", 1000);
-                gameData.AddScore("Fallson", 2000);
-                gameData.AddScore("2013/06/05", 3000);
-                gameData.Save("duckhunt.xml");
-                 */
-            }
-
-            backgroundPage.InitGamePage(this);
-            playPage.InitGamePage(this);
-            mainMenuPage.InitGamePage(this);
-            gameOverPage.InitGamePage(this);
-            scoreListPage.InitGamePage(this);
-            optionPage.InitGamePage(this);
-
-            snapPage.InitGamePage(this);
-
 
             // logic rect 1600x900
             // calculate our background rect
@@ -442,10 +517,16 @@ namespace DuckHuntCommon
 
                 bgdefscale = screenRect.Height * 1.0f / globalViewRect.Height;
             }
+            BackgorundCamera.ViewPort = bgorgpoint;
+            BackgorundCamera.CameraScale = bgdefscale;
+            BackgorundCamera.WorldWidth = globalViewRect.Width;
+            BackgorundCamera.WorldHeight = globalViewRect.Height;
+            BackgorundCamera.ViewWidth = screenRect.Width;
+            BackgorundCamera.ViewHeight = screenRect.Height;
+
 
 
             // calcualte the logic view 
-
             if ((float)screenRect.Width / screenRect.Height > logicWtoH)
             {
                 // to wide, will full filll height
@@ -477,17 +558,89 @@ namespace DuckHuntCommon
                 this.defscale = localViewRect.Width * 1.0f / globalViewRect.Width;
             }
 
-            ViewObjectFactory.SetLocalViewInfo(screenRect, orgpoint, defscale, bgorgpoint, bgdefscale);
+            //ViewObjectFactory.SetLocalViewInfo(screenRect, orgpoint, defscale, bgorgpoint, bgdefscale);
+            Camera.ViewPort = orgpoint;
+            Camera.CameraScale = defscale;
+            Camera.WorldWidth = globalViewRect.Width;
+            Camera.WorldHeight = globalViewRect.Height;
+            Camera.ViewWidth = screenRect.Width;
+            Camera.ViewHeight = screenRect.Height;
         }
 
-        public void SaveNewScore(int score, int level)
+        public void StartGame(Rectangle screenRect1)
+        {
+            screenRect = screenRect1;
+            InitCamaerView();
+
+            gameData.Load("duckhunt.xml");
+            if (IsExpired())
+            {
+                return;
+            }
+
+            if (gameData.ScoreList.Count == 0)
+            {
+                /*
+                gameData.AddScore("Penner", 1000);
+                gameData.AddScore("Fallson", 2000);
+                gameData.AddScore("2013/06/05", 3000);
+                gameData.Save("duckhunt.xml");
+                 */
+            }
+
+            backgroundPage.InitGamePage(this);
+            playPage.InitGamePage(this);
+            mainMenuPage.InitGamePage(this);
+            gameOverPage.InitGamePage(this);
+            scoreListPage.InitGamePage(this);
+            optionPage.InitGamePage(this);
+
+            levelGoalPage.InitGamePage(this); 
+            levelConclusionPage.InitGamePage(this);
+            propSeletPage.InitGamePage(this);
+
+
+            snapPage.InitGamePage(this);
+
+
+        }
+
+        public static void PlayerInputAsyncCallback(IAsyncResult ar)
+        {
+#if !WINDOWS_PHONE
+            DuckHuntGame game = (DuckHuntGame)ar.AsyncState;
+            string playername = DuckHunt.PlayerInputPage.EndShowKeyboardInput(ar);
+            game.SaveNewScoreWithPlayerName(playername,game.currentscore, game.currentlevel);
+#endif
+
+        }
+
+        public void AskPlayerNameAndSaveScore(int score, int level)
+        {
+#if !WINDOWS_PHONE
+            currentscore = score;
+            currentlevel = level;
+            DuckHunt.PlayerInputPage.BeginShowKeyboardInput(
+                "Input Player Name", "Input Player Name", "", PlayerInputAsyncCallback, this);
+#endif
+        }
+
+        int currentscore;
+        int currentlevel;
+
+        public void SaveNewScoreWithPlayerName(string playename, int score, int level)
         {
             // 
             DateTime now = DateTime.Now;
-            gameData.AddScore(now.ToString(), score);
-            gameData.AddLevel(now.ToString(), level);
+            string name = playename;
+            //name += ".";
+            //name += now.ToString();
+            gameData.AddScore(name.ToString(), score);
+            gameData.AddLevel(name.ToString(), level);
             gameData.Save("duckhunt.xml");
+
         }
+
 
         public void GetGameRecord(out int highestScore, out int highestLevel)
         {
@@ -528,6 +681,12 @@ namespace DuckHuntCommon
             currentPage.Click(clickpositionlist);
             return;
         }
+
+
+        public void Press(List<Vector2> clickpositionlist)
+        {
+            currentPage.Press(clickpositionlist);
+        }
     }
 
 
@@ -552,7 +711,7 @@ namespace DuckHuntCommon
         public string soundpath;
     }
 
-    enum GameMode { GAME_TIME_LIMIT, GAME_FREE_MODE };
+    enum GameMode { GAME_TIME_LIMIT, GAME_FREE_MODE, GAME_DEMON};
 
     enum GameChapterPhase { CHAPTER1, CHAPTER2, CHAPTER3, CHAPTER4, CHAPTER5, FOREVER };
 
@@ -572,6 +731,114 @@ namespace DuckHuntCommon
         override public int GetDuckBatch()
         {
             return 1;
+        }
+    }
+
+    class BatchDucks
+    {
+        // a batch should have compose a shape,
+        int count;
+        int curve;
+    }
+
+    class CommonGameChapter : GameChapterBase
+    {
+        public int totalcount = 0;
+        public int minReleaseInterval = 0;
+        public int maxReleaseInterval = 3000; //ms
+        public int nextrleaseInterval = 1000;
+
+        int batchcount = 1;
+        int releasedDuckCount = 0;
+        List<PilotType> pilottypeList = null;
+        List<int> duckTypeList = null;
+
+        DateTime lastReleaseTime = DateTime.Now;
+
+        public int MinSpeedRatio
+        {
+            set;
+            get;
+        }
+        public int MaxSpeedRatio
+        {
+            get;
+            set;
+        }
+
+        public CommonGameChapter() 
+        {
+            pilottypeList = new List<PilotType>();
+            pilottypeList.Add(PilotType.DUCK_BEZIER);
+            duckTypeList = new List<int>();
+            duckTypeList.Add(0);
+            duckTypeList.Add(0);
+            duckTypeList.Add(0);
+            duckTypeList.Add(1);
+            duckTypeList.Add(1);
+            duckTypeList.Add(1);
+            duckTypeList.Add(2);
+            MinSpeedRatio = 1;
+            MaxSpeedRatio = 1;
+        }
+
+        override public int GetDuckBatch()
+        {
+            return batchcount++;
+        }
+
+
+        Random random = null;
+        override public bool GetDuckList(out List<AnimalModel> ducks)
+        {
+            ducks = null;
+            if (CanBeRemoved())
+            {
+                return false;
+            }
+
+            TimeSpan losttime = DateTime.Now - lastReleaseTime;
+            if (losttime.TotalMilliseconds < nextrleaseInterval)
+            {
+                return false;
+            }
+            lastReleaseTime = DateTime.Now;
+            if(random == null)
+            {
+                random = new Random((int)DateTime.Now.Ticks);
+            }
+            nextrleaseInterval = random.Next(minReleaseInterval, maxReleaseInterval);
+
+            ducks = null;
+            ducks = new List<AnimalModel>();
+            AnimalModel duck = null;
+            string name = "CommonGameChapter";
+            int typeindex = random.Next(99) % duckTypeList.Count;
+            int type = duckTypeList[typeindex];
+            if (type == 2)
+            {
+                duck = new ParrotModel(pilottypeList[releasedDuckCount % pilottypeList.Count], name);
+            }
+            else
+            {
+                duck = new DuckModel(pilottypeList[releasedDuckCount % pilottypeList.Count], name);
+                ((DuckModel)duck).DuckStyle = type;
+            }
+            duck.SetSpeedRatio(random.Next(MinSpeedRatio, MaxSpeedRatio));
+            ducks.Add(duck);
+            releasedDuckCount++;
+
+            return true;
+        }
+
+
+        public override bool CanBeRemoved()
+        {
+            if (releasedDuckCount > totalcount)
+            {
+                return true;
+            }
+            return false;
         }
     }
 
@@ -605,6 +872,8 @@ namespace DuckHuntCommon
 
             return true;
         }
+
+
         public override bool CanBeRemoved()
         {
             if (duckcount >= 50)
@@ -691,6 +960,8 @@ namespace DuckHuntCommon
 
             return true;
         }
+
+
         public override bool CanBeRemoved()
         {
             if (times >= 15)
@@ -722,6 +993,8 @@ namespace DuckHuntCommon
 
             return true;
         }
+
+
         public override bool CanBeRemoved()
         {
             if (duckcount >= 5)
@@ -741,7 +1014,7 @@ namespace DuckHuntCommon
             ducks = new List<AnimalModel>();
 
             DuckModel duck;
-            if (duckcount >= 6)
+            if (duckcount >= 8)
             {
                 ducks = null;
                 return false;
@@ -759,7 +1032,7 @@ namespace DuckHuntCommon
 
         public override bool CanBeRemoved()
         {
-            if (duckcount >= 6)
+            if (duckcount >= 8)
             {
                 return true;
             }
@@ -1428,16 +1701,63 @@ namespace DuckHuntCommon
         {
             PilotManager.Reset();
 
+            chapters = new List<GameChapter>();
             if (mode == GameMode.GAME_TIME_LIMIT)
             {
-                chapters = new List<GameChapter>();
-                GameChapter chapter;
-
-                chapter = new TimeChapter2();
+                CommonGameChapter chapter = null;
+                chapter = new CommonGameChapter();
+                chapter.totalcount = 10;
+                chapter.MinSpeedRatio = 1;
+                chapter.MaxSpeedRatio = 3;
                 chapters.Add(chapter);
 
-                chapter = new TimeChapter1();
+                chapter = new CommonGameChapter();
+                chapter.totalcount = 20;
+                chapter.MinSpeedRatio = 2;
+                chapter.MaxSpeedRatio = 3;
                 chapters.Add(chapter);
+
+                chapter = new CommonGameChapter();
+                chapter.totalcount = 30;
+                chapter.MinSpeedRatio = 3;
+                chapter.MaxSpeedRatio = 5;
+                chapters.Add(chapter);
+
+                bonousChapter = new List<GameChapter>();
+                GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
+                GameChapterILoveU loveuChapter = new GameChapterILoveU();
+                bonousChapter.Add(loveuChapter);
+                bonousChapter.Add(curveChapter);
+
+            }
+            else if (mode == GameMode.GAME_FREE_MODE)
+            {
+                CommonGameChapter chapter = null;
+                chapter = new CommonGameChapter();
+                chapter.totalcount = 10;
+                chapter.MinSpeedRatio = 1;
+                chapter.MaxSpeedRatio = 3;
+                chapters.Add(chapter);
+
+                chapter = new CommonGameChapter();
+                chapter.totalcount = 20;
+                chapter.MinSpeedRatio = 2;
+                chapter.MaxSpeedRatio = 3;
+                chapters.Add(chapter);
+
+                chapter = new CommonGameChapter();
+                chapter.totalcount = 30;
+                chapter.MinSpeedRatio = 3;
+                chapter.MaxSpeedRatio = 5;
+                chapters.Add(chapter);
+
+                bonousChapter = new List<GameChapter>();
+                GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
+                GameChapterILoveU loveuChapter = new GameChapterILoveU();
+                bonousChapter.Add(loveuChapter);
+                bonousChapter.Add(curveChapter);
+
+                /*
                 chapter = new GameChapter1();
                 chapters.Add(chapter);
                 chapter = new GameChapter2();
@@ -1456,67 +1776,34 @@ namespace DuckHuntCommon
                 chapters.Add(chapter);
                 chapter = new GameChapter7();
                 chapters.Add(chapter);
-
                 chapter = new GameChapter8();
                 chapters.Add(chapter);
                 chapter = new GameChapter9();
-                chapters.Add(chapter); 
+                chapters.Add(chapter);
 
                 chapter = new GameChapter10();
                 chapters.Add(chapter);
                 chapter = new GameChapterForever();
                 chapters.Add(chapter);
 
-
                 bonousChapter = new List<GameChapter>();
                 GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
                 GameChapterILoveU loveuChapter = new GameChapterILoveU();
                 bonousChapter.Add(loveuChapter);
                 bonousChapter.Add(curveChapter);
-                chapters.Add(loveuChapter);
-
+                bonousChapter.Add(curveChapter);
+                bonousChapter.Add(curveChapter);
+                bonousChapter.Add(curveChapter);
+                */
             }
             else
             {
-                chapters = new List<GameChapter>();
-                GameChapter chapter;
-                chapter = new GameChapter1();
+                CommonGameChapter chapter = null;
+                chapter = new CommonGameChapter();
+                chapter.totalcount = 5000;
+                chapter.MinSpeedRatio = 1;
+                chapter.MaxSpeedRatio = 3;
                 chapters.Add(chapter);
-                chapter = new GameChapter2();
-                chapters.Add(chapter);
-                chapter = new GameChapter3();
-                chapters.Add(chapter);
-                chapter = new GameChapter4();
-                chapters.Add(chapter);
-                chapter = new GameChapter5();
-                chapters.Add(chapter);
-
-                //chapter = new GameChapterFunShowCurve();
-                //chapters.Add(chapter);
-
-                chapter = new GameChapter6();
-                chapters.Add(chapter);
-                chapter = new GameChapter7();
-                chapters.Add(chapter);
-                chapter = new GameChapter8();
-                chapters.Add(chapter);
-                chapter = new GameChapter9();
-                chapters.Add(chapter);
-
-                chapter = new GameChapter10();
-                chapters.Add(chapter);
-                chapter = new GameChapterForever();
-                chapters.Add(chapter);
-
-                bonousChapter = new List<GameChapter>();
-                GameChapterFunShowCurve curveChapter = new GameChapterFunShowCurve();
-                GameChapterILoveU loveuChapter = new GameChapterILoveU();
-                bonousChapter.Add(loveuChapter);
-                bonousChapter.Add(curveChapter);
-                bonousChapter.Add(curveChapter);
-                bonousChapter.Add(curveChapter);
-                bonousChapter.Add(curveChapter);
-
             }
             return true;
         }
@@ -1535,18 +1822,18 @@ namespace DuckHuntCommon
         {
             chapter = null;
 
-            while (true)
+            //while (true)
             {
                 if (chapters.Count <= 0)
                 {
                     return false;
                 }
                 chapter = chapters[0];
-                if (chapter.CanBeRemoved())
+                //if (chapter.CanBeRemoved())
                 {
                     chapters.RemoveAt(0);
                 }
-                else
+               // else
                 {
                     return true;
                 }
@@ -1554,19 +1841,47 @@ namespace DuckHuntCommon
         }
     }
 
-    interface GamePage
+    abstract class  GamePage
     {
-        void InitGamePage(DuckHuntGame game);
-        void GetObjects(out List<ModelObject> objlst);
-        void Update(GameTime gametime);
-        void Click(List<Vector2> clickpositionlist);
+        abstract public void InitGamePage(DuckHuntGame game);
+        abstract public void GetObjects(out List<ModelObject> objlst);
+        abstract public void Update(GameTime gametime);
+        abstract public void Click(List<Vector2> clickpositionlist);
+        abstract public void Press(List<Vector2> clickpositionlist);
+
+        Object showLayer = null;
+        protected void AddShowLayer()
+        {
+            showLayer = DuckHuntGameControler.controler.AddShowLayer();
+        }
+
+        public GamePage()
+        {
+            AddShowLayer();
+        }
+
+        public void Active()
+        {
+            DuckHuntGameControler.controler.SwitchShowLayer(showLayer);
+        }
+        public void AddObjectToShowLayer(ModelObject model)
+        {
+            DuckHuntGameControler.controler.AddObjectToShowLayer(showLayer, model);
+        }
+
+        public void RemoveObjectFromShowLayer(ModelObject modelobj)
+        {
+            DuckHuntGameControler.controler.RemoveObjectFromShowLayer(showLayer, modelobj);
+        }
+
+        public void ClearObjectFromShowLayer()
+        {
+            DuckHuntGameControler.controler.ClearObjectFromShowLayer(showLayer);
+        }
     }
 
     class GamePlayPage : GamePage
     {
-
-        GAME_PHASE phase = GAME_PHASE.GAME_SELECT;
-
         GameChapterManager gameChapterMgr;
 
 
@@ -1581,17 +1896,15 @@ namespace DuckHuntCommon
         Rectangle leftTimeBoardSpace;
 
 
-        List<BulletModel> bulletsList;
+        //List<BulletModel> bulletsList;
         List<AnimalModel> duckList;
         Rectangle duckFlySpace;
 
-        DogModel dog;
-        Rectangle dogRunSpace;
 
         PandaModel panda;
         BaloonModel baloon;
         PlaneModel plane;
-        ParrotModel parrot;
+        //ParrotModel parrot;
         Rectangle baloonSpace;
 
         HitBoardModel hitBoard;
@@ -1613,16 +1926,62 @@ namespace DuckHuntCommon
         LevelUpBoardModel levelUp;
         Rectangle levelUpSpace;
 
+        //HunterModel hunter;
+        List<BulletModel> arrowList;
+
+
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
 
         public GamePlayPage()
         {
-            bulletsList = new List<BulletModel>();
+            arrowList = new List<BulletModel>();
             gameChapterMgr = new GameChapterManager();
+            duckList = new List<AnimalModel>();
+            tmplist = new List<AnimalModel>();
         }
 
-        public void InitGamePage(DuckHuntGame game)
+        public void ResetGame()
+        {
+            ClearObjectFromShowLayer();
+            
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+            
+            //NewDog();
+            /*
+            gameMode = GameMode.GAME_FREE_MODE;// gameMode1;
+            gameChapterMgr.Init(gameMode);
+            gameMode = GameMode.GAME_TIME_LIMIT;
+             */
+            leftTime.SetTime(30);
+            lostDuck.ResetLostCount();
+            
+            scoreBoard.AddScore(-scoreBoard.TotalScore);
+
+
+            levelUpInShowLayer = false;
+
+            hitBoardInShowLayer = false;
+
+            scoreBoardInShowLayer = false;
+
+            leftTimeBoardInShowLayer = false;
+
+
+            lostDuckBoardInShowLayer = false;
+
+            pauseInShowLayer = false;
+
+            gameChapterMgr.GetNextChapter(out chapter);
+
+        }
+
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             backgroundPage = game.GetBackgroundPage();
@@ -1638,7 +1997,7 @@ namespace DuckHuntCommon
                 duckFlySpace.Width = rectBackground.Width;
                 duckFlySpace.Height = rectBackground.Height - 150;
             }
-
+            /*
             if (rectBackground.Width < rectBackground.Height)
             {
                 dogRunSpace.Width = rectBackground.Height;
@@ -1651,7 +2010,7 @@ namespace DuckHuntCommon
                 dogRunSpace.Y = rectBackground.Height - (150 + 140);
                 dogRunSpace.Height = 150;
             }
-
+            */
             baloonSpace.Width = rectBackground.Width;
             baloonSpace.Y = 100;
             baloonSpace.Height = 150;
@@ -1726,68 +2085,63 @@ namespace DuckHuntCommon
             levelUpSpace.Height = levelUp1.GetSpace().Height;
 
 
+
             NewScoreBoard();
             NewAssistBoard();
 
            // firework = new FireworkModel();
            // firework.Initialize(null, fireworkSpace, 0);
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
         }
 
 
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
-            if (phase == GAME_PHASE.SEEK_DUCK)
+            objlst.Add(pause);
+            if (levelUp.Show())
             {
-                objlst.Add(dog);
-                //objlst.Add(panda);
-                //objlst.Add(levelUp);
-                objlst.Add(infoBoard);
-
+                objlst.Add(levelUp);
             }
-            else if (phase == GAME_PHASE.DUCK_FLY)
+
+            if (baloon != null)
             {
-                //objlst.Add(panda);
-                objlst.Add(pause);
-                if (levelUp.Show())
-                {
-                    objlst.Add(levelUp);
-                }
-
-                //objlst.Add(firework);
-                if (parrot != null)
-                {
-                    objlst.Add(parrot);
-                }
-                if (baloon != null)
-                {
-                    objlst.Add(baloon);
-                }
-                if (plane != null)
-                {
-                    objlst.Add(plane);
-                }
-                //objlst.Add(plane);
-                foreach (AnimalModel duck in duckList)
-                {
-                    objlst.Add(duck);
-                }
-                foreach (BulletModel bullet in bulletsList)
-                {
-                    objlst.Add(bullet);
-                }
-                objlst.Add(hitBoard);
-                objlst.Add(scoreBoard);
-
-                if (this.gameMode == GameMode.GAME_TIME_LIMIT)
-                {
-                    objlst.Add(leftTime);
-                }
-                else
-                {
-                    objlst.Add(lostDuck);
-                }
+                objlst.Add(baloon);
             }
+            if (plane != null)
+            {
+                objlst.Add(plane);
+            }
+            foreach (AnimalModel duck in duckList)
+            {
+                objlst.Add(duck);
+            }
+
+            objlst.Add(hitBoard);
+            objlst.Add(scoreBoard);
+
+            if (this.gameMode == GameMode.GAME_TIME_LIMIT)
+            {
+                objlst.Add(leftTime);
+            }
+            else
+            {
+                objlst.Add(lostDuck);
+            }
+
+            //objlst.Add(hunter);
+            foreach (var arrow in arrowList)
+            {
+                objlst.Add(arrow);
+            }
+
             List<ModelObject> backgroundobjlst;
             backgroundPage.GetObjects(out backgroundobjlst);
             foreach (ModelObject obj in backgroundobjlst)
@@ -1795,30 +2149,141 @@ namespace DuckHuntCommon
                 objlst.Add(obj);
             }
         }
+
+
+        bool levelUpInShowLayer = false;
+        bool hitBoardInShowLayer = false;
+        bool scoreBoardInShowLayer = false;
+        bool leftTimeBoardInShowLayer = false;
+        bool lostDuckBoardInShowLayer = false;
+        bool pauseInShowLayer = false;
+
         GameChapter chapter;
-        public void Update(GameTime gametime)
+
+        void updateShootProgress()
         {
-            if (duckHuntGame.Pause)
+            //hunter.Update(gametime);
+            // check if the arrow shoot the duck
+            foreach (var arrow in arrowList)
+            {
+                foreach (AnimalModel duck in duckList)
+                {
+                    arrow.Shoot(duck);
+                }
+                arrow.Shoot(baloon);
+            }
+
+        }
+
+        bool addBalloon = false;
+        Vector2 bonousDuckStartPos = Vector2.Zero;
+        void updateShootResult()
+        {
+            foreach (var arrow in arrowList)
+            {
+                List<AnimalModel> lastshotducklist = arrow.RetrieveShootDucks();
+                if (lastshotducklist != null)
+                {
+                    //
+                    float score = 100;
+                    int shootduckcount = 0;
+                    foreach (AnimalModel animal in lastshotducklist)
+                    {
+                        if (animal.Type() == ModelType.DUCK)
+                        {
+                            shootduckcount++;
+                            score = 100;
+                            score *= shootduckcount;
+                            score /= animal.GetSacle();
+                            scoreBoard.AddScore((int)score);
+                            hitBoard.AddHitCount(1);
+                        }
+                        else if (animal.Type() == ModelType.PARROT)
+                        {
+                            // shot a parrot
+                            scoreBoard.AddScore(-500 - showbaloonCount * 10);
+                        }
+                    }
+
+                    if (shootduckcount > 1)
+                    {
+                        addBalloon = true;
+                        //ShowBalloon();
+                    }
+
+                    //ShowEastEgg();
+                }
+
+                if (arrow.RetrieveBaloon() != null)
+                {
+                    // show award
+                    //AddBonusDuck(arrow.GetAbsolutePosition());
+                    bonousDuckStartPos = arrow.GetShootPoint();
+                }
+            }
+        }
+
+        DateTime lastrelaseducktime = DateTime.Now;
+        void checkIfneed2Releaseducks()
+        {
+            // change the logic
+            // 1. every level, they will about N ducks, M parrots, they will released
+            //  with a time span, batch by batch
+            // 2. When no more birds left, the leve is finished
+            // 3. check if meet the level result ( accuracy)
+            //
+            //
+            if (addBalloon)
+            {
+                addBalloon = false;
+                ShowBalloon();
+            }
+            if (bonousDuckStartPos != Vector2.Zero)
+            {
+                AddBonusDuck(bonousDuckStartPos);
+                bonousDuckStartPos = Vector2.Zero;
+            }
+            /*
+            TimeSpan timegone = DateTime.Now - lastrelaseducktime;
+            if (timegone.TotalSeconds < 2)
             {
                 return;
             }
-            //
-            backgroundPage.Update(gametime);
-            //panda.Update(gametime);
-            //firework.Update(gametime);
-            if (parrot != null)
+             */
+            lastrelaseducktime = DateTime.Now;
+
+            // check if all left items are not duck, if so , next chapter
+            //if (duckList.Count == 0)
             {
-                parrot.Update(gametime);
-                if (parrot.Gone())
+                NewDuck();
+                /*
+                if (duckList.Count > 0)
                 {
-                    parrot = null;
+                    phase = GAME_PHASE.DUCK_FLY;
                 }
+                else
+                {
+                    phase = GAME_PHASE.OVER;
+                    // save new score
+
+                    int score = scoreBoard.TotalScore;
+                    int level = scoreBoard.GetLevel();
+
+                    duckHuntGame.GotoGameOverPage(score, level);
+                }
+                 */
             }
+
+        }
+
+        void updateThisBatchOfDucks(GameTime gametime)
+        {
             if (baloon != null)
             {
                 baloon.Update(gametime);
                 if (baloon.Gone)
                 {
+                    RemoveObjectFromShowLayer(baloon);
                     baloon = null;
                 }
 
@@ -1829,125 +2294,270 @@ namespace DuckHuntCommon
                 plane.Update(gametime);
                 if (plane.Gone)
                 {
+                    RemoveObjectFromShowLayer(plane);
                     plane = null;
                 }
             }
 
-            if (phase == GAME_PHASE.GAME_SELECT)
+            if (duckList == null)
             {
+                return;
             }
-            else if (phase == GAME_PHASE.SEEK_DUCK)
+            int deadcount = 0;
+            List<AnimalModel> goneducklist = new List<AnimalModel>();
+            foreach (AnimalModel duck in duckList)
             {
-                //
-                dog.Update(gametime);
-                if (dog.Gone/* || true*/)
+                duck.Update(gametime);
+                if (duck.Type() == ModelType.DUCK && !duck.Gone())
                 {
-                    // show duck
-                    phase = GAME_PHASE.DUCK_FLY;
-
-                    // create two new duck
-                    NewDuck();
+                }
+                if (duck.Dead())
+                {
+                    deadcount++;
+                }
+                if (duck.Gone())
+                {
+                    // new duck will clear the list
+                    goneducklist.Add(duck);
                 }
             }
-            else if (phase == GAME_PHASE.DUCK_FLY)
+            foreach (var duck in goneducklist)
             {
-                if (gameMode == GameMode.GAME_TIME_LIMIT)
+                RemoveObjectFromShowLayer(duck);
+                duckList.Remove(duck);
+                duck.Cleanup();
+            }
+            goneducklist.Clear();
+
+        }
+
+        void updateWeaponStatus(GameTime gametime)
+        {
+            /*
+            foreach (var arrow in arrowList)
+            {
+                arrow.Update(gametime);
+            }
+            */
+
+            for (int i = 0; i < arrowList.Count; )
+            {
+                if (arrowList[i].Gone)
                 {
-                    leftTime.Update(gametime);
-                }
-
-
-                if (gameMode != GameMode.GAME_TIME_LIMIT)
-                {
-
-                    if (lostDuck.LostDuckCount >= 3)
-                    {
-                        duckList.Clear();
-
-                        phase = GAME_PHASE.OVER;
-                        // save new score
-
-                        int score = scoreBoard.TotalScore;
-                        int level = scoreBoard.GetLevel();
-                        duckHuntGame.SaveNewScore(score, level);
-
-                        duckHuntGame.GotoGameOverPage(score, level); 
-                        return;
-                    }
+                    // remove it from this one 
+                    RemoveObjectFromShowLayer(arrowList[i]);
+                    arrowList.RemoveAt(i);
                 }
                 else
                 {
-                    if (leftTime.LeftTime <= 0)
-                    {
-                        duckList.Clear();
-                        phase = GAME_PHASE.OVER;
-                        // save new score
-
-                        int score = scoreBoard.TotalScore;
-                        int level = scoreBoard.GetLevel();
-                        duckHuntGame.SaveNewScore(score, level);
-
-                        duckHuntGame.GotoGameOverPage(score, level);
-                        return;
-                    }
-                }
-
-
-                levelUp.Update(gametime);
-
-
-
-                bool finished = true;
-                int deadcount = 0;
-                foreach (AnimalModel duck in duckList)
-                {
-                    duck.Update(gametime);
-                    if (duck.Type() == ModelType.DUCK && !duck.Gone())
-                    {
-                        finished = false;
-                    }
-                    if (duck.Dead())
-                    {
-                        deadcount++;
-                    }
-                }
-
-                for (int i = 0; i < bulletsList.Count; )
-                {
-                    bulletsList[i].Update(gametime);
-                    if (bulletsList[i].Gone)
-                    {
-                        // remove it from this one 
-                        bulletsList.RemoveAt(i);
-                    }
-                    else
-                    {
-                        i++;
-                    }
-                }
-
-                if (finished)
-                {
-                    //phase = GAME_PHASE.DOG_SHOW;
-                    //dog.ShowDog(deadcount);
-                    NewDuck();
-                    if (duckList.Count > 0)
-                    {
-                        phase = GAME_PHASE.DUCK_FLY;
-                    }
-                    else
-                    {
-                        phase = GAME_PHASE.OVER;
-                        // save new score
-
-                        int score = scoreBoard.TotalScore;
-                        int level = scoreBoard.GetLevel();
-                        duckHuntGame.SaveNewScore(score, level);
-
-                        duckHuntGame.GotoGameOverPage(score, level);
-                    }
+                    arrowList[i].Update(gametime);
+                    i++;
                 }
             }
+        }
+
+        void updateGameProgress(GameTime gametime, out bool finishedThisLevel)
+        {
+            finishedThisLevel = false;
+            if (gameMode != GameMode.GAME_TIME_LIMIT)
+            {
+                if ((chapter.CanBeRemoved() && duckList.Count == 0))
+                {
+                    foreach (var duck in duckList)
+                    {
+                        duck.Cleanup();
+                        RemoveObjectFromShowLayer(duck);
+                    }
+                    duckList.Clear();
+
+                    int score = scoreBoard.TotalScore;
+                    int level = scoreBoard.GetLevel();
+
+                    duckHuntGame.GotoLevelConclusionPage(score, level);
+
+                    finishedThisLevel = true;
+                    return;
+                }
+            }
+            else
+            {
+                if (leftTime.LeftTime <= 0 || (chapter.CanBeRemoved() && duckList.Count == 0))
+                {
+                    foreach (var duck in duckList)
+                    {
+                        duck.Cleanup();
+                        RemoveObjectFromShowLayer(duck);
+                    }
+                    duckList.Clear();
+
+                    // save new score
+
+                    int score = scoreBoard.TotalScore;
+                    int level = scoreBoard.GetLevel();
+                    //duckHuntGame.SaveNewScore(score, level);
+
+                    duckHuntGame.GotoLevelConclusionPage(score, level);
+
+                    finishedThisLevel = true;
+
+                    return;
+                }
+            }
+
+        }
+
+
+        void showInfoBoards()
+        {
+            if (!hitBoardInShowLayer)
+            {
+                AddObjectToShowLayer(hitBoard);
+                hitBoardInShowLayer = true;
+            }
+            if (!scoreBoardInShowLayer)
+            {
+                AddObjectToShowLayer(scoreBoard);
+                scoreBoardInShowLayer = true;
+            }
+
+            if (!pauseInShowLayer)
+            {
+                AddObjectToShowLayer(pause);
+                pauseInShowLayer = true;
+            }
+
+            if (this.gameMode == GameMode.GAME_TIME_LIMIT)
+            {
+                if (!leftTimeBoardInShowLayer)
+                {
+                    AddObjectToShowLayer(leftTime);
+                    leftTimeBoardInShowLayer = true;
+                }
+            }
+            else
+            {
+                if (!lostDuckBoardInShowLayer)
+                {
+                    AddObjectToShowLayer(lostDuck);
+                    lostDuckBoardInShowLayer = true;
+                }
+            }
+
+        }
+        void hideInfoBoards()
+        {
+            if (levelUpInShowLayer)
+            {
+                RemoveObjectFromShowLayer(levelUp);
+                levelUpInShowLayer = false;
+            }
+
+            if (hitBoardInShowLayer)
+            {
+                RemoveObjectFromShowLayer(hitBoard);
+                hitBoardInShowLayer = false;
+            }
+            if (scoreBoardInShowLayer)
+            {
+                RemoveObjectFromShowLayer(scoreBoard);
+                scoreBoardInShowLayer = false;
+            }
+
+            if (leftTimeBoardInShowLayer)
+            {
+                RemoveObjectFromShowLayer(leftTime);
+                leftTimeBoardInShowLayer = false;
+            }
+
+            if (lostDuckBoardInShowLayer)
+            {
+                RemoveObjectFromShowLayer(lostDuck);
+                lostDuckBoardInShowLayer = false;
+            }
+            if (pauseInShowLayer)
+            {
+                RemoveObjectFromShowLayer(pause);
+                pauseInShowLayer = false;
+            }
+               
+
+        }
+
+        void updateInforBoards(GameTime gametime)
+        {
+            /*
+            if (levelUp.Show())
+            {
+                if (!levelUpInShowLayer)
+                {
+                    AddObjectToShowLayer(levelUp);
+                    levelUpInShowLayer = true;
+                }
+            }
+            else
+            {
+                if (levelUpInShowLayer)
+                {
+                    RemoveObjectFromShowLayer(levelUp);
+                    levelUpInShowLayer = false;
+                }
+            }
+            levelUp.Update(gametime);
+             */
+
+            showInfoBoards();
+            if (gameMode == GameMode.GAME_TIME_LIMIT)
+            {
+                leftTime.Update(gametime);
+            }
+
+        }
+
+        override public void Update(GameTime gametime)
+        {
+            if (duckHuntGame.Pause)
+            {
+                return;
+            }
+            //
+            backgroundPage.Update(gametime);
+            //panda.Update(gametime);
+            //firework.Update(gametime);
+
+            //
+            // update weapons
+            //
+            updateShootProgress();
+            updateShootResult();
+
+            updateWeaponStatus(gametime);
+
+            //
+            // update objects
+            //
+            updateThisBatchOfDucks(gametime);
+
+
+            //
+            // update information board
+            //
+            updateInforBoards(gametime);
+
+            //
+            // check if need to release any ducks
+            //
+            checkIfneed2Releaseducks();
+
+            //
+            // update game progress
+            //
+            bool finishedThisLevel = false;
+            updateGameProgress(gametime, out finishedThisLevel);
+            if (finishedThisLevel)
+            {
+                return ;
+            }
+
         }
 
         int previousTotalScore = 0;
@@ -1968,6 +2578,7 @@ namespace DuckHuntCommon
                     lastbaloon = now;
                     baloon = new BaloonModel();
                     baloon.Initialize(null, baloonSpace, 0);
+                    AddObjectToShowLayer(baloon);
                 }
             }
         }
@@ -1975,6 +2586,7 @@ namespace DuckHuntCommon
         void ShowBomb()
         {
             // show plane
+            /*
             if (parrot == null)
             {
                 parrot = new ParrotModel();
@@ -1982,6 +2594,7 @@ namespace DuckHuntCommon
                 parrot.Initialize(null, this.duckFlySpace, 0);
                 parrot.StartPilot();
             }
+             */
         }
 
         void ShowPlane()
@@ -1991,6 +2604,8 @@ namespace DuckHuntCommon
                 plane = new PlaneModel();
                 DateTime now = DateTime.Now;
                 plane.Initialize(null, this.baloonSpace, now.Millisecond);
+                AddObjectToShowLayer(plane);
+
             }
         }
 
@@ -2016,9 +2631,21 @@ namespace DuckHuntCommon
 
         }
 
-        public void Click(List<Vector2> clickpositionlist)
+        override public void Press(List<Vector2> clickpositionlist)
         {
+            // new a bullet
+            foreach (Vector2 clickpos in clickpositionlist)
+            {
+                //
+                //hunter.SetTargetPos(clickpos);
+                return;
+            }
+        }
 
+
+        override public void Click(List<Vector2> clickpositionlist)
+        {
+#if false
             if (phase != GAME_PHASE.DUCK_FLY)
             {
                 return;
@@ -2048,99 +2675,56 @@ namespace DuckHuntCommon
                     continue;
                 }
 
+
+                ArrowModel arrow = null;// hunter.Shoot();
+                if (arrow != null)
+                {
+                    arrowList.Add(arrow);
+                    AddObjectToShowLayer(arrow);
+                }
+                return;
+            }
+
+#endif
+            ////
+            /*
+            if (bulletsList.Count > 0)
+            {
+                return;
+            }
+            */
+            // new a bullet
+            foreach (Vector2 clickpos in clickpositionlist)
+            {
+                if (pause.Click(clickpos))
+                {
+                    // reset the icon
+                    pause.Click(clickpos);
+                    duckHuntGame.Pause = !duckHuntGame.Pause;
+                    if (duckHuntGame.Pause)
+                    {
+                        duckHuntGame.PauseGame(true);
+                    }
+                    continue;
+                }
+                if (duckHuntGame.Pause)
+                {
+                    continue;
+                }
+
                 BulletModel bullet = new BulletModel(clickpos);
-                foreach (AnimalModel duck in duckList)
-                {
-                    duck.Shoot(bullet);
-                }
-                if (parrot != null)
-                {
-                    parrot.Shoot(bullet);
-                }
-                if (baloon != null)
-                {
-                    baloon.Shoot(bullet);
-                }
 
-                bullet.AdjustForFlyEffect();
-                bulletsList.Add(bullet);
-
-                if (bullet.GetShootDucks() != null)
-                {
-                    //
-                    float score = 100;
-                    bool showplane = false;
-                    int shootduckcount = 0;
-                    foreach (AnimalModel animal in bullet.GetShootDucks())
-                    {
-                        if (animal.Type() == ModelType.DUCK)
-                        {
-                            shootduckcount++;
-                            score = 100;
-                            score *= shootduckcount;
-                            score /= animal.GetSacle();
-                            scoreBoard.AddScore((int)score);
-                            hitBoard.AddHitCount(1);
-                        }
-                        else if (animal.Type() == ModelType.PARROT)
-                        {
-                            // shot a parrot
-                            scoreBoard.AddScore(-500 - showbaloonCount * 10);
-                        }
-                    }
-
-
-                    if (shootduckcount > 1)
-                    {
-                        ShowBalloon();
-                    }
-
-                    ShowEastEgg();
-                }
-
-                if (bullet.GetBaloon() != null)
-                {
-                    // show award
-                    AddBonusDuck(clickpos);
-                    //baloon = null;
-                }
-
-                /*
-                if (bullet.GetParrot() != null)
-                {
-                    // show award
-                    //AddBonusDuck(clickpos);
-                    scoreBoard.AddScore(-500 - showbaloonCount*10);
-                }
-                 */
+                //bullet.AdjustForFlyEffect();
+                arrowList.Add(bullet);
 
             }
+
         }
 
 
 
         /////////////////////////////////////////////////////
 
-        void NewDog()
-        {
-            // dog seek duck
-            dog = new DogModel();
-            dog.Initialize(null, dogRunSpace, 0);
-            dog.StartPilot();
-
-            /*
-            panda = new PandaModel();
-            panda.Initialize(null, dogRunSpace, 0);
-             */
-
-            /*
-            plane = new PlaneModel();
-            plane.Initialize(null, planeSpace, 0);
-
-            baloon = new BaloonModel();
-            baloon.Initialize(null, planeSpace, 0);
-            */
-        }
 
         void NewScoreBoard()
         {
@@ -2202,7 +2786,7 @@ namespace DuckHuntCommon
             {
                 // set duck state
                 int ii = 0;
-
+                /*
                 if (gameMode != GameMode.GAME_TIME_LIMIT)
                 {
                     foreach (AnimalModel duck2 in duckList)
@@ -2221,12 +2805,20 @@ namespace DuckHuntCommon
                         {
                             // animal gone, reutrn pilot
                             duck2.Cleanup();
-
+                            RemoveObjectFromShowLayer(duck2);
                         }
                     }
                     if (lostDuck.LostDuckCount >= 3)
                     {
+
+                        foreach (AnimalModel duck2 in tmplist)
+                        {
+                            duck2.Cleanup();
+                            RemoveObjectFromShowLayer(duck2);
+                        }
+                        tmplist.Clear();
                         duckList.Clear();
+
                         return;
                     }
                 }
@@ -2238,33 +2830,41 @@ namespace DuckHuntCommon
                         {
                             tmplist.Add(duck2);
                         }
+                        else
+                        {
+                            duck2.Cleanup();
+                            RemoveObjectFromShowLayer(duck2);
+                        }
                     }
 
                     if (leftTime.LeftTime <= 0)
                     {
+                        foreach (AnimalModel duck2 in tmplist)
+                        {
+                            duck2.Cleanup();
+                            RemoveObjectFromShowLayer(duck2);
+                        }
+                        tmplist.Clear();
                         duckList.Clear();
                         return;
                     }
                 }
                 duckList.Clear();
+                 */
             }
-
+            
             List<AnimalModel> ducks = null;
 
-            do
+            if (chapter != null && chapter.GetDuckList(out ducks) && ducks != null && ducks.Count > 0)
             {
-                if (chapter != null && chapter.GetDuckList(out ducks) && ducks != null && ducks.Count > 0)
-                {
-                    break;
-                }
-                gameChapterMgr.GetNextChapter(out chapter);
-                ShowLevelUp();
-            } while (chapter != null);
+               
+            }
 
             if (ducks == null)
             {
                 return;
             }
+
 
             int batchcount = chapter.GetDuckBatch();
             do
@@ -2278,6 +2878,7 @@ namespace DuckHuntCommon
                     duck.Initialize(null, duckFlySpace, s + (i++) * 7);
                     duck.StartPilot();
                     duckList.Add(duck);
+                    AddObjectToShowLayer(duck);
                 }
                 batchcount--;
                 if (batchcount > 0)
@@ -2350,10 +2951,11 @@ namespace DuckHuntCommon
                     int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
                     duck.Initialize(null, duckFlySpace, s + (i++) * 73);
                     duck.StartPilot();
-                    //duck.SetStartPos(startPos);
+
                     duck.SetEndPos(endpos);
                     duck.SetShowTime(showTime);
                     duckList.Add(duck);
+                    AddObjectToShowLayer(duck);
 
                 }
                 endpos.X += duckFlySpace.Width / batchcount;
@@ -2367,21 +2969,18 @@ namespace DuckHuntCommon
         public void NewGame(GameMode gameMode1)
         {
             // reset dog, duck and so on
-            NewDog();
+           // NewDog();
             if (duckList != null)
             {
                 duckList.Clear();
             }
 
-            gameMode = gameMode1;
+            gameMode = duckHuntGame.gameMode;
             gameChapterMgr.Init(gameMode);
-            leftTime.SetTime(2 * 60);
+            leftTime.SetTime(30);
             lostDuck.ResetLostCount();
 
-            gameChapterMgr.GetNextChapter(out chapter);
-            phase = GAME_PHASE.SEEK_DUCK;
-
-
+            //gameChapterMgr.GetNextChapter(out chapter);
         }
     }
 
@@ -2391,6 +2990,11 @@ namespace DuckHuntCommon
         // (local rect - orgpoint ) = global rect * default scale
         // local rect = orgpoint + global rect * default scale
         //
+        GameChapterManager gameChapterMgr;
+        GameChapter chapter = null;
+
+        List<AnimalModel> duckList;
+        Rectangle duckFlySpace;
 
         MenuItemModel menuTimeModelItem;
         MenuItemModel menuFreeModelItem;
@@ -2404,12 +3008,24 @@ namespace DuckHuntCommon
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
-        public void InitGamePage(DuckHuntGame game)
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             backgroundPage = game.GetBackgroundPage();
 
+            pause = backgroundPage.GetPauseButton();
+
             Rectangle rectBackground = game.GetGlobalViewRect();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                duckFlySpace.Width = rectBackground.Height - 150;
+                duckFlySpace.Height = rectBackground.Width;
+            }
+            else
+            {
+                duckFlySpace.Width = rectBackground.Width;
+                duckFlySpace.Height = rectBackground.Height - 150;
+            }
 
 
             MenuItemModel menuItem = new MenuItemModel();
@@ -2431,10 +3047,21 @@ namespace DuckHuntCommon
             scoreListMenuSpace.Y = rectBackground.Top + 400;
 
 
+            gameChapterMgr = new GameChapterManager();
+            gameChapterMgr.Init(GameMode.GAME_DEMON);
+            gameChapterMgr.GetNextChapter(out chapter);
+
             NewMenu();
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
         }
 
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
 
@@ -2451,7 +3078,7 @@ namespace DuckHuntCommon
             }
 
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
             backgroundPage.Update(gametime);
             menuTimeModelItem.Update(gametime);
@@ -2459,13 +3086,128 @@ namespace DuckHuntCommon
             menuOptionItem.Update(gametime);
             menuScoreListItem.Update(gametime);
 
+            updateThisBatchOfDucks(gametime);
+
+            checkIfneed2Releaseducks();
+
+        }
+
+        List<AnimalModel> tmplist = null;
+        void NewDuck()
+        {
+            if (duckList == null)
+            {
+                duckList = new List<AnimalModel>();
+                tmplist = new List<AnimalModel>();
+            }
+
+            List<AnimalModel> ducks = null;
+
+            if (chapter != null && chapter.GetDuckList(out ducks) && ducks != null && ducks.Count > 0)
+            {
+
+            }
+
+            if (ducks == null)
+            {
+                return;
+            }
+
+
+            int batchcount = chapter.GetDuckBatch();
+            do
+            {
+
+                int i = 0;
+                DateTime now = System.DateTime.Now;
+                foreach (AnimalModel duck in ducks)
+                {
+                    int s = now.Hour * 60 * 60 + now.Minute * 60 + now.Second;
+                    duck.Initialize(null, duckFlySpace, s + (i++) * 7);
+                    duck.StartPilot();
+                    duck.EnableSound = false;
+                    duckList.Add(duck);
+                    AddObjectToShowLayer(duck);
+                }
+                batchcount--;
+                if (batchcount > 0)
+                {
+                    chapter.GetDuckList(out ducks);
+                    if (ducks == null || ducks.Count == 0)
+                    {
+                        break;
+                    }
+                }
+            } while (batchcount > 0);
+
+            duckList.AddRange(tmplist);
+            tmplist.Clear();
+        }
+
+        DateTime lastrelaseducktime = DateTime.Now;
+        void checkIfneed2Releaseducks()
+        {
+            lastrelaseducktime = DateTime.Now;
+
+            NewDuck();
+
         }
 
 
-        public void Click(List<Vector2> clickpositionlist)
+        void updateThisBatchOfDucks(GameTime gametime)
+        {
+            if (duckList == null)
+            {
+                return;
+            }
+            int deadcount = 0;
+            List<AnimalModel> goneducklist = new List<AnimalModel>();
+            foreach (AnimalModel duck in duckList)
+            {
+                duck.Update(gametime);
+                if (duck.Type() == ModelType.DUCK && !duck.Gone())
+                {
+                }
+                if (duck.Dead())
+                {
+                    deadcount++;
+                }
+                if (duck.Gone())
+                {
+                    // new duck will clear the list
+                    goneducklist.Add(duck);
+                }
+            }
+            foreach (var duck in goneducklist)
+            {
+                RemoveObjectFromShowLayer(duck);
+                duckList.Remove(duck);
+                duck.Cleanup();
+            }
+            goneducklist.Clear();
+        }
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+
+        override public void Click(List<Vector2> clickpositionlist)
         {
             //
-            backgroundPage.Click(clickpositionlist);
+           // backgroundPage.Click(clickpositionlist);
+            if (showPause)
+            {
+                if (pause.Click(clickpositionlist[0]))
+                {
+                    // reset the icon
+                    pause.Click(clickpositionlist[0]);
+
+                    duckHuntGame.PauseGame(false);
+                }
+            }
+
 
             foreach (Vector2 clickpos in clickpositionlist)
             {
@@ -2509,7 +3251,7 @@ namespace DuckHuntCommon
                     */
 #else
                     //Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.System) + Path.DirectorySeparatorChar + "osk.exe");
-
+                    /*
                     DuckHunt.App app = (DuckHunt.App)DuckHunt.App.Current;
 
                     if (app.playerPage == null)
@@ -2521,6 +3263,7 @@ namespace DuckHuntCommon
                     Window.Current.Content = app.playerPage;
                     Window.Current.Activate();
                     app.playerPage.Focus(FocusState.Keyboard);
+                     */
 #endif
 
                     return;
@@ -2531,8 +3274,6 @@ namespace DuckHuntCommon
                     // show score list
                     duckHuntGame.GotoScoreListPage();
                 }
-
-
 
 
             }
@@ -2559,6 +3300,24 @@ namespace DuckHuntCommon
             menuScoreListItem.Initialize(null, scoreListMenuSpace, 0);
             menuScoreListItem.Conent = "Score List";
         }
+
+        ButtonModel pause = null;
+        bool showPause = false;
+        public void ShowPause(bool show)
+        {
+            showPause = show;
+            if (showPause)
+            {
+                AddObjectToShowLayer(pause);
+                pause.Checked = false;
+            }
+            else
+            {
+                pause.Checked = true;
+                RemoveObjectFromShowLayer(pause);
+            }
+        }
+
     }
 
 
@@ -2588,7 +3347,7 @@ namespace DuckHuntCommon
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
-        public void InitGamePage(DuckHuntGame game)
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             backgroundPage = game.GetBackgroundPage();
@@ -2626,9 +3385,17 @@ namespace DuckHuntCommon
 
 
             NewMenu();
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
         }
 
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
 
@@ -2647,7 +3414,7 @@ namespace DuckHuntCommon
             }
 
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
             backgroundPage.Update(gametime);
             gameOverTitleItem.Update(gametime);
@@ -2659,7 +3426,11 @@ namespace DuckHuntCommon
         }
 
 
-        public void Click(List<Vector2> clickpositionlist)
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+        override public void Click(List<Vector2> clickpositionlist)
         {
             //
             backgroundPage.Click(clickpositionlist);
@@ -2743,6 +3514,443 @@ namespace DuckHuntCommon
         }
     }
 
+
+
+    class LevelGoalDescriptionPage : GamePage
+    {
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+
+        //TitleItemModel gameOverTitleItem;
+        DogModel dog;
+        Rectangle dogRunSpace;
+
+        DuckModel blackDuck = null;
+        TitleItemModel blackDuckScore = null;
+
+        DuckModel blueDuck = null;
+        TitleItemModel blueDuckScore = null;
+
+        ParrotModel parrotDuck = null;
+        TitleItemModel parrotDuckScore = null;
+
+
+        //Rectangle gameOverTitleSpace;
+
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
+        override public void InitGamePage(DuckHuntGame game)
+        {
+            duckHuntGame = game;
+            backgroundPage = game.GetBackgroundPage();
+
+            Rectangle rectBackground = game.GetGlobalViewRect();
+            if (rectBackground.Width < rectBackground.Height)
+            {
+                dogRunSpace.Width = rectBackground.Height;
+                dogRunSpace.Y = rectBackground.Width - 200 - 180;
+                dogRunSpace.Height = 150;
+            }
+            else
+            {
+                dogRunSpace.Width = rectBackground.Width;
+                dogRunSpace.Y = rectBackground.Height - (150 + 140);
+                dogRunSpace.Height = 150;
+            }
+            NewDog();
+
+            Rectangle scoreInfoRc = new Rectangle();
+            Vector2 duckpos = new Vector2();
+            duckpos.X = rectBackground.Width/3;
+            duckpos.Y = rectBackground.Height/5;
+
+            blackDuck = new DuckModel();
+            blackDuck.Initialize(null, rectBackground, 0);
+            blackDuck.ShowTime = 100;
+            blackDuck.SetStartPos(duckpos);
+            AddObjectToShowLayer(blackDuck);
+
+            scoreInfoRc.X = (int)(duckpos.X + 100);
+            scoreInfoRc.Y = (int)duckpos.Y - 10;
+            blackDuckScore = new TitleItemModel();
+            scoreInfoRc.Width = blackDuckScore.GetSpace().Width;
+            scoreInfoRc.Height = blackDuckScore.GetSpace().Height;
+            blackDuckScore.Initialize(null, scoreInfoRc, 0);
+            blackDuckScore.Conent = "= X 100";
+            AddObjectToShowLayer(blackDuckScore);
+
+            duckpos.Y += 120;
+            blueDuck = new DuckModel();
+            blueDuck.Initialize(null, rectBackground, 0);
+            blueDuck.ShowTime = 100;
+            blueDuck.DuckStyle = 1;
+            blueDuck.SetStartPos(duckpos);
+            AddObjectToShowLayer(blueDuck);
+
+            scoreInfoRc.Y = (int)duckpos.Y-10;
+            blueDuckScore = new TitleItemModel();
+            blueDuckScore.Initialize(null, scoreInfoRc, 0);
+            blueDuckScore.Conent = "= X 200";
+            AddObjectToShowLayer(blueDuckScore);
+
+            duckpos.Y += 120;
+            duckpos.X -= 40;
+            parrotDuck = new ParrotModel();
+            parrotDuck.Initialize(null, rectBackground, 0);
+            parrotDuck.SetStartPos(duckpos);
+            AddObjectToShowLayer(parrotDuck);
+
+            scoreInfoRc.Y = (int)duckpos.Y-10;
+            scoreInfoRc.X += 25;
+            parrotDuckScore = new TitleItemModel();
+            parrotDuckScore.Initialize(null, scoreInfoRc, 0);
+            parrotDuckScore.Conent = "= X -100";
+            AddObjectToShowLayer(parrotDuckScore);
+
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
+        }
+
+
+        void NewDog()
+        {
+            // dog seek duck
+            if (dog != null)
+            {
+                // remove the dog from current layer
+                RemoveObjectFromShowLayer(dog);
+                dog = null;
+            }
+            dog = new DogModel();
+            dog.Initialize(null, dogRunSpace, 0);
+            dog.StartPilot();
+
+            AddObjectToShowLayer(dog);
+
+            /*
+            panda = new PandaModel();
+            panda.Initialize(null, dogRunSpace, 0);
+             */
+
+            /*
+            plane = new PlaneModel();
+            plane.Initialize(null, planeSpace, 0);
+
+            baloon = new BaloonModel();
+            baloon.Initialize(null, planeSpace, 0);
+            */
+        }
+
+        override public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+
+        }
+
+        override public void Update(GameTime gametime)
+        {
+            backgroundPage.Update(gametime);
+            //gameOverTitleItem.Update(gametime);
+            blackDuck.Update(gametime);
+            blueDuck.Update(gametime);
+            parrotDuck.Update(gametime);
+
+            TimeSpan showtime = DateTime.Now - startTime;
+            /*
+            if (showtime.TotalSeconds > 20)
+            {
+                duckHuntGame.StartNextLevel();
+            }
+            */
+
+            dog.Update(gametime);
+            if (dog.Gone)
+            {
+                RemoveObjectFromShowLayer(dog);
+                dog = null;
+                blackDuck = null;
+                blueDuck = null;
+                parrotDuck = null;
+                duckHuntGame.StartNextLevel();
+            }
+        }
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+        override public void Click(List<Vector2> clickpositionlist)
+        {
+            //
+            return;
+        }
+
+        /////////
+        DateTime startTime = DateTime.Now;
+        public void ShowLevelGoal(int score)
+        {
+            LevelGoal = score;
+            startTime = DateTime.Now;
+            //gameOverTitleItem.Conent = "Level Target: " + LevelGoal.ToString();
+        }
+
+        public int LevelGoal
+        {
+            get;
+            set;
+        }
+    }
+
+
+    class LevelConclusionPage : GamePage
+    {
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+        TitleItemModel gameOverTitleItem;
+
+        Rectangle gameOverTitleSpace;
+
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
+        override public void InitGamePage(DuckHuntGame game)
+        {
+            duckHuntGame = game;
+            backgroundPage = game.GetBackgroundPage();
+
+            Rectangle rectBackground = game.GetGlobalViewRect();
+
+
+            TitleItemModel titleItem = new TitleItemModel();
+            gameOverTitleSpace.X = (rectBackground.Width - titleItem.GetSpace().Width) / 2;
+            gameOverTitleSpace.Y = 30;
+            gameOverTitleSpace.Width = titleItem.GetSpace().Width;
+            gameOverTitleSpace.Height = titleItem.GetSpace().Height;
+
+            NewMenu();
+
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
+        }
+
+        override public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+
+            objlst.Add(gameOverTitleItem);
+
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+
+        }
+
+        override public void Update(GameTime gametime)
+        {
+            backgroundPage.Update(gametime);
+            gameOverTitleItem.Update(gametime);
+
+            TimeSpan showtime = DateTime.Now - startTime;
+            if (showtime.TotalSeconds > 2)
+            {
+                if (acchievedScore > targetScore)
+                {
+                    // goto stage prop page
+                    duckHuntGame.GotoPropSelctPage();
+
+                }
+                else
+                {
+                    // goto game over page
+                    duckHuntGame.GotoGameOverPage(acchievedScore, 1);
+                }
+            }
+        }
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+        override public void Click(List<Vector2> clickpositionlist)
+        {
+            //
+            return;
+        }
+
+        /////////
+
+        void NewMenu()
+        {
+            gameOverTitleItem = new TitleItemModel();
+            gameOverTitleItem.Initialize(null, gameOverTitleSpace, 0);
+            gameOverTitleItem.Conent = "Acchieved Goal ";
+        }
+
+        DateTime startTime = DateTime.Now;
+        public void SetConclusion(int score, int targetscore1)
+        {
+            targetScore = targetscore1;
+            acchievedScore = score;
+            startTime = DateTime.Now;
+
+            if (acchievedScore > targetScore)
+            {
+                gameOverTitleItem.Conent = "Acchieved Goal";
+            }
+            else
+            {
+                gameOverTitleItem.Conent = "Fail Goal";
+            }
+        }
+
+        int acchievedScore = 0;
+        int targetScore = 0;
+
+    }
+
+
+    class StagePorpSelectPage : GamePage
+    {
+        // local rect, global rect
+        // (local rect - orgpoint ) = global rect * default scale
+        // local rect = orgpoint + global rect * default scale
+        //
+        TitleItemModel gameOverTitleItem;
+
+        Rectangle gameOverTitleSpace;
+        MenuItemModel menuRetryItem;
+        Rectangle retryMenuSpace;
+
+        GameBackGroundPage backgroundPage = null;
+        DuckHuntGame duckHuntGame = null;
+        override public void InitGamePage(DuckHuntGame game)
+        {
+            duckHuntGame = game;
+            backgroundPage = game.GetBackgroundPage();
+
+            Rectangle rectBackground = game.GetGlobalViewRect();
+
+
+            TitleItemModel titleItem = new TitleItemModel();
+            gameOverTitleSpace.X = (rectBackground.Width - titleItem.GetSpace().Width) / 2;
+            gameOverTitleSpace.Y = 30;
+            gameOverTitleSpace.Width = titleItem.GetSpace().Width;
+            gameOverTitleSpace.Height = titleItem.GetSpace().Height;
+
+
+            MenuItemModel menuItem = new MenuItemModel();
+            retryMenuSpace.X = 700;
+            retryMenuSpace.Y = 300;
+            retryMenuSpace.Width = menuItem.GetSpace().Width;
+            retryMenuSpace.Height = menuItem.GetSpace().Height;
+
+
+            NewMenu();
+
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
+        }
+
+        override public void GetObjects(out List<ModelObject> objlst)
+        {
+            objlst = new List<ModelObject>();
+
+            objlst.Add(gameOverTitleItem);
+            objlst.Add(menuRetryItem);
+
+            List<ModelObject> backgroundobjlst;
+            backgroundPage.GetObjects(out backgroundobjlst);
+            foreach (ModelObject obj in backgroundobjlst)
+            {
+                objlst.Add(obj);
+            }
+
+        }
+
+        override public void Update(GameTime gametime)
+        {
+            backgroundPage.Update(gametime);
+            gameOverTitleItem.Update(gametime);
+
+            TimeSpan showtime = DateTime.Now - startTime;
+
+        }
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+        override public void Click(List<Vector2> clickpositionlist)
+        {
+            //
+            foreach(var pos in clickpositionlist)
+            {
+                if (menuRetryItem.Hit(pos))
+                {
+                    // got o next level
+                    duckHuntGame.StartNextLevel();
+                }
+            }
+            return;
+        }
+
+        /////////
+
+        void NewMenu()
+        {
+            gameOverTitleItem = new TitleItemModel();
+            gameOverTitleItem.Initialize(null, gameOverTitleSpace, 0);
+            gameOverTitleItem.Conent = "Please select stage prop";
+
+            this.menuRetryItem = new MenuItemModel();
+            menuRetryItem.Initialize(null, retryMenuSpace, 0);
+            menuRetryItem.Conent = "Next";
+
+        }
+
+        DateTime startTime = DateTime.Now;
+        
+
+        int acchievedScore = 0;
+        int targetScore = 0;
+
+    }
+
+
     class GameSnapPage : GamePage
     {
         // local rect, global rect
@@ -2755,7 +3963,7 @@ namespace DuckHuntCommon
 
         GameBackGroundPage backgroundPage = null;
         DuckHuntGame duckHuntGame = null;
-        public void InitGamePage(DuckHuntGame game)
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             backgroundPage = game.GetBackgroundPage();
@@ -2771,9 +3979,17 @@ namespace DuckHuntCommon
 
             menuPausedInfoItem.Initialize(null, pausedMenuSpace, 0);
             menuPausedInfoItem.Conent = "Paused";
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
         }
 
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
 
@@ -2787,13 +4003,17 @@ namespace DuckHuntCommon
             }
 
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
             //backgroundPage.Update(gametime);
         }
 
 
-        public void Click(List<Vector2> clickpositionlist)
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+        override public void Click(List<Vector2> clickpositionlist)
         {
             //
             return;
@@ -2829,7 +4049,7 @@ namespace DuckHuntCommon
             returnMenuItem.Conent = "Return";
         }
 
-        public void InitGamePage(DuckHuntGame game)
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             backgroundPage = duckHuntGame.GetBackgroundPage();
@@ -2870,11 +4090,20 @@ namespace DuckHuntCommon
             scoreListBoard.Initialize(null, scoreListBoardSpace, 0);
             scoreListBoard.ScoreList = game.DuckHuntGameData.ScoreList;
             scoreListBoard.LevelList = game.DuckHuntGameData.LevelList;
+            scoreListBoard.GlobalScoreList = game.DuckHuntGameData.GlobalScoreList;
 
             returnMenuItem.Initialize(null, returnMenuSpace, 0);
 
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
+
         }
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
 
@@ -2888,7 +4117,7 @@ namespace DuckHuntCommon
                 objlst.Add(obj);
             }
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
             backgroundPage.Update(gametime);
             scoreListBoard.Update(gametime);
@@ -2896,7 +4125,15 @@ namespace DuckHuntCommon
 
             // 
         }
-        public void Click(List<Vector2> clickpositionlist)
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+
+        }
+
+        override public void Click(List<Vector2> clickpositionlist)
         {
             backgroundPage.Click(clickpositionlist);
 
@@ -2937,7 +4174,7 @@ namespace DuckHuntCommon
             parentPage = parent;
         }
 
-        public void InitGamePage(DuckHuntGame game)
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             Vector2 pos;
@@ -2948,7 +4185,7 @@ namespace DuckHuntCommon
             keyboardspace.Offset((int)pos.X, (int)pos.Y);
             keyboard.Initialize(null, keyboardspace, 0);
         }
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
 
@@ -2961,7 +4198,7 @@ namespace DuckHuntCommon
                 objlst.Add(obj);
             }
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
             parentPage.Update(gametime);
             keyboard.Update(gametime);
@@ -2969,7 +4206,14 @@ namespace DuckHuntCommon
 
             // 
         }
-        public void Click(List<Vector2> clickpositionlist)
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+
+        override public void Click(List<Vector2> clickpositionlist)
         {
             // check return button
             //keyboard.cl
@@ -2982,17 +4226,22 @@ namespace DuckHuntCommon
 
     class GameHelpPage : GamePage
     {
-        public void InitGamePage(DuckHuntGame game)
+        override public void InitGamePage(DuckHuntGame game)
         {
         }
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = null;
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
         }
-        public void Click(List<Vector2> clickpositionlist)
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+        override public void Click(List<Vector2> clickpositionlist)
         {
         }
     }
@@ -3033,7 +4282,7 @@ namespace DuckHuntCommon
 
         }
 
-        public void InitGamePage(DuckHuntGame game)
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             backgroundPage = duckHuntGame.GetBackgroundPage();
@@ -3091,8 +4340,17 @@ namespace DuckHuntCommon
             returnMenuItem.Conent = "Return";
 
 
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
+
+
         }
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
 
@@ -3107,7 +4365,7 @@ namespace DuckHuntCommon
                 objlst.Add(obj);
             }
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
             backgroundMusic.Update(gametime);
             gameSound.Update(gametime);
@@ -3115,7 +4373,14 @@ namespace DuckHuntCommon
 
             this.backgroundPage.Update(gametime);
         }
-        public void Click(List<Vector2> clickpositionlist)
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+
+        override public void Click(List<Vector2> clickpositionlist)
         {
             backgroundPage.Click(clickpositionlist);
 
@@ -3165,13 +4430,27 @@ namespace DuckHuntCommon
         public void ShowPause(bool show)
         {
             showPause = show;
+            if (showPause)
+            {
+                AddObjectToShowLayer(pause);
+                pause.Checked = true;
+            }
+            else
+            {
+                pause.Checked = false;
+                RemoveObjectFromShowLayer(pause);
+            }
         }
 
-        public void InitGamePage(DuckHuntGame game)
+        public ButtonModel GetPauseButton()
+        {
+            return pause;
+        }
+
+        override public void InitGamePage(DuckHuntGame game)
         {
             duckHuntGame = game;
             rectBackground = game.GetGlobalViewRect();
-
 
 
             ButtonModel button = new ButtonModel();
@@ -3194,9 +4473,17 @@ namespace DuckHuntCommon
 
             // calculate background settings
             NewBackground();
+
+            List<ModelObject> objlst = null;
+            GetObjects(out objlst);
+            foreach (var obj in objlst)
+            {
+                AddObjectToShowLayer(obj);
+            }
+
         }
 
-        public void GetObjects(out List<ModelObject> objlst)
+        override public void GetObjects(out List<ModelObject> objlst)
         {
             objlst = new List<ModelObject>();
             objlst.Add(blueSky);
@@ -3210,11 +4497,18 @@ namespace DuckHuntCommon
             }
 
         }
-        public void Update(GameTime gametime)
+        override public void Update(GameTime gametime)
         {
             cloud.Update(gametime);
         }
-        public void Click(List<Vector2> clickpositionlist)
+
+
+        override public void Press(List<Vector2> clickpositionlist)
+        {
+
+        }
+
+        override public void Click(List<Vector2> clickpositionlist)
         {
             if (showPause)
             {
@@ -3262,8 +4556,10 @@ namespace DuckHuntCommon
         public bool EnableBgMusic = true;
         public bool EnableGameSound = true;
         public DateTime installedDate = DateTime.Now;
+        public DateTime globalscorelistUpdateDate = DateTime.Now - new TimeSpan(1, 0, 0, 0);
 
         // score list
+        List<KeyValuePair<int, string>> globalscorelist;
         Dictionary<int, string> scorelist;
         Dictionary<int, string> levellist;
         public Dictionary<int, string> ScoreList
@@ -3271,6 +4567,13 @@ namespace DuckHuntCommon
             get
             {
                 return scorelist;
+            }
+        }
+        public List<KeyValuePair<int, string>> GlobalScoreList
+        {
+            get
+            {
+                return globalscorelist;
             }
         }
         
@@ -3282,10 +4585,90 @@ namespace DuckHuntCommon
             }
         }
 
+
+        internal class ScoreEntry
+        {
+            public string Score
+            {
+                get;
+                set;
+            }
+            public string PlayerName
+            {
+                get;
+                set;
+            }
+        }
+
+
+        void UploadScore2Server(string name, int score)
+        {
+             bool needupload = true;
+            if (globalscorelist.Count >= 10)
+            {
+                var worldscorelist = globalscorelist.OrderBy(c => c.Key);
+                foreach (var scoreitm in worldscorelist)
+                {
+                    if (score < scoreitm.Key)
+                    {
+                        needupload = false;
+                    }
+                    break;
+                }
+            }
+            if (needupload)
+            {
+                //
+                UInt16 svrscore = 0;
+                svrscore -= (UInt16)score;
+                string svrscorestr = svrscore.ToString();
+
+                int index = 0;
+                bool trynext = false;
+                do
+                {
+                    trynext = false;
+
+                    svrscore = 0;
+                    svrscore -= (UInt16)score;
+                    svrscorestr = svrscore.ToString();
+
+
+                    // score_year.mon.day.hour_index
+                    svrscorestr += "_";
+                    DateTime now = DateTime.Now;
+                    svrscorestr += now.Year.ToString();
+                    svrscorestr += ".";
+                    svrscorestr += now.Month.ToString();
+                    svrscorestr += ".";
+                    svrscorestr += now.Day.ToString();
+                    svrscorestr += ".";
+                    svrscorestr += now.Hour.ToString();
+
+                    svrscorestr += "_" + index.ToString();
+
+                    TableHelper TableHelper = new TableHelper(StorageAccount, StorageKey);
+                    try
+                    {
+                        bool ret = TableHelper.InsertEntity("pfsgameduckhunt", "duckhunt", svrscorestr,
+                            new ScoreEntry { Score = svrscorestr, PlayerName = name });
+                        if (!ret)
+                        {
+                            trynext = true;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        trynext = true;
+                    }
+                    index++;
+                } while (trynext && index < 512);
+            }
+            
+        }
         public void AddScore(string name, int score)
         {
             scorelist[score] = name;
-
             var result = scorelist.OrderByDescending(c => c.Key);
             Dictionary<int, string> tmp = new Dictionary<int, string>();
             int i = 0;
@@ -3303,6 +4686,28 @@ namespace DuckHuntCommon
             {
                 scorelist[item.Key] = item.Value;
             }
+
+            UploadScoreState state = new UploadScoreState();
+            state.gamedata = this;
+            state.name = name;
+            state.score = score;
+#if WINDOWS_PHONE
+            //ThreadPool.QueueUserWorkItem(AsyncUploadScore2Server, state);
+#else
+
+            Task task = Task.Run(async () =>AsyncUploadScore2Server(state));
+#endif
+        }
+
+        internal class UploadScoreState: Object
+        {
+            public GameData gamedata;
+            public string name;
+            public int score;
+        }
+        void AsyncUploadScore2Server(UploadScoreState state)
+        {
+            state.gamedata.UploadScore2Server(state.name, state.score);
         }
 
 
@@ -3353,6 +4758,8 @@ namespace DuckHuntCommon
         {
             scorelist = new Dictionary<int, string>();
             levellist = new Dictionary<int, string>();
+
+            globalscorelist = new List<KeyValuePair<int, string>>();
             var key = scorelist.OrderByDescending(c => c.Key);
             var key1 = levellist.OrderByDescending(c => c.Key);
         }
@@ -3511,6 +4918,33 @@ namespace DuckHuntCommon
             content = task.Result;
             LoadGameData(content);
 #endif
+
+            //
+            //Task.Run(UpdateGlobaScoreList(filename));
+            //UpdateGlobaScoreList(filename);
+
+
+            UpdateGlobalScoreState state = new UpdateGlobalScoreState();
+            state.gamedata = this;
+            state.filename = filename;
+#if WINDOWS_PHONE
+            //ThreadPool.QueueUserWorkItem(AsyncUpdateGlobalScore, state);
+#else
+            Task task1  = Task.Run(async () => AsyncUpdateGlobalScore(state));
+#endif
+        }
+
+   
+
+        internal class UpdateGlobalScoreState: Object
+        {
+            public GameData gamedata;
+            public string filename;
+        }
+
+        void AsyncUpdateGlobalScore(UpdateGlobalScoreState state)
+        {
+            state.gamedata.UpdateGlobaScoreList(state.filename);
         }
 
         private void SaveGameData(ref string content)
@@ -3534,13 +4968,23 @@ namespace DuckHuntCommon
             //              <level></level>
             //          </record>
             //      </levellist>
+            //      <globalscorelist>
+            //          <count> </count>
+            //          <record>
+            //              <name></name>
+            //              <score></score>
+            //          </record>
+            //      </globalscorelist>
             // </DuckHunt>
 
             content += "<?xml version='1.0'?>";
             content += "<DuckHunt>";
             SaveInstalledDate(ref content, this.installedDate);
+            SaveGlobalScoreListUpdateDate(ref content, this.globalscorelistUpdateDate);
+            
             SaveScoreList(ref content);
             SaveLevelList(ref content);
+            SaveGlobalScoreList(ref content);
 
             // could save other configuration
             SaveGameConfig(ref content);
@@ -3552,6 +4996,13 @@ namespace DuckHuntCommon
             content += "<installeddate>";
             content += installedDate.ToString();
             content += "</installeddate>";
+        }
+
+        private void SaveGlobalScoreListUpdateDate(ref string content, DateTime updateDate)
+        {
+            content += "<globalscorelistupdatedate>";
+            content += updateDate.ToString();
+            content += "</globalscorelistupdatedate>";
         }
 
 
@@ -3588,6 +5039,18 @@ namespace DuckHuntCommon
 
             }
             content += "</scorelist>";
+        }
+
+        private void SaveGlobalScoreList(ref string content)
+        {
+            content += "<globalscorelist>";
+            SaveCount(ref content, globalscorelist.Count);
+            foreach (KeyValuePair<int, string> pair in globalscorelist)
+            {
+                SaveRecord(ref content, pair.Value, pair.Key);
+
+            }
+            content += "</globalscorelist>";
         }
 
         private void SaveLevelList(ref string content)
@@ -3756,6 +5219,29 @@ namespace DuckHuntCommon
             }
         }
 
+        private void LoadGlobalScoreListUpdateDate(XmlReader reader, ref DateTime updateDate)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "globalscorelistupdatedate")
+            {
+                // error
+                return;
+            }
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Text)
+                {
+                    updateDate = Convert.ToDateTime(reader.Value);
+                }
+                if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (reader.Name == "globalscorelistupdatedate")
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
         private void LoadInstalledDate(XmlReader reader, ref DateTime installedDate)
         {
             if (reader.NodeType != XmlNodeType.Element || reader.Name != "installeddate")
@@ -3904,6 +5390,46 @@ namespace DuckHuntCommon
         }
 
 
+
+        private void LoadGlobalScoreList(XmlReader reader)
+        {
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "globalscorelist")
+            {
+                // error
+                return;
+            }
+
+            // next item should be scorelist
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "count")
+                    {
+                        // find score list element
+                        int count = 0;
+                        LoadCount(reader, ref count);
+                    }
+                    if (reader.Name == "record")
+                    {
+                        string name = "";
+                        int score = 0;
+                        LoadOneRecord(reader, ref name, ref score);
+                        globalscorelist.Add(new KeyValuePair<int, string>(score, name));
+                        //globalscorelist[score] = name;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    // end of element
+                    if (reader.Name == "globalscorelist")
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
         private void LoadLevelList(XmlReader reader)
         {
             if (reader.NodeType != XmlNodeType.Element || reader.Name != "levellist")
@@ -3983,10 +5509,20 @@ namespace DuckHuntCommon
                                 LoadInstalledDate(reader, ref installedDate);
                             }
 
+                            if (reader.Name == "globalscorelistupdatedate")
+                            {
+                                LoadGlobalScoreListUpdateDate(reader, ref globalscorelistUpdateDate);
+                            }
+
                             if (reader.Name == "scorelist")
                             {
                                 // find score list element
                                 LoadScoreList(reader);
+                            }
+
+                            if (reader.Name == "globalscorelist")
+                            {
+                                LoadGlobalScoreList(reader);
                             }
 
                             if (reader.Name == "levellist")
@@ -4025,6 +5561,206 @@ namespace DuckHuntCommon
             }
         }
 
+        const string StorageAccount = "pfsgame";
+        const string StorageKey = "t/uUczMLzHscEBDXUJzoaaQTFw0AD8JpvWJ0mXi8A9kRo3/1wdMxWeS97tkwq0GdloPNBXqLBC0cxgxBEkxBvQ==";
+
+        void UpdateGlobaScoreList(string localfilename) //"duckhunt.xml"
+        {
+            DateTime now = DateTime.Now;
+            if (now.Date <= globalscorelistUpdateDate.Date)
+            {
+                return;
+            }
+
+            //
+            TableHelper TableHelper = new TableHelper(StorageAccount, StorageKey);
+            string result = TableHelper.QueryEntities("pfsgameduckhunt", 10);
+            //var task = TableHelper.GetEntity("pfsgameduckhunt", "duckhunt", "");
+            //task.Wait();
+
+            // parse the result
+            //<entry>
+            //<content>
+            //  <m:properties>
+            //      <d:PartitionKey/>
+            //      <d:PlayerName/>
+            //      <d:Score>211_2013.10.17.20</d:Score>
+            //  </m:properties>
+            //</content>
+            //</entry>
+
+            LoadGlobalScoreListFromServer(result);
+
+            globalscorelistUpdateDate = DateTime.Now;
+
+            Save(localfilename);         
+        }
+
+
+
+        private bool ParseScoreEntry(System.Xml.XmlReader reader, ref string player, ref UInt16 score)
+        {
+
+            //<entry>
+            //<content>
+            //  <m:properties>
+            //      <d:PartitionKey/>
+            //      <d:PlayerName/>
+            //      <d:Score>211_2013.10.17.20</d:Score>
+            //  </m:properties>
+            //</content>
+            //</entry>
+
+            string playsubfix = "";
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "entry")
+            {
+                return false;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "m:properties")
+                {
+                    break;
+                }
+            }
+
+            if (reader.NodeType != XmlNodeType.Element || reader.Name != "m:properties")
+            {
+                return false;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "d:PlayerName")
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.NodeType == XmlNodeType.Text)
+                        {
+                            player = reader.Value;
+                            if (playsubfix.Length > 0)
+                            {
+                                player += playsubfix;
+                            }
+                            break;
+                        }
+                        //count = Convert.ToInt32(reader.Value);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.Element && reader.Name == "d:Score")
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.NodeType == XmlNodeType.Text)
+                        {
+                            //
+                            string value = reader.Value;
+                            int index = value.IndexOf('_');
+                            if (index > 0)
+                            {
+                                playsubfix = value.Substring(index, value.Length - index);
+                                value = value.Substring(0, index);
+
+                                if (player.Length > 0)
+                                {
+                                    player += playsubfix;
+                                }
+                            }
+                            score = Convert.ToUInt16(value);
+                            score = (UInt16)(0 - score);
+
+                            break;
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "m:properties")
+                {
+                    break;
+                }
+            }
+
+            // find </content>
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "content")
+                {
+                    break;
+                }
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "entry")
+                {
+                    break;
+                }
+            }
+
+            if (reader.NodeType != XmlNodeType.EndElement || reader.Name != "entry")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void LoadGlobalScoreListFromServer(string content)
+        {
+            //
+#if WINDOWS_PHONE
+            byte[] contentinbyte = StringToByte(content);
+            System.IO.MemoryStream stream = new System.IO.MemoryStream(contentinbyte);
+#else
+            StringReader stream = new StringReader(content);
+#endif
+
+            //<entry>
+            //<content>
+            //  <m:properties>
+            //      <d:PartitionKey/>
+            //      <d:PlayerName/>
+            //      <d:Score>211_2013.10.17.20</d:Score>
+            //  </m:properties>
+            //</content>
+            //</entry>
+            using (System.Xml.XmlReader reader = System.Xml.XmlReader.Create(stream))
+            {
+                try
+                {
+                    if (reader == null || reader.EOF || !reader.Read())
+                    {
+                        return;
+                    }
+
+                    while (reader.Read())
+                    {
+                        if (reader.Name == "entry" && reader.NodeType == XmlNodeType.Element)
+                        {
+                            // error
+                            string player = "";
+                            UInt16 score = 0;
+                            if (ParseScoreEntry(reader, ref player, ref score))
+                            {
+                                try
+                                {
+                                    this.globalscorelist.Add(new KeyValuePair<int, string>(score, player));
+                                }
+                                catch (Exception)
+                                {
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.ToString();
+                }
+            }
+        }
     }
+
+ 
 
 }

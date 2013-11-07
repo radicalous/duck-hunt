@@ -3909,6 +3909,12 @@ namespace DuckHuntCommon
             }
         }
 
+        public List<KeyValuePair<int, string>> GlobalScoreList
+        {
+            get;
+            set;
+        }
+
         public Dictionary<int, string> LevelList
         {
             get

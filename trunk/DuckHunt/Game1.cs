@@ -10,6 +10,12 @@ using Windows.ApplicationModel.Core;
 using DuckHuntCommon;
 using GameCommon;
 
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Activation;
+using Windows.UI.Xaml;
+
+using StorageSampleREST;
+
 namespace DuckHunt
 {
     /// <summary>
@@ -17,6 +23,8 @@ namespace DuckHunt
     /// </summary>
     public class Game1 : Game
     {
+        public static GraphicsDevice graphicDevice;
+
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
 
@@ -46,14 +54,14 @@ namespace DuckHunt
         WindowState windState = WindowState.Full;
         Windows.Foundation.Rect _fullWindowBounds;
 
-
-
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
             controler = new DuckHuntGameControler();
+
+
 
         }
 
@@ -66,12 +74,13 @@ namespace DuckHunt
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            graphicDevice = GraphicsDevice;
 
             Rectangle viewScene = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             //controler.Initialize(viewScene);
             controler.Initialize(viewScene);
 
-            TouchPanel.EnabledGestures = GestureType.Tap/*|GestureType.DoubleTap|GestureType.Pinch|GestureType.Hold*/;
+            TouchPanel.EnabledGestures = GestureType.Tap /*| GestureType.FreeDrag | GestureType.DragComplete /*|GestureType.DoubleTap|GestureType.Pinch|GestureType.Hold*/;
 
             base.Initialize();
 
@@ -141,6 +150,8 @@ namespace DuckHunt
                 _settingsPopup.SetValue(Windows.UI.Xaml.Controls.Canvas.LeftProperty, _windowBounds.Width - _settingsWidth);
                 _settingsPopup.SetValue(Windows.UI.Xaml.Controls.Canvas.TopProperty, 0);
                 _settingsPopup.IsOpen = true;
+
+               // Windows.UI.Xaml.Window.Current.Content = mypane;
             });
 
             args.Request.ApplicationCommands.Add(cmd);
@@ -206,9 +217,8 @@ namespace DuckHunt
         protected override void Update(GameTime gameTime)
         {
             // TODO: Add your update logic here
-
+            CollectInput(gameTime);
             controler.Update(gameTime);
-            HuntDuck(gameTime);
         }
 
         /// <summary>
@@ -224,17 +234,20 @@ namespace DuckHunt
             // Start drawing
             _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 
-            controler.Draw(_spriteBatch, gameTime);
+            //controler.Draw(_spriteBatch, gameTime);
+            controler.CurrentLayer().visitForDraw(_spriteBatch);
 
             // Stop drawing
             _spriteBatch.End(); 
         }
 
+        Vector2 lastpos = new Vector2();
+        GameTime lastinputtime = new GameTime();
         List<Vector2> pointpositions = new List<Vector2>();
         HashSet<Vector2> pointslist = new HashSet<Vector2>();
 
         ButtonState lastButtonState = new ButtonState();
-        private void HuntDuck(GameTime gameTime)
+        private void CollectInput(GameTime gameTime)
         {
             // Get Thumbstick Controls
             /*
@@ -288,7 +301,41 @@ namespace DuckHunt
                     lastpos = gesture.Position;
                      */
                     pointpositions.Add(gesture.Position);
+                    if (pointpositions.Count > 0)
+                    {
+                        controler.Click(pointpositions);
+                        pointpositions.Clear();
+                    }
+
                 }
+                else if (gesture.GestureType == GestureType.FreeDrag)
+                {
+                    Vector2 off = gesture.Position-lastpos;
+                    if(/*gameTime.TotalGameTime.Milliseconds - lastinputtime.TotalGameTime.Milliseconds < 20 || */(off.Length() < 1))
+                    {
+                        continue ;
+                    }
+                    lastinputtime.TotalGameTime = gameTime.TotalGameTime;
+                    lastpos = gesture.Position;
+
+                    pointpositions.Add(gesture.Position);
+                    if (pointpositions.Count > 0)
+                    {
+                        controler.Press(pointpositions);
+                        pointpositions.Clear();
+                    }
+                }
+                else if (gesture.GestureType == GestureType.DragComplete)
+                {
+                    pointpositions.Add(lastpos);
+                    if (pointpositions.Count > 0)
+                    {
+                        controler.Click(pointpositions);
+                        pointpositions.Clear();
+                    }
+                }
+
+
                 /*
             else if (gesture.GestureType == GestureType.Pinch)
             {
@@ -318,19 +365,20 @@ namespace DuckHunt
                 pointpositions.Add(pos);
             }
              */
-            if (pointpositions.Count > 0)
-            {
-                controler.Click(pointpositions);
-                pointpositions.Clear();
-
-                return;
-            }
 
             //Get Mouse State then Capture the Button type and Respond Button Press
 
             currentMouseState = Mouse.GetState();
             Vector2 mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
-            if (currentMouseState.LeftButton == ButtonState.Released && lastButtonState == ButtonState.Pressed)
+            if (currentMouseState.LeftButton == ButtonState.Pressed)
+            {
+                IsMouseVisible = true;
+
+                pointpositions.Add(mousePosition);
+                controler.Press(pointpositions);
+                pointpositions.Clear();
+            }
+            else if (currentMouseState.LeftButton == ButtonState.Released && lastButtonState == ButtonState.Pressed)
             {
                 IsMouseVisible = true;
 

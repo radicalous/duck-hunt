@@ -17,7 +17,7 @@
     <RemoteDebugEnabled>true</RemoteDebugEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <RemoteDebugMachine>10.94.90.229</RemoteDebugMachine>
+    <RemoteDebugMachine>192.168.2.101</RemoteDebugMachine>
     <UseAuthentication>True</UseAuthentication>
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <UseSimulator>False</UseSimulator>

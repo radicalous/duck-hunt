@@ -69,6 +69,8 @@ namespace GameCommon
         {
 
             // Keep a local copy of the values passed in
+            Rotation = 0;
+            Origion = Vector2.Zero;
 
             this.color = color;
 
@@ -162,9 +164,9 @@ namespace GameCommon
 
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
 
-             destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2, 
+             destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2  , 
 
-             (int)Position.Y - (int)(FrameHeight * scale) / 2, 
+             (int)Position.Y - (int)(FrameHeight * scale) / 2  , 
 
              (int)(FrameWidth * scale), 
 
@@ -172,6 +174,17 @@ namespace GameCommon
 
          }
 
+        public float Rotation
+        {
+            set;
+            get;
+        }
+
+        public Vector2 Origion
+        {
+            get;
+            set;
+        }
         // Draw the Animation Strip
 
         public void Draw(SpriteBatch spriteBatch, float depth)
@@ -181,9 +194,8 @@ namespace GameCommon
 
             if (Active)
             {
-                Vector2 orgion = new Vector2(0, 0);
-                spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color, 0, orgion, SpriteEffects.None, depth); // 0 f
-
+                Vector2 orgion = Origion;
+                spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color, Rotation, orgion, SpriteEffects.None, depth); // 0 f
             }
 
         }

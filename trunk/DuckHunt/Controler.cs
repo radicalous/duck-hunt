@@ -39,6 +39,7 @@ namespace DuckHuntCommon
 
     class ViewObjectFactory
     {
+        /*
         static Vector2 s_playgroundOrgPoint;
         static float s_playgroundDefScale;
         static Vector2 s_backgroundOrgPoint;
@@ -52,34 +53,30 @@ namespace DuckHuntCommon
             s_backgroundOrgPoint = backgroundOrgPoint;
             s_backgroundDefScale = backgroundDefScale;
             s_localViewRect = localViewRc;
-        }
 
-        public static ViewObject CreateViewObject(ModelObject model)
+            Camera.CameraScale = s_playgroundDefScale;
+            Camera.ViewPort = s_playgroundOrgPoint;
+        }
+        */
+        public static CXShowNode CreateViewObject(ModelObject model)
         {
             CommonViewObject commViewObj = null;
-            ScoreBoardViewObject scoreboardObj = null;
-            HitBoardViewObject hitBoardObj = null;
-            ScoreListBoardViewObject scorelistobj = null;
-            ViewObject viewObject = null;
+            CXShowNode viewObject = null;
             switch (model.Type())
             {
-                case ModelType.SKY:
-                    {
-                        CommonViewObjectEx objext  = new CommonViewObjectEx(model, s_backgroundOrgPoint, s_backgroundDefScale);
-                        objext.screenRc = s_localViewRect;
-                        viewObject = objext;
-                    }
-                    break;
                 case ModelType.SMOKE:
                     {
-                        viewObject = new SmokeViewObject(model, s_backgroundOrgPoint, s_backgroundDefScale);
+                        viewObject = new SmokeViewObject(model);
                     }
                     break;
                 case ModelType.CLOUD:
                 case ModelType.GRASS:
                 case ModelType.FORGROUND:
+                case ModelType.SKY:
                     {
-                        commViewObj = new CommonViewObject(model, s_backgroundOrgPoint, s_backgroundDefScale);
+                        commViewObj = new CommonViewObject(model/*, s_backgroundOrgPoint, s_backgroundDefScale*/);
+                        commViewObj.BackGround = true;
+                        viewObject = commViewObj;
                     }
                     break;
                 case ModelType.PANDA:
@@ -90,18 +87,19 @@ namespace DuckHuntCommon
                 case ModelType.BALOON:
                 case ModelType.PARROT:
                     {
-                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
+                        viewObject = new CommonViewObject(model/*, s_playgroundOrgPoint, s_playgroundDefScale*/);
                     }
                     break;
                 case ModelType.HITBOARD:
                     {
-                        hitBoardObj = new HitBoardViewObject(model);
-                        hitBoardObj.BgOrgPoint = s_backgroundOrgPoint;
+                        HitBoardViewObject hitBoardObj = new HitBoardViewObject(model);
+                        //hitBoardObj.BgOrgPoint = s_backgroundOrgPoint;
+                        viewObject = hitBoardObj;
                     }
                     break;
                 case ModelType.SCORELISTBOARD:
                     {
-                        scorelistobj = new ScoreListBoardViewObject(model);
+                        viewObject = new ScoreListBoardViewObject(model);
                     }
                     break;
                 case ModelType.LEVELUPBOARD:
@@ -111,38 +109,42 @@ namespace DuckHuntCommon
                     break;
                 case ModelType.DUCKICON:
                     {
-                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
+                        viewObject = new CommonViewObject(model/*, s_playgroundOrgPoint, s_playgroundDefScale*/);
                     }
                     break;
                 case ModelType.BULLETBOARD:
                     {
-                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
+                        viewObject = new CommonViewObject(model/*, s_playgroundOrgPoint, s_playgroundDefScale*/);
                     }
                     break;
                 case ModelType.BUTTON:
                     {
-                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
+                        viewObject = new CommonViewObject(model/*, s_playgroundOrgPoint, s_playgroundDefScale*/);
                     }
                     break;
+                    /*
                 case ModelType.KEYITEM:
                     {
                         //Vector2 ogpoint = Vector2.Zero;
-                        viewObject = new KeyItemViewObject(model/*, Vector2.Zero, 1.0f*/);
+                        viewObject = new KeyItemViewObject(model);
                     }
                     break;
+                    */
+                    /*
                 case ModelType.KEYBORD:
                     {
                         viewObject = new KeyboardViewObject(model, Vector2.Zero, 1.0f);
                     }
                     break;
+                     */
                 case ModelType.BULLETICON:
                     {
-                        commViewObj = new CommonViewObject(model, s_playgroundOrgPoint, s_playgroundDefScale);
+                        commViewObj = new CommonViewObject(model/*, s_playgroundOrgPoint, s_playgroundDefScale*/);
                     }
                     break;
                 case ModelType.SCOREBOARD:
                     {
-                        scoreboardObj = new ScoreBoardViewObject(model);
+                        viewObject = new ScoreBoardViewObject(model);
                     }
                     break;
                 case ModelType.MENUITEM:
@@ -158,13 +160,13 @@ namespace DuckHuntCommon
                 case ModelType.TIMEBOARD:
                     {
                         viewObject = new TimeBoardViewObject(model);
-                        ((TimeBoardViewObject)viewObject).BgOrgPoint = s_backgroundOrgPoint;
+                        //((TimeBoardViewObject)viewObject).BgOrgPoint = s_backgroundOrgPoint;
                     }
                     break;
                 case ModelType.LOSTDUCKBOARD:
                     {
                         viewObject = new LostDuckBoardViewObject(model);
-                        ((LostDuckBoardViewObject)viewObject).BgOrgPoint = s_backgroundOrgPoint;
+                        //((LostDuckBoardViewObject)viewObject).BgOrgPoint = s_backgroundOrgPoint;
                     }
                     break;
                 case ModelType.RESULTSUMMARY:
@@ -177,45 +179,45 @@ namespace DuckHuntCommon
                         viewObject = new CheckBoxViewObject(model);
                     }
                     break;
+                    /*
                 case ModelType.FIREWORK:
                     {
                         viewObject = new FireworkViewObject();
                     }
                     break;
+                     */
                 case ModelType.INFOBORD:
                     {
                         viewObject = new InfoBoardViewObject(model);
                     }
                     break;
+                case ModelType.HUNTER:
+                    {
+                        viewObject = new HunterViewObject(model);
+                    }
+                    break;
+                case ModelType.ARROW:
+                    {
+                        viewObject = new ArrowViewObject(model);
+                    }
+                    break;
             }
-            if (commViewObj != null)
-            {
-                commViewObj.screenRc = s_localViewRect;
-                viewObject = commViewObj;
-            }
-            if (scoreboardObj != null)
-            {
-                viewObject = scoreboardObj;
-            }
-            if( hitBoardObj != null )
-            {
-                viewObject = hitBoardObj;
-            }
-            if (scorelistobj != null)
-            {
-                viewObject = scorelistobj;
-            }
+
             return viewObject;
         }
     }
 
     class DuckHuntGameControler
     {
+        public static DuckHuntGameControler controler = null;
+
         ContentManager Content = null;
         DuckHuntGame game = null;
         Rectangle viewRect = new Rectangle();
 
         Dictionary<ModelType, ObjectTexturesItem> objTextureLst;
+
+        CXLayer showlayer = null;
 
         bool pause = false;
 
@@ -227,9 +229,23 @@ namespace DuckHuntCommon
         /// </summary>
         public void Initialize(Rectangle viewScene)
         {
+            if (controler == null)
+            {
+                controler = this;
+            }
+            Camera.ViewHeight = viewScene.Height;
+            Camera.ViewWidth = viewScene.Width;
+
             game = new DuckHuntGame();
             viewRect = viewScene;
             objTextureLst = new Dictionary<ModelType, ObjectTexturesItem>();
+
+            _texturemap = new Dictionary<string, Texture2D>();
+            _spritefontmap = new Dictionary<string, SpriteFont>();
+            _soundmap = new Dictionary<string, SoundEffect>();
+
+
+
 #if WINDOWS_PHONE
             game.TrialVersion = Guide.IsTrialMode;
 #endif
@@ -245,6 +261,8 @@ namespace DuckHuntCommon
         {
             // TODO: use this.Content to load your game content here
             Content = Content1;
+            CXBaseShowNode.controler = this;
+
             LoadResources();
 
             List<GameSound> soundList = game.GetSoundList();
@@ -282,6 +300,46 @@ namespace DuckHuntCommon
 
         }
 
+
+
+        Dictionary<string, Texture2D> _texturemap;
+        public Texture2D LoadTexture(string texturepath)
+        {
+            if (_texturemap.Keys.Contains<string>(texturepath))
+            {
+                return _texturemap[texturepath];
+            }
+
+            Texture2D texture = Content.Load<Texture2D>(texturepath);
+            _texturemap[texturepath] = texture;
+            return texture;
+        }
+
+        Dictionary<string, SpriteFont> _spritefontmap;
+        public SpriteFont LoadSpriteFont(string fontpath)
+        {
+            if (_spritefontmap.Keys.Contains<string>(fontpath))
+            {
+                return _spritefontmap[fontpath];
+            }
+
+            SpriteFont font = Content.Load<SpriteFont>(fontpath);
+            _spritefontmap[fontpath] = font;
+            return font;
+        }
+
+        Dictionary<string, SoundEffect> _soundmap;
+        public SoundEffect LoadSoundEffect(string soundpath)
+        {
+            if (_soundmap.Keys.Contains<string>(soundpath))
+            {
+                return _soundmap[soundpath];
+            }
+
+            SoundEffect sound = Content.Load<SoundEffect>(soundpath);
+            _soundmap[soundpath] = sound;
+            return sound;
+        }
 
         public void LoadResources()
         {
@@ -329,7 +387,18 @@ namespace DuckHuntCommon
             {
                 return;
             }
+            /*
+            if ((gameTime.TotalGameTime - lastupdateTime).TotalMilliseconds < 25)
+            {
+                return;
+            }
+            lastupdateTime = gameTime.TotalGameTime;
+            */
             game.Update(gameTime);
+
+            CurrentLayer().visitForUpdate(gameTime);
+
+
             if (game.DuckHuntGameData.EnableBgMusic != bgSoundEnabled)
             {
                 //
@@ -343,76 +412,78 @@ namespace DuckHuntCommon
                     MediaPlayer.Pause();
                 }
             }
-          
-            /*
-            if (pause)
-            {
-                pause = game.Pause;
-                return;
-            }
-            pause = game.Pause;
-            */
 
-            List<ModelObject> objlst = null;
-            game.GetObjects(out objlst);
-            if (objlst == null)
-            {
-                return;
-            }
 
-            foreach (ModelObject obj in objlst)
-            {
-                ViewObject viewObject = obj.GetViewObject();
-                if (viewObject == null)
-                {
-                    //viewObject = ViewObjectFactory.CreateViewObject(this.viewRect, obj, game.orgpoint, game.defscale);
-                    Vector2 bgorgpoint = game.GetBgOrgPointInLocalView();
-                    float bgdefscale = game.GetLogicBgDefScale();
-                    viewObject = ViewObjectFactory.CreateViewObject(obj);
-
-                    viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
-                    obj.SetViewObject(viewObject);
-                }
-                viewObject.Update(gameTime);
-
-                if (game.DuckHuntGameData.EnableGameSound)
-                {
-                    viewObject.PlaySound();
-                }
-            }
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+
+        public Object AddShowLayer()
         {
-            // TODO: Add your drawing code here
-            List<ModelObject> objlst = null;
-            game.GetObjects(out objlst);
-            if (objlst == null)
+            CXLayer layer = new DuckHuntLayer();
+            layer.Init();
+            return layer;
+        }
+
+        public void AddObjectToShowLayer(Object showLayer1, ModelObject modelobj)
+        {
+            CXShowNode showNode = modelobj.GetShowNode();
+            if (showNode == null)
+            {
+                showNode = ViewObjectFactory.CreateViewObject(modelobj);
+                showNode.Init(null);
+                modelobj.SetShowNode(showNode);
+
+            }
+
+
+            CXLayer layer = (CXLayer)showLayer1;
+            layer.AddChild(showNode);
+        }
+
+        public void ClearObjectFromShowLayer(Object showLayer1)
+        {
+            CXLayer layer = (CXLayer)showLayer1;
+            layer.RemoveAllChildren();
+        }
+        public void RemoveObjectFromShowLayer(Object showLayer1, ModelObject modelobj)
+        {
+            CXShowNode showNode = modelobj.GetShowNode();
+            if (showNode == null)
             {
                 return;
             }
 
-            foreach (ModelObject obj in objlst)
-            {
-                ViewObject viewObject = obj.GetViewObject();
-                if (viewObject == null)
-                {
-                    Vector2 bgorgpoint = game.GetBgOrgPointInLocalView();
-                    float bgdefscale = game.GetLogicBgDefScale();
-                    viewObject = ViewObjectFactory.CreateViewObject(obj);
-                    viewObject.Init(game.orgpoint, game.defscale, obj, objTextureLst, obj.GetSpace());
-                    obj.SetViewObject(viewObject);
-                    obj.Update(gameTime);
-                }
-                viewObject.Draw(spriteBatch);
-            }
+            CXLayer layer = (CXLayer)showLayer1;
+            layer.RemoveChild(showNode);
+        }
+
+        public void SwitchShowLayer(Object showLayer1)
+        {
+            showlayer = (CXLayer)showLayer1;
+        }
+
+        public CXLayer CurrentLayer()
+        {
+            return showlayer;
         }
 
 
+        public void Press(List<Vector2> clickPositions)
+        {
+            //
+            // local rect, global rect
+            // (local rect - orgpoint ) = global rect * default scale
+            // local rect = orgpoint + global rect * default scale
+            // global rect = (local rect - orgpoint)/ defalult scale
+            //
+            //Vector2 globalshotpos = (shootPosition - game.orgpoint) / game.defscale;
+            List<Vector2> globalpointposlst = new List<Vector2>();
+            foreach (Vector2 localclickpos in clickPositions)
+            {
+                globalpointposlst.Add((localclickpos - game.orgpoint) / game.defscale);
+            }
+            game.Press(globalpointposlst);
+        }
         public void Click(List<Vector2> clickPositions)
         {
             //
