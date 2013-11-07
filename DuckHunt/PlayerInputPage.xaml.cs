@@ -22,7 +22,66 @@ namespace DuckHunt
     /// </summary>
     public sealed partial class PlayerInputPage : Page
     {
+        public class InputAsyncResult : IAsyncResult
+        {
+            public string Text
+            {
+                get;
+                set;
+            }
+            public Object State
+            {
+                get;
+                set;
+            }
+            public virtual object AsyncState 
+            {
+                get
+                {
+                    return State;
+                }
+            }
+
+  
+            public virtual WaitHandle AsyncWaitHandle 
+            {
+                get
+                {
+                    return null;
+                }
+            }
+
+            public virtual bool CompletedSynchronously
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public bool Completed
+            {
+                get;
+                set;
+            }
+
+            public virtual bool IsCompleted
+            {
+                get
+                {
+                    return Completed;
+                }
+            }
+
+           
+        }
         UIElement previousPage;
+
+        public string Text
+        {
+            get;
+            set;
+        }
 
         public UIElement PreviousPage
         {
@@ -35,10 +94,41 @@ namespace DuckHunt
                 previousPage = value;
             }
         }
-        public PlayerInputPage()
+        public PlayerInputPage(UIElement previousPage1)
         {
+            previousPage = previousPage1;
             this.InitializeComponent();
         }
+
+        static PlayerInputPage singelen;
+
+        AsyncCallback _callback = null;
+        Object _state = null;
+
+        public static void BeginShowKeyboardInput(
+             string title,
+             string description,
+             string defaultText,
+             AsyncCallback callback,
+             Object state
+        )
+        {
+            if (singelen == null)
+            {
+                singelen = new PlayerInputPage(null);
+            }
+            singelen.PreviousPage = Windows.UI.Xaml.Window.Current.Content;
+            singelen._callback = callback;
+            singelen._state = state;
+            Windows.UI.Xaml.Window.Current.Content = singelen;
+        }
+
+        public static string EndShowKeyboardInput(IAsyncResult r)
+        {
+            InputAsyncResult result = (InputAsyncResult)r;
+            return result.Text;
+        }
+
 
         /// <summary>
         /// Invoked when this page is about to be displayed in a Frame.
@@ -51,8 +141,13 @@ namespace DuckHunt
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            DuckHunt.App app = (DuckHunt.App)DuckHunt.App.Current;
+            InputAsyncResult result = new InputAsyncResult();
+            result.State = this._state;
+            result.Text = this.InputText.Text;
+            result.Completed = true;
+            _callback(result);
 
+            Text = this.InputText.Text;
             Window.Current.Content = previousPage;
             Window.Current.Activate();
         }

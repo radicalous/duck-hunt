@@ -22,6 +22,8 @@ namespace DuckHunt4Wp
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        public static GraphicsDevice graphicDevice;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -57,6 +59,7 @@ namespace DuckHunt4Wp
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            graphicDevice = GraphicsDevice;
 
             Rectangle viewScene = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             //controler.Initialize(viewScene);
@@ -108,9 +111,8 @@ namespace DuckHunt4Wp
             // TODO: Add your update logic here
 
             // Update the parallaxing background
+            CollectInput(gameTime);
             controler.Update(gameTime);
-
-            HuntDuck(gameTime);
 
             //base.Update(gameTime);
         }
@@ -129,7 +131,7 @@ namespace DuckHunt4Wp
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 
             // Draw the moving background
-            controler.Draw(spriteBatch, gameTime);
+            controler.CurrentLayer().visitForDraw(spriteBatch);
 
             // Stop drawing
             spriteBatch.End(); 
@@ -137,7 +139,7 @@ namespace DuckHunt4Wp
 
         List<Vector2> pointpositions = new List<Vector2>();
         ButtonState lastButtonState = new ButtonState();
-        private void HuntDuck(GameTime gameTime)
+        private void CollectInput(GameTime gameTime)
         {
            // Get Thumbstick Controls
             /*

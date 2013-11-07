@@ -9,10 +9,9 @@
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid HorizontalAlignment="Left" Height="748" Margin="0,10,0,0" VerticalAlignment="Top" Width="1356">
-            <TextBlock HorizontalAlignment="Left" Margin="312,374,0,0" TextWrapping="Wrap" Text="Please input Player's Name" VerticalAlignment="Top"/>
-            <TextBox HorizontalAlignment="Left" Margin="312,414,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="252"/>
-            <Button Content="Button" HorizontalAlignment="Left" Margin="312,485,0,0" VerticalAlignment="Top" Width="161" Click="Button_Click_1"/>
-            <TextBox HorizontalAlignment="Left" Margin="663,431,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" TextChanged="TextBox_TextChanged_1"/>
+            <TextBlock HorizontalAlignment="Left" Margin="156,180,0,0" TextWrapping="Wrap" Text="Please input Player's Name" VerticalAlignment="Top"/>
+            <TextBox x:Name="InputText" HorizontalAlignment="Left" Margin="158,234,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="252"/>
+            <Button Content="OK" HorizontalAlignment="Left" Margin="158,294,0,0" VerticalAlignment="Top" Width="252" Click="Button_Click_1"/>
         </Grid>
 
     </Grid>

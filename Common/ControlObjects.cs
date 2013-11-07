@@ -2188,24 +2188,24 @@ namespace DuckHuntCommon
             pos1.Y += 30 * DefScaleInScreen;
             pos2 = pos1;
             pos2.X += 150 * DefScaleInScreen;
-            spriteBatch.DrawString(base.ObjFontList[0], "Top 5 Level List",
+            spriteBatch.DrawString(base.ObjFontList[0], "Top 5 Global Score List",
                 pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                 SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
 
             pos1.Y += 60 * DefScaleInScreen*textscale;
-
-            result = model.LevelList.OrderByDescending(c => c.Key);
+            result = model.GlobalScoreList.OrderByDescending(c => c.Key);
             foreach (KeyValuePair<int, string> pair in result)
             {
+                // the score include the index, move the index to playname
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Value,
                     pos1, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
                 pos2 = pos1;
-                pos2.X += 430 * DefScaleInScreen*textscale;
+                pos2.X += 430 * DefScaleInScreen * textscale;
                 spriteBatch.DrawString(base.ObjFontList[1], pair.Key.ToString(),
                     pos2, Color.Yellow, 0, Vector2.Zero, DefScaleInScreen * textscale,
                     SpriteEffects.None, model.GetAnimationDepth() - 0.02f);
-                pos1.Y += 30 * DefScaleInScreen*textscale;
+                pos1.Y += 30 * DefScaleInScreen * textscale;
             }
 
         }
